@@ -26,40 +26,98 @@ jobs:
           pip install -e .
 
       - name: Create data directory
-        run: mkdir -p data
+        run: mkdir -p data logs
 
-      - name: Fetch calls
-        run: cordis-data fetch-calls --force
+      - name: Fetch calls with logging
+        id: fetch
+        run: |
+          set -o pipefail
+          echo "=== Starting calls fetch ===" | tee -a logs/fetch-calls.log
+          echo "Timestamp: $(date -u +'%Y-%m-%d %H:%M:%S UTC')" | tee -a logs/fetch-calls.log
+          echo "Python version: $(python --version)" | tee -a logs/fetch-calls.log
+          echo "Installed packages:" | tee -a logs/fetch-calls.log
+          pip list | tee -a logs/fetch-calls.log
+          echo "" | tee -a logs/fetch-calls.log
+
+          if cordis-data fetch-calls --force 2>&1 | tee -a logs/fetch-calls.log; then
+            echo "Fetch completed successfully" | tee -a logs/fetch-calls.log
+            echo "status=success" >> $GITHUB_OUTPUT
+          else
+            echo "Fetch failed" | tee -a logs/fetch-calls.log
+            echo "status=failed" >> $GITHUB_OUTPUT
+          fi
         continue-on-error: true
 
-      - name: Check if data exists
-        id: check
+      - name: Validate fetched data
+        id: validate
         run: |
+          echo "=== Data Validation ===" | tee -a logs/fetch-calls.log
+
           if [ -f data/calls.json ]; then
+            size=$(wc -c < data/calls.json)
+            count=$(python -c "import json; print(len(json.load(open('data/calls.json'))))" 2>/dev/null || echo "unknown")
+            echo "calls.json exists" | tee -a logs/fetch-calls.log
+            echo "  Size: $(numfmt --to=iec-i --suffix=B <<< $size)" | tee -a logs/fetch-calls.log
+            echo "  Records: $count" | tee -a logs/fetch-calls.log
             echo "has_data=true" >> $GITHUB_OUTPUT
           else
+            echo "calls.json not found" | tee -a logs/fetch-calls.log
             echo "has_data=false" >> $GITHUB_OUTPUT
           fi
 
+          if [ -f data/.metadata.json ]; then
+            echo "metadata.json exists" | tee -a logs/fetch-calls.log
+            cat data/.metadata.json | tee -a logs/fetch-calls.log
+          else
+            echo "metadata.json not found" | tee -a logs/fetch-calls.log
+          fi
+
       - name: Commit and push changes
-        if: steps.check.outputs.has_data == 'true'
+        id: commit
+        if: steps.validate.outputs.has_data == 'true'
         run: |
+          echo "=== Git Operations ===" | tee -a logs/fetch-calls.log
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add data/calls.json data/.metadata.json
+
           if ! git diff --cached --quiet; then
-            git commit -m "chore(data): update EU funding calls data [$(date -u +'%Y-%m-%d %H:%M:%S UTC')]"
-            git push
+            git commit -m "chore(data): update EU funding calls data [$(date -u +'%Y-%m-%d %H:%M:%S UTC')]" \
+              2>&1 | tee -a logs/fetch-calls.log
+            git push 2>&1 | tee -a logs/fetch-calls.log
+            echo "Commit and push successful" | tee -a logs/fetch-calls.log
+            echo "commit_status=pushed" >> $GITHUB_OUTPUT
           else
-            echo "No changes in calls data"
+            echo "No changes in calls data" | tee -a logs/fetch-calls.log
+            echo "commit_status=no_changes" >> $GITHUB_OUTPUT
           fi
+        continue-on-error: true
+
+      - name: Upload logs as artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: fetch-calls-logs
+          path: logs/fetch-calls.log
+          retention-days: 30
+          if-no-files-found: ignore
 
       - name: Workflow summary
+        if: always()
         run: |
-          echo "## Calls Data Fetch" >> $GITHUB_STEP_SUMMARY
-          if [ -f data/calls.json ]; then
-            echo "Status: Success" >> $GITHUB_STEP_SUMMARY
-            echo "Calls file size: $(wc -c < data/calls.json | numfmt --to=iec-i --suffix=B)" >> $GITHUB_STEP_SUMMARY
+          echo "## Calls Data Fetch Report" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Status**: ${{ steps.fetch.outputs.status }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Validation**: $([ '${{ steps.validate.outputs.has_data }}' = 'true' ] && echo 'Valid' || echo 'Invalid')" >> $GITHUB_STEP_SUMMARY
+          echo "**Git**: ${{ steps.commit.outputs.commit_status }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Timestamp**: $(date -u +'%Y-%m-%d %H:%M:%S UTC')" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Logs" >> $GITHUB_STEP_SUMMARY
+          if [ -f logs/fetch-calls.log ]; then
+            echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+            cat logs/fetch-calls.log >> $GITHUB_STEP_SUMMARY
+            echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
           else
-            echo "Status: Failed - calls.json not found" >> $GITHUB_STEP_SUMMARY
+            echo "No logs captured" >> $GITHUB_STEP_SUMMARY
           fi
