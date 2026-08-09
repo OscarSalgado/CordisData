@@ -15,6 +15,15 @@ RELEVANT_FIELDS = {
     "actionType",
     "programme",
     "cluster",
+    "description",
+    "objectives",
+    "submissionProcedure",
+    "callTitle",
+    "deadlineModel",
+    "crossCuttingPriorities",
+    "typesOfAction",
+    "topicConditions",
+    "supportInfo",
 }
 
 

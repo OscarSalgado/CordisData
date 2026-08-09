@@ -344,3 +344,117 @@ class TestCallsFetcher:
         must_clauses = query["bool"]["must"]
         type_clause = [m for m in must_clauses if "terms" in m and "type" in m.get("terms", {})]
         assert len(type_clause) > 0
+
+    def test_transform_record_new_metadata_fields(self) -> None:
+        """Test transformation includes new metadata fields."""
+        fetcher = CallsFetcher()
+        raw_record = {
+            "reference": "NEW-001",
+            "metadata": {
+                "identifier": ["HORIZON-CL1-2024"],
+                "title": ["Test Call"],
+                "status": ["31094502"],
+                "frameworkProgramme": ["43108390"],
+                "descriptionByte": ["<p>Call description</p>"],
+                "destinationDescription": ["Strategic direction"],
+                "destinationDetails": ["<p>More details</p>"],
+                "callTitle": ["Call Title"],
+                "deadlineModel": ["single-stage"],
+                "crossCuttingPriorities": ["RepowerEU"],
+                "typesOfAction": ["RIA"],
+                "topicConditions": ["<p>Conditions apply</p>"],
+                "supportInfo": ["<p>Support available</p>"],
+                "actions": [json.dumps([{
+                    "submissionProcedure": {
+                        "abbreviation": "single-stage",
+                        "description": "Standard submission"
+                    }
+                }])],
+            },
+        }
+        transformed = fetcher._transform_record(raw_record)
+
+        # Check new fields exist
+        assert "description" in transformed
+        assert "objectives" in transformed
+        assert "submissionProcedure" in transformed
+        assert "callTitle" in transformed
+        assert "deadlineModel" in transformed
+        assert "crossCuttingPriorities" in transformed
+        assert "typesOfAction" in transformed
+        assert "topicConditions" in transformed
+        assert "supportInfo" in transformed
+        assert "qnaUrl" in transformed
+        assert "updatesUrl" in transformed
+        assert "documentsUrl" in transformed
+
+        # Check values
+        assert "Call description" in transformed["description"]
+        assert "Strategic direction" in transformed["objectives"]
+        assert transformed["callTitle"] == "Call Title"
+        assert transformed["deadlineModel"] == "single-stage"
+        assert transformed["crossCuttingPriorities"] == "RepowerEU"
+
+    def test_transform_record_url_construction(self) -> None:
+        """Test URL fields are correctly constructed from topicId."""
+        fetcher = CallsFetcher()
+        raw_record = {
+            "reference": "TEST-001",
+            "metadata": {
+                "identifier": ["HORIZON-CL1-2024-TEST"],
+                "title": ["Test"],
+                "status": ["31094502"],
+                "frameworkProgramme": ["43108390"],
+            },
+        }
+        transformed = fetcher._transform_record(raw_record)
+
+        topic_id = "HORIZON-CL1-2024-TEST".lower()
+        assert transformed["qnaUrl"] == f"https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/questions-answers/{topic_id}"
+        assert transformed["updatesUrl"] == f"https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-updates/{topic_id}"
+        assert transformed["documentsUrl"] == f"https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/documents/{topic_id}"
+
+    def test_extract_submission_procedure(self) -> None:
+        """Test submission procedure extraction."""
+        fetcher = CallsFetcher()
+        metadata = {
+            "actions": [json.dumps([{
+                "submissionProcedure": {
+                    "abbreviation": "two-stage",
+                    "description": "Two-stage procedure"
+                }
+            }])]
+        }
+        result = fetcher._extract_submission_procedure(metadata)
+        assert result["abbreviation"] == "two-stage"
+        assert result["description"] == "Two-stage procedure"
+
+    def test_extract_submission_procedure_missing(self) -> None:
+        """Test submission procedure extraction with missing data."""
+        fetcher = CallsFetcher()
+        result = fetcher._extract_submission_procedure({})
+        assert result == {}
+
+    def test_transform_record_empty_html_fields(self) -> None:
+        """Test transformation handles empty HTML fields gracefully."""
+        fetcher = CallsFetcher()
+        raw_record = {
+            "reference": "TEST-001",
+            "metadata": {
+                "identifier": ["TEST-TOPIC"],
+                "title": ["Test"],
+                "status": ["31094502"],
+                "frameworkProgramme": ["43108390"],
+                "descriptionByte": [""],
+                "destinationDescription": [""],
+                "destinationDetails": [""],
+                "topicConditions": [""],
+                "supportInfo": [""],
+            },
+        }
+        transformed = fetcher._transform_record(raw_record)
+
+        assert transformed["description"] == ""
+        assert transformed["objectives"] == ""
+        assert transformed["topicConditions"] == ""
+        assert transformed["supportInfo"] == ""

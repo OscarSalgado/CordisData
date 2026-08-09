@@ -10,6 +10,7 @@ from typing import Any, Optional, cast
 from cordis_data.api.sedia import SediaClient
 from cordis_data.data.archival import RETENTION_DAYS, cleanup_old_changelogs
 from cordis_data.data.changelog import generate_changelog
+from cordis_data.data.html_clean import clean_html_to_text
 from cordis_data.config import (
     DEFAULT_WINDOW_DAYS,
     PROGRAMME_NAMES,
@@ -159,6 +160,29 @@ class CallsFetcher:
                 cluster = cl_map.get(tag, tag if tag.startswith("CL") else "")
         return cluster
 
+    def _extract_submission_procedure(self, m: dict[str, Any]) -> dict[str, Any]:
+        """Extract submission procedure from actions[0].
+
+        Args:
+            m: Metadata dict from API response
+
+        Returns:
+            Dict with submissionProcedure fields or empty dict
+        """
+        result = {}
+        try:
+            actions_str = (m.get("actions") or ["[]"])[0]
+            actions = cast(list[Any], json.loads(actions_str))
+            if actions and "submissionProcedure" in actions[0]:
+                sp = actions[0].get("submissionProcedure", {})
+                result = {
+                    "abbreviation": sp.get("abbreviation", ""),
+                    "description": sp.get("description", ""),
+                }
+        except (json.JSONDecodeError, KeyError, AttributeError, TypeError):
+            pass
+        return result
+
     def _transform_record(self, r: dict[str, Any]) -> dict[str, Any]:
         """Map one raw SEDIA API result into call record shape.
 
@@ -166,11 +190,18 @@ class CallsFetcher:
         programmes return many distinct records sharing the same identifier.
         "reference" is the true per-record unique id.
 
+        Extracts 9 additional metadata fields from SEDIA API responses,
+        including descriptions, objectives, and submission procedures.
+        Also adds 3 convenience URLs for portal navigation.
+
+        Phase 2 work will implement optional scraping of Q&A/Updates content,
+        conditional on callStatus == "open" (only scrape active calls).
+
         Args:
             r: Raw result dict from API
 
         Returns:
-            Transformed call record dict
+            Transformed call record dict with 12 additional enrichment fields
         """
         m = r.get("metadata", {})
         reference = r.get("reference") or ""
@@ -200,6 +231,30 @@ class CallsFetcher:
         )
         budget_min, budget_max, expected_grants = extract_budget(m, identifier)
 
+        description_byte = (m.get("descriptionByte") or [""])[0]
+        description = clean_html_to_text(description_byte)
+
+        dest_desc = (m.get("destinationDescription") or [""])[0]
+        dest_details = (m.get("destinationDetails") or [""])[0]
+        objectives = clean_html_to_text(f"{dest_desc} {dest_details}".strip())
+
+        submission_procedure = self._extract_submission_procedure(m)
+
+        call_title = (m.get("callTitle") or [""])[0]
+        deadline_model = (m.get("deadlineModel") or [""])[0]
+        cross_cutting = (m.get("crossCuttingPriorities") or [""])[0]
+        types_of_action = (m.get("typesOfAction") or [""])[0]
+
+        topic_conditions = (m.get("topicConditions") or [""])[0]
+        topic_conditions = clean_html_to_text(topic_conditions)
+
+        support_info = (m.get("supportInfo") or [""])[0]
+        support_info = clean_html_to_text(support_info)
+
+        qna_url = f"https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/questions-answers/{identifier.lower()}"
+        updates_url = f"https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-updates/{identifier.lower()}"
+        documents_url = f"https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/documents/{identifier.lower()}"
+
         return {
             "reference": reference,
             "topicId": identifier,
@@ -217,6 +272,18 @@ class CallsFetcher:
             "expectedGrants": expected_grants,
             "keywords": ", ".join(kw[:10]) if kw else "",
             "portalUrl": portal_url,
+            "description": description,
+            "objectives": objectives,
+            "submissionProcedure": submission_procedure,
+            "callTitle": call_title,
+            "deadlineModel": deadline_model,
+            "crossCuttingPriorities": cross_cutting,
+            "typesOfAction": types_of_action,
+            "topicConditions": topic_conditions,
+            "supportInfo": support_info,
+            "qnaUrl": qna_url,
+            "updatesUrl": updates_url,
+            "documentsUrl": documents_url,
         }
 
     def main(
