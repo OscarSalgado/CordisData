@@ -50,3 +50,4 @@ data/calls.json
 data/projects.json
 data/.metadata.json
 *.log
+.mypy_cache
