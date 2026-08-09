@@ -285,3 +285,28 @@ class TestCallsFetcher:
         }
         transformed = fetcher._transform_record(raw_record)
         assert transformed["keywords"] == ""
+
+    def test_transform_record_no_framework_programme(self) -> None:
+        """Test record transformation with no framework programme."""
+        fetcher = CallsFetcher()
+        raw_record = {
+            "reference": "TEST-001",
+            "metadata": {
+                "identifier": ["TEST-TOPIC"],
+                "title": ["Test"],
+                "status": ["31094502"],
+                "frameworkProgramme": [],  # No framework
+            },
+        }
+        transformed = fetcher._transform_record(raw_record)
+        assert transformed["programme"] == ""
+        assert transformed["programmeId"] == ""
+
+    def test_build_query_includes_types(self) -> None:
+        """Test query builder includes correct types."""
+        fetcher = CallsFetcher()
+        query = fetcher._build_query()
+        # Should include type check for types 1 and 2
+        must_clauses = query["bool"]["must"]
+        type_clause = [m for m in must_clauses if "terms" in m and "type" in m.get("terms", {})]
+        assert len(type_clause) > 0

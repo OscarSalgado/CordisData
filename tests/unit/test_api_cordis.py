@@ -142,3 +142,19 @@ class TestCordisClient:
         assert CordisClient._get_backoff_seconds(0, 1) == 3
         assert CordisClient._get_backoff_seconds(0, 2) == 5
         assert CordisClient._get_backoff_seconds(400, 0) == 1
+
+    @patch("cordis_data.api.cordis.time.sleep")
+    @patch("cordis_data.api.cordis.urllib.request.urlopen")
+    def test_fetch_project_all_retries_fail(
+        self, mock_urlopen: MagicMock, mock_sleep: MagicMock
+    ) -> None:
+        """Test fetch_project returns None when all retries exhaust."""
+        mock_urlopen.side_effect = urllib.error.HTTPError(
+            "url", 500, "Server Error", {}, None
+        )
+
+        client = CordisClient()
+        result = client.fetch_project("TEST123", retries=2)
+
+        assert result is None
+        assert mock_urlopen.call_count == 2
