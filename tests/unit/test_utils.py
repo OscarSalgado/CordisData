@@ -1,6 +1,9 @@
 """Tests for cordis_data.utils."""
 
+import json
+
 from cordis_data.utils import (
+    extract_budget,
     merge_calls,
     merge_projects,
     normalize_date,
@@ -58,6 +61,11 @@ class TestNormalizeDate:
         result = parse_action_type("Unknown Type XYZ")
         assert isinstance(result, str)
         assert result != ""
+
+    def test_extract_budget_empty_metadata(self) -> None:
+        """Test extract_budget with empty metadata."""
+        result = extract_budget({}, "HORIZON-CL1-2024")
+        assert result == (None, None, None)
 
 class TestParseActionType:
     """Tests for parse_action_type function."""
