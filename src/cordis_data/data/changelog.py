@@ -24,6 +24,7 @@ RELEVANT_FIELDS = {
     "typesOfAction",
     "topicConditions",
     "supportInfo",
+    "h2020_related",
 }
 
 

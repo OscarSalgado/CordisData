@@ -17,6 +17,7 @@ from cordis_data.config import (
     PROJECTS_BATCH_SIZE,
     SEDIA_API_URL,
 )
+from cordis_data.data.h2020 import H2020Enricher
 from cordis_data.utils import merge_projects, normalize_date, summarize_changes
 
 
@@ -391,6 +392,33 @@ class ProjectsFetcher:
         non_enriched = [p for p in projects if p["projectId"] not in to_enrich_ids]
         if non_enriched:
             self._write_and_merge_projects(non_enriched, output_path)
+
+        # H2020 enrichment (optional, non-blocking)
+        print("\nEnriching projects with H2020 data...", flush=True)
+        try:
+            h2020_enricher = H2020Enricher(cordis_client=self.cordis_client)
+            if h2020_enricher.load_index():
+                # Read current projects and enrich with H2020
+                if output_path.exists():
+                    with open(output_path, "r", encoding="utf-8") as f:
+                        current_projects = json.load(f)
+
+                    h2020_enriched = 0
+                    for proj in current_projects:
+                        h2020_data = h2020_enricher.enrich(proj)
+                        if h2020_data:
+                            proj["h2020_related"] = h2020_data
+                            h2020_enriched += 1
+
+                    # Write back enriched projects
+                    with open(output_path, "w", encoding="utf-8") as f:
+                        json.dump(current_projects, f, separators=(",", ":"), ensure_ascii=False)
+
+                    print(f"H2020-enriched {h2020_enriched} projects", flush=True)
+            else:
+                print("H2020 index load failed; skipping H2020 enrichment", flush=True)
+        except Exception as e:
+            print(f"H2020 enrichment error: {e}; continuing without H2020 data", flush=True)
 
         # Final summary
         if output_path.exists():
