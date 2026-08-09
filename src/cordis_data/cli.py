@@ -29,7 +29,17 @@ def main() -> None:
     help="Output file path (default: data/calls.json)",
 )
 def fetch_calls(full_history: bool, output: str | None) -> None:
-    """Fetch open/forthcoming/closed EU grant calls."""
+    """Fetch open/forthcoming/closed EU grant calls from SEDIA API.
+
+    By default, fetches calls published in the last 90 days and merges into
+    existing data. Use --full-history to fetch complete dataset and replace.
+
+    Args:
+        full_history: If True, fetch complete dataset (no date limit)
+        output: Output file path (default: data/calls.json)
+
+    Exits with code 1 if fetch fails.
+    """
     try:
         fetcher = CallsFetcher()
         output_path = Path(output) if output else None
@@ -58,8 +68,22 @@ def fetch_calls(full_history: bool, output: str | None) -> None:
     default=None,
     help="Path to calls.json (default: data/calls.json)",
 )
-def fetch_projects(years: int | None, output: str | None, calls: str | None) -> None:
-    """Fetch awarded projects and enrich with CORDIS data."""
+def fetch_projects(
+    years: int | None, output: str | None, calls: str | None
+) -> None:
+    """Fetch awarded projects for closed calls and enrich with CORDIS data.
+
+    Fetches projects from SEDIA for all closed calls, then enriches with
+    objective and DOI from CORDIS API using rate limiting (max 2 req/s).
+    Checkpoints after every 500 projects to enable resumption on failure.
+
+    Args:
+        years: Limit to calls closed within last N years (optional)
+        output: Output file path (default: data/projects.json)
+        calls: Path to calls.json (default: data/calls.json)
+
+    Exits with code 1 if fetch fails.
+    """
     try:
         fetcher = ProjectsFetcher()
         output_path = Path(output) if output else None
@@ -82,7 +106,16 @@ def fetch_projects(years: int | None, output: str | None, calls: str | None) -> 
     help="Data directory (default: ./data)",
 )
 def status(data_dir: str | None) -> None:
-    """Display metadata about fetched data."""
+    """Display metadata about fetched data and freshness status.
+
+    Shows last fetch timestamps and TTL (time-to-live) for calls and projects
+    data, allowing users to check if a fresh fetch is needed.
+
+    Args:
+        data_dir: Data directory path (default: ./data)
+
+    Exits with code 1 if metadata cannot be read.
+    """
     try:
         project_root = Path(data_dir or "data")
         metadata_path = project_root / ".metadata.json"

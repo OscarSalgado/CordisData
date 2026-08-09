@@ -121,6 +121,7 @@ def merge_calls(
         Dict keyed by reference or topicId
     """
     def merge_key(c: dict[str, Any]) -> str:
+        """Get unique key for a call record (reference or topicId)."""
         return c.get("reference") or c["topicId"]
 
     if full_history:
