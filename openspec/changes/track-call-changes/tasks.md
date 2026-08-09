@@ -52,5 +52,5 @@
 - [x] 8.1 Run full test suite: pytest --cov to ensure no regressions
 - [x] 8.2 Verify flake8 and pyright pass
 - [x] 8.3 Manual test: run `python -m cordis_data.cli fetch-calls --force` locally, inspect generated changelog
-- [ ] 8.4 Verify changelog commits to git with correct message
-- [ ] 8.5 Test cleanup: wait for >90-day scenario or mock date to verify archival works
+- [x] 8.4 Verify changelog commits to git with correct message
+- [x] 8.5 Test cleanup: wait for >90-day scenario or mock date to verify archival works
