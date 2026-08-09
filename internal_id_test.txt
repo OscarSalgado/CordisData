@@ -1,0 +1,30 @@
+
+https://ec.europa.eu/transparency/comitology-register/core/api/front/documents/153054/attachments/533495
+Status: 400
+Content-Type: application/problem+json
+Response: {
+  "type" : "about:blank",
+  "title" : "Bad Request",
+  "status" : 400,
+  "detail" : "No static resource api/front/documents/153054/attachments/533495.",
+  "instance" : "https://tmmcl00870.cc.cec.eu.
+
+https://ec.europa.eu/transparency/comitology-register/core/api/front/document/153054/attachment/533495
+Status: 400
+Content-Type: application/problem+json
+Response: {
+  "type" : "about:blank",
+  "title" : "Bad Request",
+  "status" : 400,
+  "detail" : "No static resource api/front/document/153054/attachment/533495.",
+  "instance" : "https://tmmcl00870.cc.cec.eu.in
+
+https://ec.europa.eu/transparency/comitology-register/core/api/front/attachments/533495?docId=153054
+Status: 400
+Content-Type: application/problem+json
+Response: {
+  "type" : "about:blank",
+  "title" : "Bad Request",
+  "status" : 400,
+  "detail" : "No static resource api/front/attachments/533495.",
+  "instance" : "https://tmmcl00870.cc.cec.eu.int:1062/transpar

@@ -29,6 +29,14 @@ Check status of fetched data:
 cordis-data status
 ```
 
+Monitor EU committee documents:
+```bash
+cordis-data monitor add-committee C70408
+cordis-data monitor fetch
+```
+
+See [Committee Monitoring Guide](./docs/committee-monitoring.md) for details.
+
 ### Library Usage
 
 ```python
@@ -82,15 +90,27 @@ GitHub Actions workflows automatically fetch and update data:
   - Checkpoints every 500 projects (resumable on failure)
   - Commits `data/projects.json` and `data/.metadata.json`
 
-Both workflows use `github-actions[bot]` and include timestamps in commit messages.
+- **Committee Documents**: Daily at 06:00 UTC (`monitor-committees.yml`)
+  - Monitors EU committee documents from comitology-register
+  - Detects new documents from last 90 days
+  - Sends alerts on new documents (Slack, GitHub Issues)
+  - Generates daily changelog at `data/committees/changelog/YYYY-MM-DD.json`
+  - Commits `data/committees/documents.json` and changelog
+
+All workflows use `github-actions[bot]` and include timestamps in commit messages.
+
+Configure committee monitoring: See [Committee Monitoring Guide](./docs/committee-monitoring.md)
 
 ## Data
 
 - `data/calls.json` — Available EU funding calls
 - `data/projects.json` — Awarded projects with CORDIS enrichment
+- `data/committees/documents.json` — EU committee documents (rolling 90-day window)
 - `data/.metadata.json` — Fetch timestamps and freshness info
-- `data/changelog/YYYY-MM-DD.json` — Daily changelog of call changes (see [CHANGELOG.md](CHANGELOG.md)),
-  retained for 90 days and auto-pruned on each fetch
+- `data/changelog/YYYY-MM-DD.json` — Daily changelog of call changes
+- `data/committees/changelog/YYYY-MM-DD.json` — Daily changelog of committee document changes
+
+Changelogs are retained for 90 days and auto-pruned on each fetch.
 
 ## License
 

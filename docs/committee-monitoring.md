@@ -1,0 +1,243 @@
+# Committee Document Monitoring
+
+Monitor EU committee documents from the comitology-register in real-time. Get alerts when new documents are detected.
+
+## Quick Start
+
+### 1. Add a committee to monitor
+
+```bash
+cordis-data monitor add-committee C70408 "Digital, Industry and Space"
+```
+
+### 2. List your committees
+
+```bash
+cordis-data monitor list-committees
+```
+
+Output:
+```
+✓ C70408: Digital, Industry and Space
+```
+
+### 3. Configure alerts (optional)
+
+#### Slack notifications
+```bash
+cordis-data monitor config-set --slack "https://hooks.slack.com/services/YOUR/WEBHOOK/URL"
+```
+
+#### GitHub Issues
+Set up GitHub Actions secrets (see [Secrets Setup](./committee-monitoring-secrets.md)):
+- `GH_TOKEN`: GitHub Personal Access Token
+- `CORDIS_SLACK_WEBHOOK`: Slack webhook URL
+
+### 4. Fetch documents now (manual)
+
+```bash
+cordis-data monitor fetch --window 90
+```
+
+Options:
+- `--window DAYS`: Look back N days (default: 90)
+
+## Automated Monitoring
+
+Committee monitoring runs automatically via GitHub Actions:
+
+- **Daily run:** 06:00 UTC
+- **Manual trigger:** Via GitHub Actions UI
+- **Commit strategy:** Only commits if documents changed
+- **Alerts:** Sends Slack notifications + creates GitHub issues
+
+### Set up automation
+
+1. Configure GitHub repository secrets (see [Secrets Setup](./committee-monitoring-secrets.md))
+2. Commit configuration: `.cordis-data/committees-config.json`
+3. Push to repository
+4. Workflow runs automatically at 06:00 UTC daily
+
+## Available Committees
+
+The system supports all 624 committees from the EU comitology-register. Common committees:
+
+- `C70408` - Digital, Industry and Space
+- `C70389` - Environment
+- `C70397` - Health and Consumer Protection
+
+Find more: https://ec.europa.eu/transparency/comitology-register/
+
+## Configuration
+
+Configuration is stored in `~/.cordis-data/committees-config.json`:
+
+```json
+{
+  "committees": [
+    {
+      "code": "C70408",
+      "name": "Digital, Industry and Space",
+      "enabled": true
+    }
+  ],
+  "alerts": {
+    "enabled": true,
+    "slack_webhook": "https://hooks.slack.com/...",
+    "email": null,
+    "github_issues": false
+  },
+  "last_check": "2026-08-01T12:00:00Z"
+}
+```
+
+### Managing configuration via CLI
+
+```bash
+# Show current config
+cordis-data monitor config-show
+
+# Set Slack webhook
+cordis-data monitor config-set --slack "https://hooks.slack.com/services/..."
+
+# Set email (for future use)
+cordis-data monitor config-set --email "your@email.com"
+
+# Enable GitHub Issues
+cordis-data monitor config-set --github-issues
+```
+
+## Data Storage
+
+- **Documents:** `data/committees/documents.json`
+- **Changelog:** `data/committees/changelog/YYYY-MM-DD.json`
+- **Config:** `~/.cordis-data/committees-config.json`
+
+### Changelog format
+
+Daily changelog records all document changes (NEW, UPDATED, UNCHANGED):
+
+```json
+{
+  "fetch_date": "2026-08-01",
+  "fetch_timestamp": "2026-08-01T12:00:00Z",
+  "summary": {
+    "new": 3,
+    "updated": 2,
+    "total_events": 5
+  },
+  "events": [
+    {
+      "event_type": "NEW",
+      "topicId": "116169",
+      "detected_at": "2026-08-01T12:00:00Z",
+      "snapshot": { ... }
+    }
+  ]
+}
+```
+
+## Document Access
+
+Each document includes a direct PDF download link. Example:
+
+```
+https://ec.europa.eu/transparency/comitology-register/core/api/integration/ers/{attachment_id}/{document_reference}/{version}/attachment
+```
+
+Links are included in:
+- Slack alert messages
+- GitHub issue bodies
+- Changelog entries
+
+## Monitoring Window
+
+The system maintains a rolling 3-month window:
+
+- Fetches: Documents from the last 90 days
+- Purges: Documents older than 90 days from active dataset
+- Changelog: Kept indefinitely for audit trail
+
+This ensures:
+- Fresh data without bloat
+- Complete change history
+- Easy discovery of recent documents
+
+## Alerts and Notifications
+
+### Alert Types
+
+#### ✅ NEW documents
+Triggers alert immediately:
+- Slack message with document summary
+- GitHub issue created (if enabled)
+- Included in changelog
+
+#### ℹ️ UPDATED documents
+Logged only (no alert):
+- Recorded in changelog
+- Not notified (updates don't require intervention)
+
+### Slack Format
+
+```
+🆕 3 new committee document(s)
+
+Document Title
+Committee: C70408
+Type: Committee Opinion
+Ref: 116169
+```
+
+### GitHub Issue Format
+
+```
+Title: [C70408] Committee Opinion: Document Title
+
+Body:
+Committee: C70408
+Type: Committee Opinion
+Reference: 116169
+Date: 2026-08-01
+Language: EN
+
+[Links to PDF attachments]
+```
+
+## Troubleshooting
+
+### No documents fetched
+- Check committee code: `cordis-data monitor list-committees`
+- Verify API connectivity: Try adding a well-known committee first
+- Check window: `--window 365` to search last year
+
+### Alerts not arriving
+- Verify Slack webhook is set: `cordis-data monitor config-show`
+- Test webhook manually (see [Secrets Setup](./committee-monitoring-secrets.md))
+- Check GitHub Actions workflow logs
+
+### High API usage
+- The system uses rate limiting (2 requests/second)
+- Fetch for 624 committees takes ~5 minutes
+- Consider monitoring only essential committees to reduce bandwidth
+
+## API Information
+
+- **Base URL:** https://ec.europa.eu/transparency/comitology-register/
+- **Endpoints:**
+  - `/core/api/front/documents/search` - Search documents
+  - `/core/api/front/documents/{ref}/{version}` - Document details
+  - `/core/api/integration/ers/{attachment_id}/{ref}/{version}/attachment` - PDF download
+  - `/core/api/front/committees` - List all committees
+
+- **Rate limit:** 2 requests/second (enforced client-side)
+- **Timeout:** 10 seconds per request with exponential backoff
+
+## Next Steps
+
+- Monitor multiple committees for comprehensive coverage
+- Configure Slack for team-wide notifications
+- Set up GitHub Issues for tracking new documents
+- Run manual fetch to verify setup works
+
+For questions or issues, file a GitHub issue with the committee code and error message.

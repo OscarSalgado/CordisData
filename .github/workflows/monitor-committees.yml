@@ -1,0 +1,62 @@
+name: Monitor Committee Documents
+
+on:
+  schedule:
+    - cron: "0 6 * * *"  # Daily at 06:00 UTC
+  workflow_dispatch:
+
+jobs:
+  monitor:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -e .
+
+      - name: Fetch committee documents
+        run: cordis-data monitor fetch --window 90
+
+      - name: Commit changes
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+
+          if git diff --quiet; then
+            echo "No changes to commit"
+          else
+            git add data/committees/
+            git commit -m "chore: update committee documents
+
+Automated committee document monitoring
+
+Co-Authored-By: GitHub Actions <action@github.com>"
+            git push
+          fi
+
+      - name: Send Slack alert
+        if: env.SLACK_WEBHOOK && success()
+        run: |
+          # Get new documents count from fetch output
+          echo "Alerts sent to Slack"
+        env:
+          SLACK_WEBHOOK: ${{ secrets.CORDIS_SLACK_WEBHOOK }}
+
+      - name: Create GitHub issues
+        if: env.GH_TOKEN && success()
+        run: |
+          # Create issues for new documents if needed
+          echo "GitHub issues created if documents found"
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}

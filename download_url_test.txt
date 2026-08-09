@@ -1,0 +1,36 @@
+
+https://ec.europa.eu/transparency/comitology-register/core/api/front/documents/116169/1/download/533495
+Status: 400
+Content-Type: application/problem+json
+Content-Length: N/A
+Final URL: https://ec.europa.eu/transparency/comitology-register/core/api/front/documents/116169/1/download/533495
+
+https://ec.europa.eu/transparency/comitology-register/core/api/front/documents/153054/attachments/533495
+Status: 400
+Content-Type: application/problem+json
+Content-Length: N/A
+Final URL: https://ec.europa.eu/transparency/comitology-register/core/api/front/documents/153054/attachments/533495
+
+https://ec.europa.eu/transparency/comitology-register/core/api/front/attachments/533495/download
+Status: 400
+Content-Type: application/problem+json
+Content-Length: N/A
+Final URL: https://ec.europa.eu/transparency/comitology-register/core/api/front/attachments/533495/download
+
+https://ec.europa.eu/transparency/comitology-register/core/api/front/attachments/533495
+Status: 400
+Content-Type: application/problem+json
+Content-Length: N/A
+Final URL: https://ec.europa.eu/transparency/comitology-register/core/api/front/attachments/533495
+
+https://ec.europa.eu/transparency/comitology-register/document/116169/attachment/533495
+Status: 404
+Content-Type: text/html;charset=utf-8
+Content-Length: 837
+Final URL: https://ec.europa.eu/transparency/comitology-register/document/116169/attachment/533495
+
+https://ec.europa.eu/transparency/documents/533495
+Status: 200
+Content-Type: text/html; charset=UTF-8
+Content-Length: 0
+Final URL: https://commission.europa.eu/about/service-standards-and-principles/ethics-and-good-administration/good-administration_en

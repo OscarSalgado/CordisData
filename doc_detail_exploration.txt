@@ -1,0 +1,15 @@
+
+================================================================================
+Endpoint: https://ec.europa.eu/transparency/comitology-register/core/api/front/documents/116169
+Status: 400
+Error: 400
+
+================================================================================
+Endpoint: https://ec.europa.eu/transparency/comitology-register/core/api/front/document/116169
+Status: 400
+Error: 400
+
+================================================================================
+Endpoint: https://ec.europa.eu/transparency/comitology-register/core/api/front/documents/C70408/116169
+Status: 404
+Error: 404

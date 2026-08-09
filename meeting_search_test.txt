@@ -1,0 +1,24 @@
+
+================================================================================
+Payload #1: {"reset": true, "meetingCode": "CMTD(2026)974"}
+Status: 200
+Found 3 documents
+  - 116169: agenda ad hoc PC 10 07 2026
+  - 116169: Agenda ad hoc PC meeting with notice - Digital, Industry and
+  - 117264: Summary record of the ad hoc PC meeting  'Digital, Industry 
+
+================================================================================
+Payload #2: {"reset": true, "meetingCodes": ["CMTD(2026)974"]}
+Status: 200
+Found 10 documents
+  - 000003: Agenda 448th meeting
+  - 000021: CONVOCATION A LA 915EME REUNION DU COMITE DE GESTION DES VIN
+  - 000023: The 73rd meeting of the Standing Committee on Organic Farmin
+
+================================================================================
+Payload #3: {"reset": true, "committeeCodes": ["C70408"], "meetingCode": "CMTD(2026)974"}
+Status: 200
+Found 3 documents
+  - 116169: agenda ad hoc PC 10 07 2026
+  - 116169: Agenda ad hoc PC meeting with notice - Digital, Industry and
+  - 117264: Summary record of the ad hoc PC meeting  'Digital, Industry 

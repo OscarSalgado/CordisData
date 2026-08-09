@@ -6,6 +6,7 @@ from pathlib import Path
 import click
 
 from cordis_data.cli.explorer import explorer_cli
+from cordis_data.cli.monitor import monitor
 from cordis_data.data.calls import CallsFetcher
 from cordis_data.data.metadata import load_metadata
 from cordis_data.data.projects import ProjectsFetcher
@@ -143,8 +144,9 @@ def status(data_dir: str | None) -> None:
         sys.exit(1)
 
 
-# Add explorer commands as subgroup
+# Add subgroups
 main.add_command(explorer_cli, name="explore")
+main.add_command(monitor, name="monitor")
 
 
 if __name__ == "__main__":  # pragma: no cover

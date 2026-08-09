@@ -1,0 +1,2014 @@
+{
+  "id": 153054,
+  "title": "agenda ad hoc PC 10 07 2026",
+  "comment": "Invitation sent to PC member in AGM on 8/6/2026",
+  "documentReference": "116169",
+  "discloseToPublic": true,
+  "version": 1,
+  "creationDate": "2026-06-08T09:46:01.636Z",
+  "updateDate": "2026-06-08T12:48:01.664Z",
+  "documentType": {
+    "id": 1,
+    "description": "label.agenda",
+    "letter": "A"
+  },
+  "documentStatus": {
+    "id": 4,
+    "description": "label.transmitted"
+  },
+  "meeting": {
+    "id": 48521,
+    "code": "CMTD(2026)974",
+    "startDate": "2026-07-09T22:00:00Z",
+    "endDate": "2026-07-09T22:00:00Z",
+    "meetingType": {
+      "id": 1,
+      "description": "label.committee_meeting"
+    },
+    "dg": {
+      "id": 29,
+      "code": "RTD",
+      "validFrom": "2019-03-12T16:09:47Z",
+      "validTo": null,
+      "dgTitles": [
+        {
+          "id": 673,
+          "title": "Research and Innovation",
+          "language": "EN"
+        },
+        {
+          "id": 674,
+          "title": "Научни изследвания и иновации",
+          "language": "BG"
+        },
+        {
+          "id": 675,
+          "title": "Výzkum a inovace",
+          "language": "CS"
+        },
+        {
+          "id": 676,
+          "title": "Forskning og innovation",
+          "language": "DA"
+        },
+        {
+          "id": 677,
+          "title": "Forschung und Innovation",
+          "language": "DE"
+        },
+        {
+          "id": 678,
+          "title": "Έρευνα και καινοτομία",
+          "language": "EL"
+        },
+        {
+          "id": 679,
+          "title": "Investigación e Innovación",
+          "language": "ES"
+        },
+        {
+          "id": 680,
+          "title": "Teadusuuringud ja innovatsioon",
+          "language": "ET"
+        },
+        {
+          "id": 681,
+          "title": "Tutkimus ja innovointi",
+          "language": "FI"
+        },
+        {
+          "id": 682,
+          "title": "Recherche et innovation",
+          "language": "FR"
+        },
+        {
+          "id": 683,
+          "title": "Taighde agus Nuálaíocht",
+          "language": "GA"
+        },
+        {
+          "id": 684,
+          "title": "Istraživanje i inovacije",
+          "language": "HR"
+        },
+        {
+          "id": 685,
+          "title": "Kutatás és innováció",
+          "language": "HU"
+        },
+        {
+          "id": 686,
+          "title": "Ricerca e innovazione",
+          "language": "IT"
+        },
+        {
+          "id": 687,
+          "title": "Moksliniai tyrimai ir inovacijos",
+          "language": "LT"
+        },
+        {
+          "id": 688,
+          "title": "Pētniecība un inovācija",
+          "language": "LV"
+        },
+        {
+          "id": 689,
+          "title": "Riċerka u Innovazzjoni",
+          "language": "MT"
+        },
+        {
+          "id": 690,
+          "title": "Onderzoek en Innovatie",
+          "language": "NL"
+        },
+        {
+          "id": 691,
+          "title": "Badania naukowe i innowacje",
+          "language": "PL"
+        },
+        {
+          "id": 692,
+          "title": "Investigação e Inovação",
+          "language": "PT"
+        },
+        {
+          "id": 693,
+          "title": "Cercetare și Inovare",
+          "language": "RO"
+        },
+        {
+          "id": 694,
+          "title": "Výskum a inovácia",
+          "language": "SK"
+        },
+        {
+          "id": 695,
+          "title": "Raziskave in inovacije",
+          "language": "SL"
+        },
+        {
+          "id": 696,
+          "title": "Forskning och innovation",
+          "language": "SV"
+        }
+      ]
+    },
+    "committee": {
+      "id": 770,
+      "code": "C70408",
+      "abolishedSince": null,
+      "rulesProcedures": {
+        "id": 3368,
+        "rulesProcedureDesc": "HE PC - Rules of Procedure_in force 30 July 2026.docx",
+        "filename": "HE PC - Rules of Procedure_in force 30 July 2026.docx"
+      },
+      "dg": {
+        "id": 29,
+        "code": "RTD",
+        "validFrom": "2019-03-12T16:09:47Z",
+        "validTo": null,
+        "dgTitles": [
+          {
+            "id": 673,
+            "title": "Research and Innovation",
+            "language": "EN"
+          },
+          {
+            "id": 674,
+            "title": "Научни изследвания и иновации",
+            "language": "BG"
+          },
+          {
+            "id": 675,
+            "title": "Výzkum a inovace",
+            "language": "CS"
+          },
+          {
+            "id": 676,
+            "title": "Forskning og innovation",
+            "language": "DA"
+          },
+          {
+            "id": 677,
+            "title": "Forschung und Innovation",
+            "language": "DE"
+          },
+          {
+            "id": 678,
+            "title": "Έρευνα και καινοτομία",
+            "language": "EL"
+          },
+          {
+            "id": 679,
+            "title": "Investigación e Innovación",
+            "language": "ES"
+          },
+          {
+            "id": 680,
+            "title": "Teadusuuringud ja innovatsioon",
+            "language": "ET"
+          },
+          {
+            "id": 681,
+            "title": "Tutkimus ja innovointi",
+            "language": "FI"
+          },
+          {
+            "id": 682,
+            "title": "Recherche et innovation",
+            "language": "FR"
+          },
+          {
+            "id": 683,
+            "title": "Taighde agus Nuálaíocht",
+            "language": "GA"
+          },
+          {
+            "id": 684,
+            "title": "Istraživanje i inovacije",
+            "language": "HR"
+          },
+          {
+            "id": 685,
+            "title": "Kutatás és innováció",
+            "language": "HU"
+          },
+          {
+            "id": 686,
+            "title": "Ricerca e innovazione",
+            "language": "IT"
+          },
+          {
+            "id": 687,
+            "title": "Moksliniai tyrimai ir inovacijos",
+            "language": "LT"
+          },
+          {
+            "id": 688,
+            "title": "Pētniecība un inovācija",
+            "language": "LV"
+          },
+          {
+            "id": 689,
+            "title": "Riċerka u Innovazzjoni",
+            "language": "MT"
+          },
+          {
+            "id": 690,
+            "title": "Onderzoek en Innovatie",
+            "language": "NL"
+          },
+          {
+            "id": 691,
+            "title": "Badania naukowe i innowacje",
+            "language": "PL"
+          },
+          {
+            "id": 692,
+            "title": "Investigação e Inovação",
+            "language": "PT"
+          },
+          {
+            "id": 693,
+            "title": "Cercetare și Inovare",
+            "language": "RO"
+          },
+          {
+            "id": 694,
+            "title": "Výskum a inovácia",
+            "language": "SK"
+          },
+          {
+            "id": 695,
+            "title": "Raziskave in inovacije",
+            "language": "SL"
+          },
+          {
+            "id": 696,
+            "title": "Forskning och innovation",
+            "language": "SV"
+          }
+        ]
+      },
+      "parentCommittee": {
+        "id": 762,
+        "code": "C70400",
+        "abolishedSince": null,
+        "rulesProcedures": {
+          "id": 3362,
+          "rulesProcedureDesc": "HE PC - Rules of Procedure_in force 30 July 2026.docx",
+          "filename": "HE PC - Rules of Procedure_in force 30 July 2026.docx"
+        },
+        "dg": {
+          "id": 29,
+          "code": "RTD",
+          "validFrom": "2019-03-12T16:09:47Z",
+          "validTo": null,
+          "dgTitles": [
+            {
+              "id": 673,
+              "title": "Research and Innovation",
+              "language": "EN"
+            },
+            {
+              "id": 674,
+              "title": "Научни изследвания и иновации",
+              "language": "BG"
+            },
+            {
+              "id": 675,
+              "title": "Výzkum a inovace",
+              "language": "CS"
+            },
+            {
+              "id": 676,
+              "title": "Forskning og innovation",
+              "language": "DA"
+            },
+            {
+              "id": 677,
+              "title": "Forschung und Innovation",
+              "language": "DE"
+            },
+            {
+              "id": 678,
+              "title": "Έρευνα και καινοτομία",
+              "language": "EL"
+            },
+            {
+              "id": 679,
+              "title": "Investigación e Innovación",
+              "language": "ES"
+            },
+            {
+              "id": 680,
+              "title": "Teadusuuringud ja innovatsioon",
+              "language": "ET"
+            },
+            {
+              "id": 681,
+              "title": "Tutkimus ja innovointi",
+              "language": "FI"
+            },
+            {
+              "id": 682,
+              "title": "Recherche et innovation",
+              "language": "FR"
+            },
+            {
+              "id": 683,
+              "title": "Taighde agus Nuálaíocht",
+              "language": "GA"
+            },
+            {
+              "id": 684,
+              "title": "Istraživanje i inovacije",
+              "language": "HR"
+            },
+            {
+              "id": 685,
+              "title": "Kutatás és innováció",
+              "language": "HU"
+            },
+            {
+              "id": 686,
+              "title": "Ricerca e innovazione",
+              "language": "IT"
+            },
+            {
+              "id": 687,
+              "title": "Moksliniai tyrimai ir inovacijos",
+              "language": "LT"
+            },
+            {
+              "id": 688,
+              "title": "Pētniecība un inovācija",
+              "language": "LV"
+            },
+            {
+              "id": 689,
+              "title": "Riċerka u Innovazzjoni",
+              "language": "MT"
+            },
+            {
+              "id": 690,
+              "title": "Onderzoek en Innovatie",
+              "language": "NL"
+            },
+            {
+              "id": 691,
+              "title": "Badania naukowe i innowacje",
+              "language": "PL"
+            },
+            {
+              "id": 692,
+              "title": "Investigação e Inovação",
+              "language": "PT"
+            },
+            {
+              "id": 693,
+              "title": "Cercetare și Inovare",
+              "language": "RO"
+            },
+            {
+              "id": 694,
+              "title": "Výskum a inovácia",
+              "language": "SK"
+            },
+            {
+              "id": 695,
+              "title": "Raziskave in inovacije",
+              "language": "SL"
+            },
+            {
+              "id": 696,
+              "title": "Forskning och innovation",
+              "language": "SV"
+            }
+          ]
+        },
+        "parentCommittee": null,
+        "committeeTitles": [
+          {
+            "id": 32793,
+            "title": "Programme Committee for the specific programme implementing Horizon Europe - the Framework Programme for Research and Innovation",
+            "language": "EN"
+          },
+          {
+            "id": 32794,
+            "title": "Posebnog programa za provedbu Okvirnog programa za istraživanja i inovacije Obzor Europa",
+            "language": "HR"
+          },
+          {
+            "id": 32795,
+            "title": "Comité pour le programme spécifique mettant en œuvre Horizon Europe - le programme-cadre pour la recherche et l'innovation",
+            "language": "FR"
+          },
+          {
+            "id": 32796,
+            "title": "Programului specific de implementare a Programului-cadru pentru cercetare și inovare Orizont Europa",
+            "language": "RO"
+          },
+          {
+            "id": 32797,
+            "title": "Programmausschuss für das spezifische Programm zur Durchführung von Horizon Europe - das Rahmenprogramm für Forschung und Innovation",
+            "language": "DE"
+          },
+          {
+            "id": 32798,
+            "title": "Programm Speċifiku li jimplimenta l-Orizzont Ewropa — il-Programm Qafas għar- Riċerka u l-Innovazzjoni",
+            "language": "MT"
+          },
+          {
+            "id": 32799,
+            "title": "Program szczegółowy służący realizacji programu ramowego w zakresie badań naukowych i innowacji „Horyzont Europa”",
+            "language": "PL"
+          },
+          {
+            "id": 32800,
+            "title": "Cпецифична програма за изпълнение на Рамковата програма за научни изследвания и иновации „Хоризонт Европа“",
+            "language": "BG"
+          },
+          {
+            "id": 32801,
+            "title": "Programa Específico por el que se ejecuta el Programa Marco de Investigación e Innovación Horizonte Europa",
+            "language": "ES"
+          },
+          {
+            "id": 32802,
+            "title": "Specialioji programa, kuria įgyvendinama bendroji mokslinių tyrimų ir inovacijų programa „Europos horizontas“",
+            "language": "LT"
+          },
+          {
+            "id": 32803,
+            "title": "Horizont Európa kutatási és innovációs keretprogram végrehajtását szolgáló egyedi program",
+            "language": "HU"
+          },
+          {
+            "id": 32804,
+            "title": "Īpašo programmu, ar kuru īsteno pētniecības un inovācijas pamatprogrammu “Apvārsnis Eiropa”",
+            "language": "LV"
+          },
+          {
+            "id": 32805,
+            "title": "Zvláštního programu, kterým se provádí rámcový program pro výzkum a inovace Horizont Evropa",
+            "language": "CS"
+          },
+          {
+            "id": 32806,
+            "title": "Särskilda programmet för genomförande av Horisont Europa – ramprogrammet för forskning och innovation",
+            "language": "SV"
+          },
+          {
+            "id": 32807,
+            "title": "Mbunaítear an Clár Sonrach lena gcuirtear chun feidhme Fís Eorpach - an Clár Réime um Thaighde agus um Nuálaíocht",
+            "language": "GA"
+          },
+          {
+            "id": 32808,
+            "title": "Specifieke programma tot uitvoering van Horizon Europa — het kaderprogramma voor onderzoek en innovatie",
+            "language": "NL"
+          },
+          {
+            "id": 32809,
+            "title": "Eιδικού προγράμματος εφαρμογής για το πρόγραμμα πλαίσιο έρευνας και καινοτομίας «Ορίζοντας Ευρώπη»",
+            "language": "EL"
+          },
+          {
+            "id": 32810,
+            "title": "Programma specifico di attuazione di Orizzonte Europa — il programma quadro di ricerca e innovazione",
+            "language": "IT"
+          },
+          {
+            "id": 32811,
+            "title": "Innovoinnin puiteohjelman ”Horisontti Eurooppa”täytäntöönpanoa koskevan erityisohjelman perustamisesta",
+            "language": "FI"
+          },
+          {
+            "id": 32812,
+            "title": "Osobitný program na vykonávanie programu Horizont Európa – rámcový program pre výskum a inovácie",
+            "language": "SK"
+          },
+          {
+            "id": 32813,
+            "title": "Programa Específico de execução do Horizonte Europa — Programa-Quadro de Investigação e Inovação",
+            "language": "PT"
+          },
+          {
+            "id": 32814,
+            "title": "Særprogrammet til gennemførelse af Horisont Europa — rammeprogrammet for forskning og innovation",
+            "language": "DA"
+          },
+          {
+            "id": 32815,
+            "title": "Kehtestatakse teadusuuringute ja innovatsiooni raamprogrammi „Euroopa horisont“",
+            "language": "ET"
+          },
+          {
+            "id": 32816,
+            "title": "Posebnega programa za izvajanje okvirnega programa za raziskave in inovacije Obzorje Evropa",
+            "language": "SL"
+          }
+        ],
+        "dgCommittees": [
+          {
+            "id": 1410,
+            "dg": {
+              "id": 7,
+              "code": "EAC",
+              "validFrom": "2019-03-12T16:09:47Z",
+              "validTo": null,
+              "dgTitles": [
+                {
+                  "id": 145,
+                  "title": "Education, Youth, Sport and Culture",
+                  "language": "EN"
+                },
+                {
+                  "id": 146,
+                  "title": "Образование, младеж, спорт и култура",
+                  "language": "BG"
+                },
+                {
+                  "id": 147,
+                  "title": "Vzdělávání, mládež, kultura a sport",
+                  "language": "CS"
+                },
+                {
+                  "id": 148,
+                  "title": "Uddannelse, Unge, Idræt og Kultur",
+                  "language": "DA"
+                },
+                {
+                  "id": 149,
+                  "title": "Bildung, Jugend, Sport und Kultur",
+                  "language": "DE"
+                },
+                {
+                  "id": 150,
+                  "title": "Εκπαίδευση, Νεολαία, Αθλητισμός και Πολιτισμός",
+                  "language": "EL"
+                },
+                {
+                  "id": 151,
+                  "title": "Educación, Juventud, Cultura y Deporte",
+                  "language": "ES"
+                },
+                {
+                  "id": 152,
+                  "title": "Haridus, noored, sport ja kultuur",
+                  "language": "ET"
+                },
+                {
+                  "id": 153,
+                  "title": "Koulutus, nuoriso, urheilu ja kulttuuri",
+                  "language": "FI"
+                },
+                {
+                  "id": 154,
+                  "title": "Éducation, jeunesse, sport et culture",
+                  "language": "FR"
+                },
+                {
+                  "id": 155,
+                  "title": "Oideachas, an Óige, Spórt agus Cultúr",
+                  "language": "GA"
+                },
+                {
+                  "id": 156,
+                  "title": "Obrazovanje, mladi, sport i kultura",
+                  "language": "HR"
+                },
+                {
+                  "id": 157,
+                  "title": "Oktatás, ifjúság, sport és kultúra",
+                  "language": "HU"
+                },
+                {
+                  "id": 158,
+                  "title": "Istruzione, gioventù, cultura e sport",
+                  "language": "IT"
+                },
+                {
+                  "id": 159,
+                  "title": "Švietimas, jaunimas, sportas ir kultūra",
+                  "language": "LT"
+                },
+                {
+                  "id": 160,
+                  "title": "Izglītība, jaunatne, sports un kultūra",
+                  "language": "LV"
+                },
+                {
+                  "id": 161,
+                  "title": "Edukazzjoni, Żgħażagħ, Sport u Kultura",
+                  "language": "MT"
+                },
+                {
+                  "id": 162,
+                  "title": "Onderwijs, Jongerenzaken, Sport en Cultuur",
+                  "language": "NL"
+                },
+                {
+                  "id": 163,
+                  "title": "Edukacja, młodzież, sport i kultura",
+                  "language": "PL"
+                },
+                {
+                  "id": 164,
+                  "title": "Educação, juventude, desporto e cultura",
+                  "language": "PT"
+                },
+                {
+                  "id": 165,
+                  "title": "Educație, Tineret, Sport și Cultură",
+                  "language": "RO"
+                },
+                {
+                  "id": 166,
+                  "title": "Vzdelávanie, mládež, šport a kultúra",
+                  "language": "SK"
+                },
+                {
+                  "id": 167,
+                  "title": "Izobraževanje, mladina, šport in kultura",
+                  "language": "SL"
+                },
+                {
+                  "id": 168,
+                  "title": "Utbildning, ungdom, kultur och idrott",
+                  "language": "SV"
+                }
+              ]
+            }
+          },
+          {
+            "id": 1407,
+            "dg": {
+              "id": 8,
+              "code": "EMPL",
+              "validFrom": "2019-03-12T16:09:47Z",
+              "validTo": null,
+              "dgTitles": [
+                {
+                  "id": 192,
+                  "title": "Sysselsättning, socialpolitik och inkludering",
+                  "language": "SV"
+                },
+                {
+                  "id": 169,
+                  "title": "Employment, Social Affairs and Inclusion",
+                  "language": "EN"
+                },
+                {
+                  "id": 170,
+                  "title": "Трудова заетост, социални въпроси и приобщаване",
+                  "language": "BG"
+                },
+                {
+                  "id": 171,
+                  "title": "Zaměstnanost, sociální věci a sociální začleňování",
+                  "language": "CS"
+                },
+                {
+                  "id": 172,
+                  "title": "Beskæftigelse, sociale anliggender, arbejdsmarkedsforhold og inklusion",
+                  "language": "DA"
+                },
+                {
+                  "id": 173,
+                  "title": "Beschäftigung, Soziales und Inklusion",
+                  "language": "DE"
+                },
+                {
+                  "id": 174,
+                  "title": "Απασχόληση, Κοινωνικές Υποθέσεις και Ένταξη",
+                  "language": "EL"
+                },
+                {
+                  "id": 175,
+                  "title": "Empleo, Asuntos Sociales e Inclusión",
+                  "language": "ES"
+                },
+                {
+                  "id": 176,
+                  "title": "Tööhõive, sotsiaalküsimused ja sotsiaalne kaasatus",
+                  "language": "ET"
+                },
+                {
+                  "id": 177,
+                  "title": "Työllisyys, sosiaaliasiat ja osallisuus",
+                  "language": "FI"
+                },
+                {
+                  "id": 178,
+                  "title": "Emploi, affaires sociales et inclusion",
+                  "language": "FR"
+                },
+                {
+                  "id": 179,
+                  "title": "Fostaíocht, Gnóthaí Sóisialta agus Cuimsiú",
+                  "language": "GA"
+                },
+                {
+                  "id": 180,
+                  "title": "Zapošljavanje, socijalna pitanja i uključivanje",
+                  "language": "HR"
+                },
+                {
+                  "id": 181,
+                  "title": "Foglalkoztatás, szociális ügyek és társadalmi befogadás",
+                  "language": "HU"
+                },
+                {
+                  "id": 182,
+                  "title": "Occupazione, affari sociali e inclusione",
+                  "language": "IT"
+                },
+                {
+                  "id": 183,
+                  "title": "Užimtumas, socialiniai reikalai ir įtrauktis",
+                  "language": "LT"
+                },
+                {
+                  "id": 184,
+                  "title": "Nodarbinātība, sociālās lietas un iekļautība",
+                  "language": "LV"
+                },
+                {
+                  "id": 185,
+                  "title": "Impjiegi, Affarijiet Soċjali u Inklużjoni",
+                  "language": "MT"
+                },
+                {
+                  "id": 186,
+                  "title": "Werkgelegenheid, Sociale Zaken en Inclusie",
+                  "language": "NL"
+                },
+                {
+                  "id": 187,
+                  "title": "Zatrudnienie, sprawy społeczne i włączenie społeczne",
+                  "language": "PL"
+                },
+                {
+                  "id": 188,
+                  "title": "Emprego, assuntos sociais e inclusão",
+                  "language": "PT"
+                },
+                {
+                  "id": 189,
+                  "title": "Ocuparea Forței de Muncă, Afaceri Sociale și Incluziune",
+                  "language": "RO"
+                },
+                {
+                  "id": 190,
+                  "title": "Zamestnanosť, sociálne záležitosti a začlenenie",
+                  "language": "SK"
+                },
+                {
+                  "id": 191,
+                  "title": "Zaposlovanje, socialne zadeve in vključevanje",
+                  "language": "SL"
+                }
+              ]
+            }
+          },
+          {
+            "id": 1411,
+            "dg": {
+              "id": 24,
+              "code": "HOME",
+              "validFrom": "2019-03-12T16:09:47Z",
+              "validTo": null,
+              "dgTitles": [
+                {
+                  "id": 576,
+                  "title": "Migration och inrikes frågor",
+                  "language": "SV"
+                },
+                {
+                  "id": 553,
+                  "title": "Migration and Home Affairs",
+                  "language": "EN"
+                },
+                {
+                  "id": 554,
+                  "title": "Миграция и вътрешни работи",
+                  "language": "BG"
+                },
+                {
+                  "id": 555,
+                  "title": "Migrace a vnitřní věci",
+                  "language": "CS"
+                },
+                {
+                  "id": 556,
+                  "title": "Migration og indre anliggender",
+                  "language": "DA"
+                },
+                {
+                  "id": 557,
+                  "title": "Migration und Inneres",
+                  "language": "DE"
+                },
+                {
+                  "id": 558,
+                  "title": "Μετανάστευση και Εσωτερικές Υποθέσεις",
+                  "language": "EL"
+                },
+                {
+                  "id": 559,
+                  "title": "Migración y Asuntos de Interior",
+                  "language": "ES"
+                },
+                {
+                  "id": 560,
+                  "title": "Ränne ja siseasjad",
+                  "language": "ET"
+                },
+                {
+                  "id": 561,
+                  "title": "Muuttoliike- ja sisäasiat",
+                  "language": "FI"
+                },
+                {
+                  "id": 562,
+                  "title": "Migration et affaires intérieures",
+                  "language": "FR"
+                },
+                {
+                  "id": 563,
+                  "title": "Imirce agus Gnóthaí Baile",
+                  "language": "GA"
+                },
+                {
+                  "id": 564,
+                  "title": "Migracije i unutarnji poslovi",
+                  "language": "HR"
+                },
+                {
+                  "id": 565,
+                  "title": "Migráció és belügy",
+                  "language": "HU"
+                },
+                {
+                  "id": 566,
+                  "title": "Migrazione e affari interni",
+                  "language": "IT"
+                },
+                {
+                  "id": 567,
+                  "title": "Migracija ir vidaus reikalai",
+                  "language": "LT"
+                },
+                {
+                  "id": 568,
+                  "title": "Migrācija un iekšlietas",
+                  "language": "LV"
+                },
+                {
+                  "id": 569,
+                  "title": "Migrazzjoni u Affarijiet Interni",
+                  "language": "MT"
+                },
+                {
+                  "id": 570,
+                  "title": "Migratie en Binnenlandse Zaken",
+                  "language": "NL"
+                },
+                {
+                  "id": 571,
+                  "title": "Migracja i sprawy wewnętrzne",
+                  "language": "PL"
+                },
+                {
+                  "id": 572,
+                  "title": "Migração e assuntos internos",
+                  "language": "PT"
+                },
+                {
+                  "id": 573,
+                  "title": "Migrație și Afaceri Interne",
+                  "language": "RO"
+                },
+                {
+                  "id": 574,
+                  "title": "Migrácia a vnútorné záležitosti",
+                  "language": "SK"
+                },
+                {
+                  "id": 575,
+                  "title": "Migracije in notranje zadeve",
+                  "language": "SL"
+                }
+              ]
+            }
+          },
+          {
+            "id": 1408,
+            "dg": {
+              "id": 30,
+              "code": "DEFIS",
+              "validFrom": "2019-03-25T08:03:22Z",
+              "validTo": null,
+              "dgTitles": [
+                {
+                  "id": 832,
+                  "title": "Obranný průmysl a vesmír",
+                  "language": "CS"
+                },
+                {
+                  "id": 833,
+                  "title": "Forsvarsindustri og Rummet",
+                  "language": "DA"
+                },
+                {
+                  "id": 834,
+                  "title": "Verteidigungsindustrie und Weltraum",
+                  "language": "DE"
+                },
+                {
+                  "id": 835,
+                  "title": "Αμυντική Βιομηχανία και Διάστημα",
+                  "language": "EL"
+                },
+                {
+                  "id": 836,
+                  "title": "Industria de Defensa y Espacio",
+                  "language": "ES"
+                },
+                {
+                  "id": 837,
+                  "title": "kaitsetööstus ja kosmos",
+                  "language": "ET"
+                },
+                {
+                  "id": 838,
+                  "title": "puolustusteollisuus ja avaruusasiat",
+                  "language": "FI"
+                },
+                {
+                  "id": 839,
+                  "title": "Industrie de la défense et espace",
+                  "language": "FR"
+                },
+                {
+                  "id": 840,
+                  "title": "Tionscal na Cosanta agus an Spás",
+                  "language": "GA"
+                },
+                {
+                  "id": 841,
+                  "title": "Indústria da Defesa e Espaço",
+                  "language": "PT"
+                },
+                {
+                  "id": 842,
+                  "title": "Industria apărării și spațiu",
+                  "language": "RO"
+                },
+                {
+                  "id": 843,
+                  "title": "Obranný priemysel a vesmír",
+                  "language": "SK"
+                },
+                {
+                  "id": 844,
+                  "title": "Obrambna industrija in vesolje",
+                  "language": "SL"
+                },
+                {
+                  "id": 845,
+                  "title": "försvarsindustri och rymdfrågor",
+                  "language": "SV"
+                },
+                {
+                  "id": 846,
+                  "title": "Védelem és űripar",
+                  "language": "HU"
+                },
+                {
+                  "id": 797,
+                  "title": "Defence Industry and Space",
+                  "language": "EN"
+                },
+                {
+                  "id": 823,
+                  "title": "Obrambena industrija i svemir",
+                  "language": "HR"
+                },
+                {
+                  "id": 825,
+                  "title": "Industria della difesa e spazio",
+                  "language": "IT"
+                },
+                {
+                  "id": 826,
+                  "title": "Gynybos pramonė ir kosmosas",
+                  "language": "LT"
+                },
+                {
+                  "id": 827,
+                  "title": "Aizsardzības rūpniecība un kosmoss",
+                  "language": "LV"
+                },
+                {
+                  "id": 828,
+                  "title": "Industrija tad-Difiża u l-Ispazju",
+                  "language": "MT"
+                },
+                {
+                  "id": 829,
+                  "title": "Defensie-industrie en Ruimtevaart",
+                  "language": "NL"
+                },
+                {
+                  "id": 830,
+                  "title": "Przemysł obronny i przestrzeń kosmiczna",
+                  "language": "PL"
+                },
+                {
+                  "id": 831,
+                  "title": "Отбранителна промишленост и космическо пространство",
+                  "language": "BG"
+                }
+              ]
+            }
+          },
+          {
+            "id": 1413,
+            "dg": {
+              "id": 17,
+              "code": "GROW",
+              "validFrom": "2019-03-12T16:09:47Z",
+              "validTo": null,
+              "dgTitles": [
+                {
+                  "id": 385,
+                  "title": "Internal Market, Industry, Entrepreneurship and SMEs",
+                  "language": "EN"
+                },
+                {
+                  "id": 386,
+                  "title": "Вътрешен пазар, промишленост, предприемачество и МСП",
+                  "language": "BG"
+                },
+                {
+                  "id": 387,
+                  "title": "Vnitřní trh, průmysl, podnikání a malé a střední podniky",
+                  "language": "CS"
+                },
+                {
+                  "id": 388,
+                  "title": "Det indre marked, industri, iværksætteri og SMV'er",
+                  "language": "DA"
+                },
+                {
+                  "id": 389,
+                  "title": "Binnenmarkt, Industrie, Unternehmertum und KMU",
+                  "language": "DE"
+                },
+                {
+                  "id": 390,
+                  "title": "Εσωτερική Αγορά, Βιομηχανία, Επιχειρηματικότητα και ΜΜΕ",
+                  "language": "EL"
+                },
+                {
+                  "id": 391,
+                  "title": "Mercado Interior, Industria, Emprendimiento y Pymes",
+                  "language": "ES"
+                },
+                {
+                  "id": 392,
+                  "title": "Siseturg, tööstus, ettevõtlus ja VKEd",
+                  "language": "ET"
+                },
+                {
+                  "id": 393,
+                  "title": "Sisämarkkinat, teollisuus, yrittäjyys ja pk-yritykset",
+                  "language": "FI"
+                },
+                {
+                  "id": 394,
+                  "title": "Marché intérieur, industrie, entrepreneuriat et PME",
+                  "language": "FR"
+                },
+                {
+                  "id": 395,
+                  "title": "An Margadh Inmheánach, Tionscal, Fiontraíocht agus FBManna",
+                  "language": "GA"
+                },
+                {
+                  "id": 396,
+                  "title": "Unutarnje tržište, industrija, poduzetništvo te mali i srednji poduzetnici",
+                  "language": "HR"
+                },
+                {
+                  "id": 397,
+                  "title": "Belső piac, ipar-, vállalkozás- és kkv-politika",
+                  "language": "HU"
+                },
+                {
+                  "id": 398,
+                  "title": "Mercato interno, industria, imprenditoria e PMI",
+                  "language": "IT"
+                },
+                {
+                  "id": 399,
+                  "title": "Vidaus rinka, pramonė, verslumas ir MVĮ",
+                  "language": "LT"
+                },
+                {
+                  "id": 400,
+                  "title": "Iekšējais tirgus, rūpniecība, uzņēmējdarbība un MVU",
+                  "language": "LV"
+                },
+                {
+                  "id": 401,
+                  "title": "Suq Intern, Industrija, Imprenditorija u SMEs",
+                  "language": "MT"
+                },
+                {
+                  "id": 402,
+                  "title": "Interne Markt, Industrie, Ondernemerschap en Midden- en Kleinbedrijf",
+                  "language": "NL"
+                },
+                {
+                  "id": 403,
+                  "title": "Rynek wewnętrzny, przemysł, przedsiębiorczość i MŚP",
+                  "language": "PL"
+                },
+                {
+                  "id": 404,
+                  "title": "Mercado Interno, indústria, empreendedorismo e PME",
+                  "language": "PT"
+                },
+                {
+                  "id": 405,
+                  "title": "Piață Internă, Industrie, Antreprenoriat și IMM-uri",
+                  "language": "RO"
+                },
+                {
+                  "id": 406,
+                  "title": "Vnútorný trh, priemysel, podnikanie a MSP",
+                  "language": "SK"
+                },
+                {
+                  "id": 407,
+                  "title": "Notranji trg, industrija, podjetništvo ter mala in srednja podjetja",
+                  "language": "SL"
+                },
+                {
+                  "id": 408,
+                  "title": "Inre marknaden, industri, entreprenörskap samt små och medelstora företag",
+                  "language": "SV"
+                }
+              ]
+            }
+          },
+          {
+            "id": 1409,
+            "dg": {
+              "id": 14,
+              "code": "SANTE",
+              "validFrom": "2019-03-12T16:09:47Z",
+              "validTo": null,
+              "dgTitles": [
+                {
+                  "id": 320,
+                  "title": "Tervis ja toiduohutus",
+                  "language": "ET"
+                },
+                {
+                  "id": 321,
+                  "title": "Terveys ja elintarviketurvallisuus",
+                  "language": "FI"
+                },
+                {
+                  "id": 322,
+                  "title": "Santé et sécurité alimentaire",
+                  "language": "FR"
+                },
+                {
+                  "id": 323,
+                  "title": "Sláinte agus Sábháilteacht Bia",
+                  "language": "GA"
+                },
+                {
+                  "id": 324,
+                  "title": "Zdravlje i sigurnost hrane",
+                  "language": "HR"
+                },
+                {
+                  "id": 325,
+                  "title": "Egészségügy és élelmiszer-biztonság",
+                  "language": "HU"
+                },
+                {
+                  "id": 326,
+                  "title": "Salute e sicurezza alimentare",
+                  "language": "IT"
+                },
+                {
+                  "id": 327,
+                  "title": "Sveikata ir maisto sauga",
+                  "language": "LT"
+                },
+                {
+                  "id": 328,
+                  "title": "Veselība un pārtikas nekaitīgums",
+                  "language": "LV"
+                },
+                {
+                  "id": 329,
+                  "title": "Saħħa u Sikurezza Alimentari",
+                  "language": "MT"
+                },
+                {
+                  "id": 330,
+                  "title": "Gezondheid en Voedselveiligheid",
+                  "language": "NL"
+                },
+                {
+                  "id": 331,
+                  "title": "Zdrowie i bezpieczeństwo żywności",
+                  "language": "PL"
+                },
+                {
+                  "id": 332,
+                  "title": "Saúde e segurança dos alimentos",
+                  "language": "PT"
+                },
+                {
+                  "id": 333,
+                  "title": "Sănătate și Siguranță Alimentară",
+                  "language": "RO"
+                },
+                {
+                  "id": 334,
+                  "title": "Zdravie a bezpečnosť potravín",
+                  "language": "SK"
+                },
+                {
+                  "id": 335,
+                  "title": "Zdravje in varnost hrane",
+                  "language": "SL"
+                },
+                {
+                  "id": 336,
+                  "title": "Hälsa och livsmedelssäkerhet",
+                  "language": "SV"
+                },
+                {
+                  "id": 313,
+                  "title": "Health and Food Safety",
+                  "language": "EN"
+                },
+                {
+                  "id": 314,
+                  "title": "Здравеопазване и безопасност на храните",
+                  "language": "BG"
+                },
+                {
+                  "id": 315,
+                  "title": "Zdraví a bezpečnost potravin",
+                  "language": "CS"
+                },
+                {
+                  "id": 316,
+                  "title": "Sundhed og fødevaresikkerhed",
+                  "language": "DA"
+                },
+                {
+                  "id": 317,
+                  "title": "Gesundheit und Lebensmittelsicherheit",
+                  "language": "DE"
+                },
+                {
+                  "id": 318,
+                  "title": "Υγεία και Ασφάλεια των Τροφίμων",
+                  "language": "EL"
+                },
+                {
+                  "id": 319,
+                  "title": "Salud y Seguridad Alimentaria",
+                  "language": "ES"
+                }
+              ]
+            }
+          },
+          {
+            "id": 1412,
+            "dg": {
+              "id": 33,
+              "code": "CNECT",
+              "validFrom": "2019-03-25T08:03:22Z",
+              "validTo": null,
+              "dgTitles": [
+                {
+                  "id": 97,
+                  "title": "Communications Networks, Content and Technology",
+                  "language": "EN"
+                },
+                {
+                  "id": 98,
+                  "title": "Съобщителни мрежи, съдържание и технологии",
+                  "language": "BG"
+                },
+                {
+                  "id": 99,
+                  "title": "Komunikační sítě, obsah a technologie",
+                  "language": "CS"
+                },
+                {
+                  "id": 100,
+                  "title": "Kommunikationsnet, indhold og teknologi",
+                  "language": "DA"
+                },
+                {
+                  "id": 101,
+                  "title": "Kommunikationsnetze, Inhalte und Technologien",
+                  "language": "DE"
+                },
+                {
+                  "id": 102,
+                  "title": "Επικοινωνιακά Δίκτυα, Περιεχόμενο και Τεχνολογίες",
+                  "language": "EL"
+                },
+                {
+                  "id": 103,
+                  "title": "Redes de Comunicación, Contenido y Tecnologías",
+                  "language": "ES"
+                },
+                {
+                  "id": 104,
+                  "title": "Sidevõrgud, sisu ja tehnoloogia",
+                  "language": "ET"
+                },
+                {
+                  "id": 105,
+                  "title": "Viestintäverkot, sisällöt ja teknologia",
+                  "language": "FI"
+                },
+                {
+                  "id": 106,
+                  "title": "Réseaux de communication, contenu et technologies",
+                  "language": "FR"
+                },
+                {
+                  "id": 107,
+                  "title": "Líonraí Cumarsáide, Ábhar agus Teicneolaíocht",
+                  "language": "GA"
+                },
+                {
+                  "id": 108,
+                  "title": "Komunikacijske mreže, sadržaji i tehnologija",
+                  "language": "HR"
+                },
+                {
+                  "id": 109,
+                  "title": "Tartalmak, technológiák és kommunikációs hálózatok",
+                  "language": "HU"
+                },
+                {
+                  "id": 110,
+                  "title": "Reti di comunicazione, contenuti e tecnologie",
+                  "language": "IT"
+                },
+                {
+                  "id": 111,
+                  "title": "Ryšių tinklai, turinys ir technologijos",
+                  "language": "LT"
+                },
+                {
+                  "id": 112,
+                  "title": "Komunikācijas tīkli, saturs un tehnoloģija",
+                  "language": "LV"
+                },
+                {
+                  "id": 113,
+                  "title": "Netwerks ta’ Komunikazzjonijiet, Kontenut u Teknoloġija",
+                  "language": "MT"
+                },
+                {
+                  "id": 114,
+                  "title": "Communicatienetwerken, Inhoud en Technologie",
+                  "language": "NL"
+                },
+                {
+                  "id": 115,
+                  "title": "Sieci komunikacyjne, treści i technologie",
+                  "language": "PL"
+                },
+                {
+                  "id": 116,
+                  "title": "Redes de comunicação, conteúdos e tecnologias",
+                  "language": "PT"
+                },
+                {
+                  "id": 117,
+                  "title": "Rețele de Comunicare, Conținut și Tehnologie",
+                  "language": "RO"
+                },
+                {
+                  "id": 118,
+                  "title": "Komunikačné siete, obsah a technológie",
+                  "language": "SK"
+                },
+                {
+                  "id": 119,
+                  "title": "Komunikacijska omrežja, vsebine in tehnologija",
+                  "language": "SL"
+                },
+                {
+                  "id": 120,
+                  "title": "Kommunikationsnät, innehåll och teknik",
+                  "language": "SV"
+                }
+              ]
+            }
+          }
+        ],
+        "basicLegalActProcedures": null
+      },
+      "committeeTitles": [
+        {
+          "id": 32960,
+          "title": "Programm Speċifiku li jimplimenta l-Orizzont Ewropa — il-Programm Qafas għar- Riċerka u l-Innovazzjoni – Diġitali, Industrija u Spazju",
+          "language": "MT"
+        },
+        {
+          "id": 32937,
+          "title": "Eιδικού προγράμματος εφαρμογής για το πρόγραμμα πλαίσιο έρευνας και καινοτομίας « Ορίζοντας Ευρώπη » – Ψηφιακές τεχνολογίες, βιομηχανία και διάστημα",
+          "language": "EL"
+        },
+        {
+          "id": 32938,
+          "title": "Kehtestatakse teadusuuringute ja innovatsiooni raamprogrammi „Euroopa horisont“ – Digivaldkond, tööstus ja kosmos",
+          "language": "ET"
+        },
+        {
+          "id": 32939,
+          "title": "Mbunaítear an Clár Sonrach lena gcuirtear chun feidhme Fís Eorpach - an Clár Réime um Thaighde agus um Nuálaíocht – Cúrsaí Digiteacha, an Tionscal agus an Spás",
+          "language": "GA"
+        },
+        {
+          "id": 32940,
+          "title": "Innovoinnin puiteohjelman ”Horisontti Eurooppa”täytäntöönpanoa koskevan erityisohjelman perustamisesta – Digitaalitalous ja -teknologia, teollisuus ja avaruusala",
+          "language": "FI"
+        },
+        {
+          "id": 32941,
+          "title": "Specialioji programa, kuria įgyvendinama bendroji mokslinių tyrimų ir inovacijų programa „Europos horizontas“ – Skaitmeninė ekonomika, pramonė ir kosmosas",
+          "language": "LT"
+        },
+        {
+          "id": 32942,
+          "title": "Zvláštního programu, kterým se provádí rámcový program pro výzkum a inovace Horizont Evropa – Digitální oblast, průmysl a vesmír",
+          "language": "CS"
+        },
+        {
+          "id": 32943,
+          "title": "Programului specific de implementare a Programului-cadru pentru cercetare și inovare Orizont Europa – Dezvoltarea digitală, industria și spațiul",
+          "language": "RO"
+        },
+        {
+          "id": 32944,
+          "title": "Comité pour le programme spécifique mettant en œuvre Horizon Europe - le programme-cadre pour la recherche et l'innovation – Numérique, industrie et espace",
+          "language": "FR"
+        },
+        {
+          "id": 32945,
+          "title": "Programma specifico di attuazione di Orizzonte Europa — il programma quadro di ricerca e innovazione – Digitale, industria e spazio",
+          "language": "IT"
+        },
+        {
+          "id": 32946,
+          "title": "Specifieke programma tot uitvoering van Horizon Europa — het kaderprogramma voor onderzoek en innovatie – Digitale wereld, industrie en ruimte",
+          "language": "NL"
+        },
+        {
+          "id": 32947,
+          "title": "Osobitný program na vykonávanie programu Horizont Európa – rámcový program pre výskum a inovácie – Digitalizácia, priemysel a vesmír",
+          "language": "SK"
+        },
+        {
+          "id": 32948,
+          "title": "Programme Committee for the specific programme implementing Horizon Europe - the Framework Programme for Research and Innovation – Digital, Industry and Space",
+          "language": "EN"
+        },
+        {
+          "id": 32949,
+          "title": "Programmausschuss für das spezifische Programm zur Durchführung von Horizon Europe - das Rahmenprogramm für Forschung und Innovation – Digitalisierung, Industrie und Weltraum",
+          "language": "DE"
+        },
+        {
+          "id": 32950,
+          "title": "Posebnog programa za provedbu Okvirnog programa za istraživanja i inovacije Obzor Europa – Digitalizacija, industrija i svemir",
+          "language": "HR"
+        },
+        {
+          "id": 32951,
+          "title": "Cпецифична програма за изпълнение на Рамковата програма за научни изследвания и иновации „Хоризонт Европа“ – Цифрова сфера, промишленост и космическо пространство",
+          "language": "BG"
+        },
+        {
+          "id": 32952,
+          "title": "Programa Específico por el que se ejecuta el Programa Marco de Investigación e Innovación Horizonte Europa – Mundo digital, industria y espacio",
+          "language": "ES"
+        },
+        {
+          "id": 32953,
+          "title": "Īpašo programmu, ar kuru īsteno pētniecības un inovācijas pamatprogrammu “Apvārsnis Eiropa” – Digitalizācija, rūpniecība un kosmoss",
+          "language": "LV"
+        },
+        {
+          "id": 32954,
+          "title": "Särskilda programmet för genomförande av Horisont Europa – ramprogrammet för forskning och innovation – Digitala frågor, industri och rymden",
+          "language": "SV"
+        },
+        {
+          "id": 32955,
+          "title": "Særprogrammet til gennemførelse af Horisont Europa — rammeprogrammet for forskning og innovation – Det digitale område, industri og rummet",
+          "language": "DA"
+        },
+        {
+          "id": 32956,
+          "title": "Horizont Európa kutatási és innovációs keretprogram végrehajtását szolgáló egyedi program – Digitalizáció, ipar és világűr",
+          "language": "HU"
+        },
+        {
+          "id": 32957,
+          "title": "Posebnega programa za izvajanje okvirnega programa za raziskave in inovacije Obzorje Evropa – Digitalno, industrija in vesolje",
+          "language": "SL"
+        },
+        {
+          "id": 32958,
+          "title": "Program szczegółowy służący realizacji programu ramowego w zakresie badań naukowych i innowacji „Horyzont Europa” – Technologie cyfrowe, przemysł i przestrzeń kosmiczna",
+          "language": "PL"
+        },
+        {
+          "id": 32959,
+          "title": "Programa Específico de execução do Horizonte Europa — Programa-Quadro de Investigação e Inovação – O digital, a indústria e o espaço",
+          "language": "PT"
+        }
+      ],
+      "dgCommittees": [
+        {
+          "id": 1418,
+          "dg": {
+            "id": 33,
+            "code": "CNECT",
+            "validFrom": "2019-03-25T08:03:22Z",
+            "validTo": null,
+            "dgTitles": [
+              {
+                "id": 97,
+                "title": "Communications Networks, Content and Technology",
+                "language": "EN"
+              },
+              {
+                "id": 98,
+                "title": "Съобщителни мрежи, съдържание и технологии",
+                "language": "BG"
+              },
+              {
+                "id": 99,
+                "title": "Komunikační sítě, obsah a technologie",
+                "language": "CS"
+              },
+              {
+                "id": 100,
+                "title": "Kommunikationsnet, indhold og teknologi",
+                "language": "DA"
+              },
+              {
+                "id": 101,
+                "title": "Kommunikationsnetze, Inhalte und Technologien",
+                "language": "DE"
+              },
+              {
+                "id": 102,
+                "title": "Επικοινωνιακά Δίκτυα, Περιεχόμενο και Τεχνολογίες",
+                "language": "EL"
+              },
+              {
+                "id": 103,
+                "title": "Redes de Comunicación, Contenido y Tecnologías",
+                "language": "ES"
+              },
+              {
+                "id": 104,
+                "title": "Sidevõrgud, sisu ja tehnoloogia",
+                "language": "ET"
+              },
+              {
+                "id": 105,
+                "title": "Viestintäverkot, sisällöt ja teknologia",
+                "language": "FI"
+              },
+              {
+                "id": 106,
+                "title": "Réseaux de communication, contenu et technologies",
+                "language": "FR"
+              },
+              {
+                "id": 107,
+                "title": "Líonraí Cumarsáide, Ábhar agus Teicneolaíocht",
+                "language": "GA"
+              },
+              {
+                "id": 108,
+                "title": "Komunikacijske mreže, sadržaji i tehnologija",
+                "language": "HR"
+              },
+              {
+                "id": 109,
+                "title": "Tartalmak, technológiák és kommunikációs hálózatok",
+                "language": "HU"
+              },
+              {
+                "id": 110,
+                "title": "Reti di comunicazione, contenuti e tecnologie",
+                "language": "IT"
+              },
+              {
+                "id": 111,
+                "title": "Ryšių tinklai, turinys ir technologijos",
+                "language": "LT"
+              },
+              {
+                "id": 112,
+                "title": "Komunikācijas tīkli, saturs un tehnoloģija",
+                "language": "LV"
+              },
+              {
+                "id": 113,
+                "title": "Netwerks ta’ Komunikazzjonijiet, Kontenut u Teknoloġija",
+                "language": "MT"
+              },
+              {
+                "id": 114,
+                "title": "Communicatienetwerken, Inhoud en Technologie",
+                "language": "NL"
+              },
+              {
+                "id": 115,
+                "title": "Sieci komunikacyjne, treści i technologie",
+                "language": "PL"
+              },
+              {
+                "id": 116,
+                "title": "Redes de comunicação, conteúdos e tecnologias",
+                "language": "PT"
+              },
+              {
+                "id": 117,
+                "title": "Rețele de Comunicare, Conținut și Tehnologie",
+                "language": "RO"
+              },
+              {
+                "id": 118,
+                "title": "Komunikačné siete, obsah a technológie",
+                "language": "SK"
+              },
+              {
+                "id": 119,
+                "title": "Komunikacijska omrežja, vsebine in tehnologija",
+                "language": "SL"
+              },
+              {
+                "id": 120,
+                "title": "Kommunikationsnät, innehåll och teknik",
+                "language": "SV"
+              }
+            ]
+          }
+        },
+        {
+          "id": 1419,
+          "dg": {
+            "id": 17,
+            "code": "GROW",
+            "validFrom": "2019-03-12T16:09:47Z",
+            "validTo": null,
+            "dgTitles": [
+              {
+                "id": 385,
+                "title": "Internal Market, Industry, Entrepreneurship and SMEs",
+                "language": "EN"
+              },
+              {
+                "id": 386,
+                "title": "Вътрешен пазар, промишленост, предприемачество и МСП",
+                "language": "BG"
+              },
+              {
+                "id": 387,
+                "title": "Vnitřní trh, průmysl, podnikání a malé a střední podniky",
+                "language": "CS"
+              },
+              {
+                "id": 388,
+                "title": "Det indre marked, industri, iværksætteri og SMV'er",
+                "language": "DA"
+              },
+              {
+                "id": 389,
+                "title": "Binnenmarkt, Industrie, Unternehmertum und KMU",
+                "language": "DE"
+              },
+              {
+                "id": 390,
+                "title": "Εσωτερική Αγορά, Βιομηχανία, Επιχειρηματικότητα και ΜΜΕ",
+                "language": "EL"
+              },
+              {
+                "id": 391,
+                "title": "Mercado Interior, Industria, Emprendimiento y Pymes",
+                "language": "ES"
+              },
+              {
+                "id": 392,
+                "title": "Siseturg, tööstus, ettevõtlus ja VKEd",
+                "language": "ET"
+              },
+              {
+                "id": 393,
+                "title": "Sisämarkkinat, teollisuus, yrittäjyys ja pk-yritykset",
+                "language": "FI"
+              },
+              {
+                "id": 394,
+                "title": "Marché intérieur, industrie, entrepreneuriat et PME",
+                "language": "FR"
+              },
+              {
+                "id": 395,
+                "title": "An Margadh Inmheánach, Tionscal, Fiontraíocht agus FBManna",
+                "language": "GA"
+              },
+              {
+                "id": 396,
+                "title": "Unutarnje tržište, industrija, poduzetništvo te mali i srednji poduzetnici",
+                "language": "HR"
+              },
+              {
+                "id": 397,
+                "title": "Belső piac, ipar-, vállalkozás- és kkv-politika",
+                "language": "HU"
+              },
+              {
+                "id": 398,
+                "title": "Mercato interno, industria, imprenditoria e PMI",
+                "language": "IT"
+              },
+              {
+                "id": 399,
+                "title": "Vidaus rinka, pramonė, verslumas ir MVĮ",
+                "language": "LT"
+              },
+              {
+                "id": 400,
+                "title": "Iekšējais tirgus, rūpniecība, uzņēmējdarbība un MVU",
+                "language": "LV"
+              },
+              {
+                "id": 401,
+                "title": "Suq Intern, Industrija, Imprenditorija u SMEs",
+                "language": "MT"
+              },
+              {
+                "id": 402,
+                "title": "Interne Markt, Industrie, Ondernemerschap en Midden- en Kleinbedrijf",
+                "language": "NL"
+              },
+              {
+                "id": 403,
+                "title": "Rynek wewnętrzny, przemysł, przedsiębiorczość i MŚP",
+                "language": "PL"
+              },
+              {
+                "id": 404,
+                "title": "Mercado Interno, indústria, empreendedorismo e PME",
+                "language": "PT"
+              },
+              {
+                "id": 405,
+                "title": "Piață Internă, Industrie, Antreprenoriat și IMM-uri",
+                "language": "RO"
+              },
+              {
+                "id": 406,
+                "title": "Vnútorný trh, priemysel, podnikanie a MSP",
+                "language": "SK"
+              },
+              {
+                "id": 407,
+                "title": "Notranji trg, industrija, podjetništvo ter mala in srednja podjetja",
+                "language": "SL"
+              },
+              {
+                "id": 408,
+                "title": "Inre marknaden, industri, entreprenörskap samt små och medelstora företag",
+                "language": "SV"
+              }
+            ]
+          }
+        },
+        {
+          "id": 1420,
+          "dg": {
+            "id": 30,
+            "code": "DEFIS",
+            "validFrom": "2019-03-25T08:03:22Z",
+            "validTo": null,
+            "dgTitles": [
+              {
+                "id": 832,
+                "title": "Obranný průmysl a vesmír",
+                "language": "CS"
+              },
+              {
+                "id": 833,
+                "title": "Forsvarsindustri og Rummet",
+                "language": "DA"
+              },
+              {
+                "id": 834,
+                "title": "Verteidigungsindustrie und Weltraum",
+                "language": "DE"
+              },
+              {
+                "id": 835,
+                "title": "Αμυντική Βιομηχανία και Διάστημα",
+                "language": "EL"
+              },
+              {
+                "id": 836,
+                "title": "Industria de Defensa y Espacio",
+                "language": "ES"
+              },
+              {
+                "id": 837,
+                "title": "kaitsetööstus ja kosmos",
+                "language": "ET"
+              },
+              {
+                "id": 838,
+                "title": "puolustusteollisuus ja avaruusasiat",
+                "language": "FI"
+              },
+              {
+                "id": 839,
+                "title": "Industrie de la défense et espace",
+                "language": "FR"
+              },
+              {
+                "id": 840,
+                "title": "Tionscal na Cosanta agus an Spás",
+                "language": "GA"
+              },
+              {
+                "id": 841,
+                "title": "Indústria da Defesa e Espaço",
+                "language": "PT"
+              },
+              {
+                "id": 842,
+                "title": "Industria apărării și spațiu",
+                "language": "RO"
+              },
+              {
+                "id": 843,
+                "title": "Obranný priemysel a vesmír",
+                "language": "SK"
+              },
+              {
+                "id": 844,
+                "title": "Obrambna industrija in vesolje",
+                "language": "SL"
+              },
+              {
+                "id": 845,
+                "title": "försvarsindustri och rymdfrågor",
+                "language": "SV"
+              },
+              {
+                "id": 846,
+                "title": "Védelem és űripar",
+                "language": "HU"
+              },
+              {
+                "id": 797,
+                "title": "Defence Industry and Space",
+                "language": "EN"
+              },
+              {
+                "id": 823,
+                "title": "Obrambena industrija i svemir",
+                "language": "HR"
+              },
+              {
+                "id": 825,
+                "title": "Industria della difesa e spazio",
+                "language": "IT"
+              },
+              {
+                "id": 826,
+                "title": "Gynybos pramonė ir kosmosas",
+                "language": "LT"
+              },
+              {
+                "id": 827,
+                "title": "Aizsardzības rūpniecība un kosmoss",
+                "language": "LV"
+              },
+              {
+                "id": 828,
+                "title": "Industrija tad-Difiża u l-Ispazju",
+                "language": "MT"
+              },
+              {
+                "id": 829,
+                "title": "Defensie-industrie en Ruimtevaart",
+                "language": "NL"
+              },
+              {
+                "id": 830,
+                "title": "Przemysł obronny i przestrzeń kosmiczna",
+                "language": "PL"
+              },
+              {
+                "id": 831,
+                "title": "Отбранителна промишленост и космическо пространство",
+                "language": "BG"
+              }
+            ]
+          }
+        }
+      ],
+      "basicLegalActProcedures": null
+    },
+    "meetingTitles": [
+      {
+        "id": 49735,
+        "title": "Ad-Hoc Meeting of the Horizon Europe Programme Committee “Digital, Industry and Space” (Call Evaluation results - Industry)",
+        "language": "EN"
+      }
+    ]
+  },
+  "implementingAct": null,
+  "documentsAttached": [
+    {
+      "id": 533495,
+      "title": "agenda ad hoc PC 10 07 2026",
+      "language": "EN",
+      "filename": "agenda ad hoc PC 10 07 2026.pdf",
+      "mainDoc": null,
+      "documentsAttachedAnnexes": null
+    }
+  ],
+  "votingSheet": null,
+  "maxVersion": 2
+}

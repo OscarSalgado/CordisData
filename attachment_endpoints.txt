@@ -1,0 +1,43 @@
+
+https://ec.europa.eu/transparency/comitology-register/core/api/front/documents/116169/attachments
+Status: 400
+Response: {
+  "type" : "about:blank",
+  "title" : "Bad Request",
+  "status" : 400,
+  "detail" : "Method parameter 'version': Failed to convert value of type 'java.lang.String' to required type 'int'; For input 
+
+https://ec.europa.eu/transparency/comitology-register/core/api/front/documents/116169/files
+Status: 400
+Response: {
+  "type" : "about:blank",
+  "title" : "Bad Request",
+  "status" : 400,
+  "detail" : "Method parameter 'version': Failed to convert value of type 'java.lang.String' to required type 'int'; For input 
+
+https://ec.europa.eu/transparency/comitology-register/core/api/front/attachments?documentReference=116169
+Status: 400
+Response: {
+  "type" : "about:blank",
+  "title" : "Bad Request",
+  "status" : 400,
+  "detail" : "No static resource api/front/attachments.",
+  "instance" : "https://tmmcl00870.cc.cec.eu.int:1062/transparency/co
+
+https://ec.europa.eu/transparency/comitology-register/core/api/front/files/116169
+Status: 400
+Response: {
+  "type" : "about:blank",
+  "title" : "Bad Request",
+  "status" : 400,
+  "detail" : "No static resource api/front/files/116169.",
+  "instance" : "https://tmmcl00870.cc.cec.eu.int:1062/transparency/c
+
+https://ec.europa.eu/transparency/comitology-register/core/api/front/download/116169
+Status: 400
+Response: {
+  "type" : "about:blank",
+  "title" : "Bad Request",
+  "status" : 400,
+  "detail" : "No static resource api/front/download/116169.",
+  "instance" : "https://tmmcl00870.cc.cec.eu.int:1062/transparenc
