@@ -90,7 +90,9 @@ jobs:
           echo "=== Git Operations ===" | tee -a logs/fetch-calls.log
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data/calls.json data/.metadata.json data/changelog/*.json
+          git add data/calls.json 2>/dev/null || true
+          git add data/.metadata.json 2>/dev/null || true
+          git add data/changelog/*.json 2>/dev/null || true
 
           if ! git diff --cached --quiet; then
             summary="${{ steps.validate.outputs.changelog_summary }}"
