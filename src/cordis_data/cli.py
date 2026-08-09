@@ -95,7 +95,7 @@ def fetch_projects(
         fetcher = ProjectsFetcher()
         output_path = Path(output) if output else None
         calls_path = Path(calls) if calls else None
-        fetcher.fetch(
+        fetcher.main(
             output_path=output_path,
             calls_path=calls_path,
             years=years,
