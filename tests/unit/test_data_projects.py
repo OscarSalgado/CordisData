@@ -321,3 +321,55 @@ class TestProjectsFetcher:
         results = fetcher._fetch_batch_all_pages(batch)
 
         assert len(results) == 50
+
+    def test_enrich_projects_partial_cordis_data(
+        self, mock_cordis_client: Mock, temp_dir: Path
+    ) -> None:
+        """Test enrichment when some projects have no CORDIS data."""
+        output_file = temp_dir / "projects.json"
+
+        projects = [
+            {"projectId": "P001", "acronym": "TEST1", "objective": None},
+            {"projectId": "P002", "acronym": "TEST2", "objective": None},
+        ]
+
+        # First project gets enriched, second returns None
+        mock_cordis_client.fetch_project.side_effect = [
+            {"objective": "Found", "grantDoi": "10.1234/test"},
+            None,  # Not found in CORDIS
+        ]
+
+        fetcher = ProjectsFetcher(cordis_client=mock_cordis_client)
+        result = fetcher._enrich_projects_with_cordis(projects, output_path=output_file)
+
+        assert len(result) == 2
+        assert result[0]["objective"] == "Found"
+        assert result[1].get("objective") is None
+
+    def test_enrich_projects_with_checkpoint(
+        self, mock_cordis_client: Mock, temp_dir: Path
+    ) -> None:
+        """Test checkpoint is triggered after 500 projects."""
+        output_file = temp_dir / "projects.json"
+
+        # Create 501 projects to trigger checkpoint
+        projects = [
+            {
+                "projectId": f"P{i:04d}",
+                "acronym": f"TEST{i}",
+                "objective": None,
+                "grantDoi": None
+            }
+            for i in range(501)
+        ]
+
+        mock_cordis_client.fetch_project.return_value = {
+            "objective": "Enriched",
+            "grantDoi": "10.1234/test"
+        }
+
+        fetcher = ProjectsFetcher(cordis_client=mock_cordis_client)
+        result = fetcher._enrich_projects_with_cordis(projects, output_path=output_file)
+
+        # Should have written checkpoint
+        assert len(result) == 501
