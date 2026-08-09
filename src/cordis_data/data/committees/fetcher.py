@@ -6,9 +6,9 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, Optional
 
-from cordis_data.data.changelog import ChangeEvent, generate_changelog
+from cordis_data.data.changelog import ChangeEvent
 from cordis_data.data.committees.client import CommitteeDocumentsClient
-from cordis_data.data.metadata import load_metadata, save_metadata, update_timestamp
+from cordis_data.data.metadata import update_timestamp
 
 
 class CommitteeDocumentsFetcher:
@@ -127,3 +127,57 @@ class CommitteeDocumentsFetcher:
                 filtered.append(doc)
 
         return filtered
+
+    def detect_changes(
+        self,
+        existing: list[dict[str, Any]],
+        fetched: list[dict[str, Any]],
+    ) -> tuple[list[dict], list[ChangeEvent]]:
+        """Detect NEW and UPDATED documents.
+
+        Args:
+            existing: Previous documents snapshot
+            fetched: Newly fetched documents
+
+        Returns:
+            Tuple of (new_documents, change_events)
+        """
+        existing_refs = {doc["documentReference"] for doc in existing}
+        existing_by_ref = {doc["documentReference"]: doc for doc in existing}
+
+        new_docs = []
+        events = []
+
+        for doc in fetched:
+            ref = doc["documentReference"]
+
+            if ref not in existing_refs:
+                # NEW document - triggers alert
+                new_docs.append(doc)
+                events.append(
+                    ChangeEvent(
+                        reference=doc.get("reference", ref),
+                        topicId=ref,
+                        event_type="NEW",
+                        detected_at=datetime.now(timezone.utc).isoformat() + "Z",
+                        snapshot=doc,
+                    )
+                )
+            else:
+                # Check if UPDATED
+                old_doc = existing_by_ref[ref]
+                if doc.get("updateDate") != old_doc.get("updateDate"):
+                    events.append(
+                        ChangeEvent(
+                            reference=doc.get("reference", ref),
+                            topicId=ref,
+                            event_type="UPDATED",
+                            detected_at=datetime.now(timezone.utc).isoformat() + "Z",
+                            field="updateDate",
+                            old_value=old_doc.get("updateDate"),
+                            new_value=doc.get("updateDate"),
+                            snapshot_after=doc,
+                        )
+                    )
+
+        return new_docs, events

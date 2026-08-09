@@ -27,14 +27,14 @@
   - Implement pagination loop + merge logic
   - Implement `detect_changes()` method using documentReference as key
 
-- [ ] Implement change detection with alert trigger
+- [x] Implement change detection with alert trigger
   - Track documentReference as unique key (across all versions)
   - Detect NEW (documentReference not in previous) → trigger alert
   - Detect UPDATED (version/date changed) → log only, no alert
   - Generate ChangeEvent objects
   - Return list of NEW documents for alert system
 
-- [ ] Implement rolling window + document purging
+- [x] Implement rolling window + document purging
   - Remove documents older than 90 days from documents.json
   - Keep changelog files (for audit trail) but don't generate new entries for purged docs
   - Log purging events for debugging
