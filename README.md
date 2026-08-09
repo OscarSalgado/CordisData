@@ -65,6 +65,23 @@ flake8 src/ tests/                     # Style checking
 pyright                                # Type checking
 ```
 
+## Automated Data Collection
+
+GitHub Actions workflows automatically fetch and update data:
+
+- **Calls**: Daily at 02:00 UTC (`fetch-calls.yml`)
+  - Fetches open/forthcoming/closed EU funding calls
+  - Merges with existing data (preserves older records by default)
+  - Commits `data/calls.json` and `data/.metadata.json`
+
+- **Projects**: Daily at 04:00 UTC (`fetch-projects.yml`)
+  - Fetches awarded projects for closed calls
+  - Enriches with CORDIS objective & DOI
+  - Checkpoints every 500 projects (resumable on failure)
+  - Commits `data/projects.json` and `data/.metadata.json`
+
+Both workflows use `github-actions[bot]` and include timestamps in commit messages.
+
 ## Data
 
 - `data/calls.json` — Available EU funding calls
