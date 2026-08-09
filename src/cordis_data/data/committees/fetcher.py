@@ -1,0 +1,129 @@
+"""Fetch and track committee documents with change detection."""
+
+import json
+import math
+from datetime import datetime, timedelta, timezone
+from pathlib import Path
+from typing import Any, Optional
+
+from cordis_data.data.changelog import ChangeEvent, generate_changelog
+from cordis_data.data.committees.client import CommitteeDocumentsClient
+from cordis_data.data.metadata import load_metadata, save_metadata, update_timestamp
+
+
+class CommitteeDocumentsFetcher:
+    """Fetch committee documents and detect changes."""
+
+    def __init__(self, client: Optional[CommitteeDocumentsClient] = None) -> None:
+        """Initialize fetcher.
+
+        Args:
+            client: CommitteeDocumentsClient instance
+        """
+        self.client = client or CommitteeDocumentsClient()
+
+    def main(
+        self,
+        committee_codes: list[str],
+        output_path: Optional[Path] = None,
+        metadata_path: Optional[Path] = None,
+        window_days: int = 90,
+    ) -> None:
+        """Fetch documents with rolling 3-month window.
+
+        Args:
+            committee_codes: Committees to monitor
+            output_path: Path to write documents.json
+            metadata_path: Path to metadata
+            window_days: Days to look back (default: 90)
+        """
+        if output_path is None:
+            project_root = Path(__file__).resolve().parent.parent.parent.parent
+            output_path = project_root / "data" / "committees" / "documents.json"
+        else:
+            output_path = Path(output_path)
+
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+
+        # Load existing documents
+        existing = self._load_documents(output_path)
+
+        # Calculate window
+        start_date = (datetime.now(timezone.utc) - timedelta(days=window_days)).strftime(
+            "%Y-%m-%dT%H:%M:%S.000Z"
+        )
+
+        # Fetch all documents from API
+        print(f"Fetching documents from {len(committee_codes)} committees...")
+        fetched = self._fetch_all_pages(committee_codes, start_date)
+        print(f"Fetched {len(fetched)} documents")
+
+        # Purge documents older than window
+        fetched = self._purge_old_documents(fetched, window_days)
+
+        # Detect changes
+        existing_by_ref = {doc["documentReference"]: doc for doc in existing}
+        new_docs = [doc for doc in fetched if doc["documentReference"] not in existing_by_ref]
+
+        print(f"New documents: {len(new_docs)}")
+
+        # Merge
+        merged = {doc["documentReference"]: doc for doc in existing}
+        for doc in fetched:
+            merged[doc["documentReference"]] = doc
+
+        merged_list = list(merged.values())
+
+        # Save
+        output_path.write_text(json.dumps(merged_list, indent=2, ensure_ascii=False))
+        print(f"Saved {len(merged_list)} documents to {output_path}")
+
+        # Update metadata
+        if metadata_path:
+            metadata_path = Path(metadata_path)
+            update_timestamp(metadata_path, "committees_fetched_at")
+
+        return new_docs
+
+    def _load_documents(self, path: Path) -> list[dict[str, Any]]:
+        """Load existing documents from disk."""
+        if path.exists():
+            with open(path) as f:
+                return json.load(f)
+        return []
+
+    def _fetch_all_pages(self, committee_codes: list[str], start_date: str) -> list[dict]:
+        """Fetch all pages with pagination."""
+        all_docs = []
+        page = 0
+
+        while True:
+            resp = self.client.fetch_documents(committee_codes, start_date, page=page, size=100)
+            all_docs.extend(resp.get("content", []))
+
+            total_pages = resp.get("totalPages", 1)
+            if page >= total_pages - 1:
+                break
+
+            page += 1
+
+        return all_docs
+
+    def _purge_old_documents(
+        self, documents: list[dict], window_days: int
+    ) -> list[dict]:
+        """Remove documents older than window."""
+        cutoff = datetime.now(timezone.utc) - timedelta(days=window_days)
+
+        filtered = []
+        for doc in documents:
+            try:
+                creation = datetime.fromisoformat(
+                    doc["creationDate"].replace("Z", "+00:00")
+                )
+                if creation >= cutoff:
+                    filtered.append(doc)
+            except (ValueError, KeyError):
+                filtered.append(doc)
+
+        return filtered
