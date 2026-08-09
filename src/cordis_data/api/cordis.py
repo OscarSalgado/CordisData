@@ -5,7 +5,7 @@ import sys
 import time
 import urllib.error
 import urllib.request
-from typing import Any, Optional
+from typing import Any, Optional, cast
 
 from cordis_data.api.rate_limiter import TokenBucket
 
@@ -58,7 +58,7 @@ class CordisClient:
                 req = urllib.request.Request(url, method="GET")
                 req.add_header("Accept", "application/json")
                 with urllib.request.urlopen(req, timeout=self.timeout) as resp:
-                    data = json.loads(resp.read().decode())
+                    data = cast(dict[str, Any], json.loads(resp.read().decode()))
                 return {
                     "objective": data.get("objective"),
                     "grantDoi": (data.get("identifiers") or {}).get("grantDoi"),

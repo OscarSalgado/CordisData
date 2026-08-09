@@ -6,7 +6,7 @@ import time
 import urllib.parse
 import urllib.request
 import uuid
-from typing import Any
+from typing import Any, cast
 
 
 def build_multipart(
@@ -78,7 +78,7 @@ class SediaClient:
                     "pageSize": str(page_size),
                     "pageNumber": str(page_num),
                 })
-                fields = {
+                fields_dict = {
                     "query": ("blob", json.dumps(query), "application/json"),
                     "sort": ("blob", json.dumps(sort), "application/json"),
                     "languages": (
@@ -87,6 +87,9 @@ class SediaClient:
                         "application/json",
                     ),
                 }
+                fields = cast(
+                    dict[str, tuple[str, str | bytes, str]], fields_dict
+                )
                 body = build_multipart(fields, boundary)
                 req = urllib.request.Request(
                     f"{self.api_url}?{params}",

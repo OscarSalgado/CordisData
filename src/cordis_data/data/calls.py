@@ -5,7 +5,7 @@ import json
 import math
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any, Optional, cast
 
 from cordis_data.api.sedia import SediaClient
 from cordis_data.config import (
@@ -94,7 +94,7 @@ class CallsFetcher:
         action_type = ""
         try:
             actions_str = (m.get("actions") or ["[]"])[0]
-            actions = json.loads(actions_str)
+            actions = cast(list[Any], json.loads(actions_str))
             if actions:
                 act = actions[0]
                 types = act.get("types", [])
@@ -119,7 +119,7 @@ class CallsFetcher:
         deadline = ""
         try:
             actions_str = (m.get("actions") or ["[]"])[0]
-            actions = json.loads(actions_str)
+            actions = cast(list[Any], json.loads(actions_str))
             if actions:
                 dls = actions[0].get("deadlineDates", [])
                 if dls:

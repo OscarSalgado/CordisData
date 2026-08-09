@@ -4,7 +4,7 @@ import datetime
 import json
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any, Optional, cast
 
 from cordis_data.api.cordis import CordisClient
 from cordis_data.api.rate_limiter import TokenBucket
@@ -97,10 +97,10 @@ class ProjectsFetcher:
             List of all result dicts across all pages
         """
         page_num = 1
-        batch_results = []
+        batch_results: list[dict[str, Any]] = []
         while True:
             data = self._fetch_projects_batch(batch, page_num, retries=retries)
-            results = data.get("results", [])
+            results = cast(list[dict[str, Any]], data.get("results", []))
             batch_results.extend(results)
             total = int(data.get("totalResults", 0) or 0)
             if len(batch_results) >= total or not results:
@@ -161,7 +161,8 @@ class ProjectsFetcher:
         if now is None:
             now = datetime.date.today()
 
-        existing = existing_by_id.get(project.get("projectId"))
+        project_id = cast(str, project.get("projectId"))
+        existing = existing_by_id.get(project_id)
         if not existing:
             return True
         if not (existing.get("objective") and existing.get("grantDoi")):

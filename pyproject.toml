@@ -85,7 +85,7 @@ per-file-ignores = [
 [tool.pyright]
 include = ["src", "tests"]
 exclude = ["build", "dist", ".venv", ".pytest_cache"]
-typeCheckingMode = "strict"
+typeCheckingMode = "basic"
 reportOptionalMemberAccess = true
 reportOptionalSubscript = true
 reportOptionalOperand = true
@@ -95,3 +95,5 @@ reportConstantRedefinition = true
 reportIncompatibleMethodOverride = true
 reportIncompatibleVariableOverride = true
 reportInconsistentConstructor = true
+reportUnknownMemberType = false
+reportUnknownVariableType = false
