@@ -23,19 +23,26 @@ def main() -> None:
     help="Fetch complete dataset with no date limit (replaces existing)",
 )
 @click.option(
+    "--force",
+    is_flag=True,
+    help="Skip freshness check and fetch unconditionally",
+)
+@click.option(
     "--output",
     type=click.Path(),
     default=None,
     help="Output file path (default: data/calls.json)",
 )
-def fetch_calls(full_history: bool, output: str | None) -> None:
+def fetch_calls(full_history: bool, force: bool, output: str | None) -> None:
     """Fetch open/forthcoming/closed EU grant calls from SEDIA API.
 
     By default, fetches calls published in the last 90 days and merges into
     existing data. Use --full-history to fetch complete dataset and replace.
+    Use --force to skip freshness check and fetch unconditionally.
 
     Args:
         full_history: If True, fetch complete dataset (no date limit)
+        force: If True, skip freshness check and always fetch
         output: Output file path (default: data/calls.json)
 
     Exits with code 1 if fetch fails.
@@ -43,7 +50,7 @@ def fetch_calls(full_history: bool, output: str | None) -> None:
     try:
         fetcher = CallsFetcher()
         output_path = Path(output) if output else None
-        fetcher.fetch(output_path=output_path, full_history=full_history)
+        fetcher.main(output_path=output_path, full_history=full_history, force=force)
     except Exception as e:
         click.echo(f"Error fetching calls: {e}", err=True)
         sys.exit(1)

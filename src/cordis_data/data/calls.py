@@ -218,16 +218,22 @@ class CallsFetcher:
             "portalUrl": portal_url,
         }
 
-    def main(self, output_path: Optional[Path] = None, full_history: bool = False) -> None:
+    def main(
+        self,
+        output_path: Optional[Path] = None,
+        full_history: bool = False,
+        force: bool = False,
+    ) -> None:
         """Fetch calls from SEDIA and write to output file.
 
         By default, fetches only calls published in last DEFAULT_WINDOW_DAYS and
         merges them into existing data. Set full_history=True to fetch all calls
-        and replace the file entirely.
+        and replace the file entirely. Set force=True to skip freshness check.
 
         Args:
             output_path: Path to write calls.json (default: data/calls.json)
             full_history: If True, fetch complete history and replace file
+            force: If True, skip freshness check and fetch unconditionally
         """
         if output_path is None:
             project_root = Path(__file__).resolve().parent.parent.parent
@@ -235,10 +241,17 @@ class CallsFetcher:
         else:
             output_path = Path(output_path)
 
-        # Check metadata freshness
+        # Check metadata freshness (skip if force=True)
         project_root = output_path.parent.parent
         metadata = load_metadata(project_root / ".metadata.json")
-        if not full_history and not is_stale(metadata["calls_fetched_at"], metadata["calls_freshness_ttl_days"]):
+        if (
+            not force
+            and not full_history
+            and not is_stale(
+                metadata["calls_fetched_at"],
+                metadata["calls_freshness_ttl_days"],
+            )
+        ):
             print("Calls data is fresh. Skipping fetch.", flush=True)
             return
 
