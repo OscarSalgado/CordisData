@@ -1,0 +1,97 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cordis-data"
+version = "0.1.0"
+description = "Python module for collecting and managing EU research funding data from CORDIS and SEDIA APIs"
+readme = "README.md"
+requires-python = ">=3.12"
+license = {text = "MIT"}
+authors = [
+    {name = "Oscar Salgado", email = "osalgado@ikerlan.es"}
+]
+keywords = ["cordis", "eu-funding", "horizon-europe", "research-data"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+]
+
+dependencies = [
+    "click>=8.1.0",
+    "pydantic>=2.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4.0",
+    "pytest-cov>=4.1.0",
+    "flake8>=6.0.0",
+    "pyright>=1.1.300",
+]
+
+[project.scripts]
+cordis-data = "cordis_data.cli:main"
+
+[tool.setuptools]
+packages = ["cordis_data"]
+
+[tool.setuptools.package-dir]
+"" = "src"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "--strict-markers -v"
+markers = [
+    "unit: unit tests (don't require external services)",
+    "integration: integration tests",
+]
+
+[tool.coverage.run]
+source = ["src/cordis_data"]
+branch = true
+
+[tool.coverage.report]
+precision = 2
+show_missing = true
+skip_covered = false
+
+[tool.flake8]
+max-line-length = 79
+extend-ignore = [
+    "E203",  # whitespace before ':'
+    "E501",  # line too long (handled by black/formatter)
+    "W503",  # line break before binary operator
+    "W504",  # line break after binary operator
+]
+exclude = [
+    ".git",
+    "__pycache__",
+    "build",
+    "dist",
+    ".venv",
+    ".pytest_cache",
+    "*.egg-info",
+]
+per-file-ignores = [
+    "__init__.py: F401",  # imported but unused
+]
+
+[tool.pyright]
+include = ["src", "tests"]
+exclude = ["build", "dist", ".venv", ".pytest_cache"]
+typeCheckingMode = "strict"
+reportOptionalMemberAccess = true
+reportOptionalSubscript = true
+reportOptionalOperand = true
+reportOptionalIterable = true
+reportOptionalContextManager = true
+reportConstantRedefinition = true
+reportIncompatibleMethodOverride = true
+reportIncompatibleVariableOverride = true
+reportInconsistentConstructor = true
