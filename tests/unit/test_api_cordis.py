@@ -58,3 +58,87 @@ class TestCordisClient:
 
         assert result is None
         assert mock_urlopen.call_count == 1  # No retries for 404
+
+    @patch("cordis_data.api.cordis.time.sleep")
+    @patch("cordis_data.api.cordis.urllib.request.urlopen")
+    def test_fetch_project_retry_on_500(
+        self, mock_urlopen: MagicMock, mock_sleep: MagicMock
+    ) -> None:
+        """Test fetch_project retries on HTTP 500."""
+        response_data = {"objective": "Success"}
+        mock_response = MagicMock()
+        mock_response.read.return_value = json.dumps(response_data).encode()
+        mock_response.__enter__.return_value = mock_response
+
+        mock_urlopen.side_effect = [
+            urllib.error.HTTPError("url", 500, "Server Error", {}, None),
+            mock_response,
+        ]
+
+        client = CordisClient()
+        result = client.fetch_project("TEST123", retries=2)
+
+        assert result["objective"] == "Success"
+        assert mock_urlopen.call_count == 2
+        mock_sleep.assert_called_once()
+
+    @patch("cordis_data.api.cordis.time.sleep")
+    @patch("cordis_data.api.cordis.urllib.request.urlopen")
+    def test_fetch_project_retry_on_429(
+        self, mock_urlopen: MagicMock, mock_sleep: MagicMock
+    ) -> None:
+        """Test fetch_project retries on HTTP 429 (rate limit)."""
+        response_data = {"objective": "Success"}
+        mock_response = MagicMock()
+        mock_response.read.return_value = json.dumps(response_data).encode()
+        mock_response.__enter__.return_value = mock_response
+
+        mock_urlopen.side_effect = [
+            urllib.error.HTTPError("url", 429, "Too Many Requests", {}, None),
+            mock_response,
+        ]
+
+        client = CordisClient()
+        result = client.fetch_project("TEST123", retries=2)
+
+        assert result["objective"] == "Success"
+
+    @patch("cordis_data.api.cordis.time.sleep")
+    @patch("cordis_data.api.cordis.urllib.request.urlopen")
+    def test_fetch_project_retry_on_connection_error(
+        self, mock_urlopen: MagicMock, mock_sleep: MagicMock
+    ) -> None:
+        """Test fetch_project retries on connection errors."""
+        response_data = {"objective": "Success"}
+        mock_response = MagicMock()
+        mock_response.read.return_value = json.dumps(response_data).encode()
+        mock_response.__enter__.return_value = mock_response
+
+        mock_urlopen.side_effect = [
+            ConnectionError("Connection refused"),
+            mock_response,
+        ]
+
+        client = CordisClient()
+        result = client.fetch_project("TEST123", retries=2)
+
+        assert result["objective"] == "Success"
+
+    def test_backoff_seconds_rate_limit(self) -> None:
+        """Test backoff calculation for rate limit (429)."""
+        assert CordisClient._get_backoff_seconds(429, 0) == 15
+        assert CordisClient._get_backoff_seconds(429, 1) == 45
+        assert CordisClient._get_backoff_seconds(429, 2) == 120
+
+    def test_backoff_seconds_server_errors(self) -> None:
+        """Test backoff calculation for 5xx errors."""
+        assert CordisClient._get_backoff_seconds(500, 0) == 2
+        assert CordisClient._get_backoff_seconds(502, 1) == 4
+        assert CordisClient._get_backoff_seconds(503, 2) == 8
+
+    def test_backoff_seconds_other_errors(self) -> None:
+        """Test backoff calculation for other errors."""
+        assert CordisClient._get_backoff_seconds(0, 0) == 1
+        assert CordisClient._get_backoff_seconds(0, 1) == 3
+        assert CordisClient._get_backoff_seconds(0, 2) == 5
+        assert CordisClient._get_backoff_seconds(400, 0) == 1

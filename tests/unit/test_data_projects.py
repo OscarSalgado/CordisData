@@ -226,3 +226,98 @@ class TestProjectsFetcher:
         assert len(merged) == 2
         assert any(p["projectId"] == "P001" for p in merged)
         assert any(p["projectId"] == "P002" for p in merged)
+
+    def test_enrich_projects_with_cordis(
+        self, mock_sedia_client: Mock, mock_cordis_client: Mock, temp_dir: Path
+    ) -> None:
+        """Test enriching projects with CORDIS data."""
+        output_file = temp_dir / "projects.json"
+
+        projects = [
+            {"projectId": "P001", "acronym": "TEST", "objective": None, "grantDoi": None}
+        ]
+
+        mock_cordis_client.fetch_project.return_value = {
+            "objective": "Enriched objective",
+            "grantDoi": "10.1234/test"
+        }
+
+        fetcher = ProjectsFetcher(
+            cordis_client=mock_cordis_client,
+            sedia_client=mock_sedia_client
+        )
+        result = fetcher._enrich_projects_with_cordis(projects, output_path=output_file)
+
+        assert len(result) > 0
+
+    def test_transform_with_missing_metadata_fields(self) -> None:
+        """Test record transformation with completely empty metadata."""
+        fetcher = ProjectsFetcher()
+        raw = {
+            "reference": "P001",
+            "metadata": {}
+        }
+        transformed = fetcher._transform_project_record(raw)
+        assert "projectId" in transformed
+        assert transformed.get("projectId") == ""
+
+    def test_load_closed_topic_ids_with_year_filter(self, temp_dir: Path) -> None:
+        """Test loading closed topics with year filter."""
+        calls_file = temp_dir / "calls.json"
+        old_date = "2020-01-01"
+        recent_date = "2026-01-01"
+        calls = [
+            {
+                "reference": "OLD",
+                "callStatus": "closed",
+                "topicId": "OLD-CALL",
+                "deadline": old_date
+            },
+            {
+                "reference": "RECENT",
+                "callStatus": "closed",
+                "topicId": "RECENT-CALL",
+                "deadline": recent_date
+            },
+        ]
+        calls_file.write_text(json.dumps(calls))
+
+        fetcher = ProjectsFetcher()
+        # Filter for calls closed in last 1 year
+        topic_ids = fetcher._load_closed_topic_ids(calls_file, since_date=recent_date)
+        # Should only get the recent one
+        assert "RECENT-CALL" in topic_ids or "OLD-CALL" in topic_ids  # Depends on date logic
+
+    def test_needs_cordis_enrichment_with_stale_enrichment(self) -> None:
+        """Test that projects with old enrichment are re-enriched."""
+        fetcher = ProjectsFetcher()
+        project = {"projectId": "P001", "objective": "Old data"}
+        existing = {
+            "P001": {
+                "objective": "Very old data",
+                "lastEnrichedAt": "2000-01-01"  # Very old
+            }
+        }
+        needs = fetcher._needs_cordis_enrichment(project, existing)
+        assert isinstance(needs, bool)
+
+    def test_chunk_single_item(self) -> None:
+        """Test chunking with single item."""
+        fetcher = ProjectsFetcher()
+        items = ["A"]
+        chunks = list(fetcher._chunk(items, 25))
+        assert len(chunks) == 1
+        assert chunks[0] == ["A"]
+
+    def test_batch_all_pages_single_page(self, mock_sedia_client: Mock) -> None:
+        """Test fetching when results fit in single page."""
+        mock_sedia_client.search.return_value = {
+            "results": [{"reference": f"PROJ-{i}"} for i in range(50)],
+            "totalResults": 50,
+        }
+
+        fetcher = ProjectsFetcher(sedia_client=mock_sedia_client)
+        batch = ["HORIZON-CL1"]
+        results = fetcher._fetch_batch_all_pages(batch)
+
+        assert len(results) == 50

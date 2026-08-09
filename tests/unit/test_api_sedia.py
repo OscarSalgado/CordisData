@@ -49,3 +49,35 @@ class TestSediaClient:
         result = client.search(query={"test": "query"}, sort={"field": "date"}, retries=1)
 
         assert result["results"] == []
+
+    @patch("cordis_data.api.sedia.time.sleep")
+    @patch("cordis_data.api.sedia.urllib.request.urlopen")
+    def test_search_retry_with_sleep(
+        self, mock_urlopen: MagicMock, mock_sleep: MagicMock
+    ) -> None:
+        """Test search retries and sleeps on error."""
+        response_data = {
+            "results": [{"id": "1"}],
+            "totalResults": 1,
+        }
+        mock_response = MagicMock()
+        mock_response.read.return_value = json.dumps(response_data).encode()
+        mock_response.__enter__.return_value = mock_response
+
+        # First attempt fails, second succeeds
+        mock_urlopen.side_effect = [
+            Exception("First attempt fails"),
+            mock_response,
+        ]
+
+        client = SediaClient(timeout=1)
+        result = client.search(
+            query={"test": "query"},
+            sort={"field": "date"},
+            retries=2
+        )
+
+        # Should succeed on second attempt
+        assert result["totalResults"] == 1
+        # Verify sleep was called during retry
+        mock_sleep.assert_called()

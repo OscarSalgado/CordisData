@@ -31,6 +31,24 @@ class TestNormalizeDate:
         """Test normalizing None."""
         assert normalize_date(None) == ""
 
+    def test_normalize_short_month_format(self) -> None:
+        """Test normalizing date with short month abbreviation."""
+        assert normalize_date("09 Aug 2024") == "2024-08-09"
+
+    def test_normalize_american_format(self) -> None:
+        """Test normalizing American date format."""
+        assert normalize_date("August 09, 2024") == "2024-08-09"
+
+    def test_normalize_invalid_format(self) -> None:
+        """Test normalizing completely invalid format."""
+        # Should return the original string if no format matches
+        result = normalize_date("this-is-not-a-date")
+        assert result == "this-is-not-a-date"
+
+    def test_normalize_with_whitespace(self) -> None:
+        """Test normalizing date with extra whitespace."""
+        assert normalize_date("  09 August 2024  ") == "2024-08-09"
+
 class TestParseActionType:
     """Tests for parse_action_type function."""
 
@@ -49,6 +67,22 @@ class TestParseActionType:
     def test_parse_empty(self) -> None:
         """Test parsing empty string."""
         assert parse_action_type("") == ""
+
+    def test_parse_ppi(self) -> None:
+        """Test parsing PPI action type."""
+        assert parse_action_type("Pre-Commercial Procurement") == "PPI"
+
+    def test_parse_prize(self) -> None:
+        """Test parsing Prize action type."""
+        assert parse_action_type("Prize") == "Prize"
+
+    def test_parse_cofund(self) -> None:
+        """Test parsing CoFund action type."""
+        assert parse_action_type("CoFund") == "CoFund"
+
+    def test_parse_msca_se(self) -> None:
+        """Test parsing MSCA-SE action type."""
+        assert parse_action_type("MSCA-SE") == "MSCA-SE"
 
 class TestMergeCalls:
     """Tests for merge_calls function."""

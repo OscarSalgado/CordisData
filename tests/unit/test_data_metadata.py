@@ -54,3 +54,23 @@ class TestMetadata:
         metadata = {"calls_fetched_at": None}
         updated = update_timestamp(metadata, "calls_fetched_at")
         assert updated["calls_fetched_at"] == datetime.date.today().isoformat()
+
+    def test_is_stale_invalid_date_format(self) -> None:
+        """Test stale check with invalid date format."""
+        # Invalid ISO format should return True (treat as stale)
+        assert is_stale("not-a-valid-date", 90) is True
+
+    def test_is_stale_with_none_value(self) -> None:
+        """Test stale check with None timestamp."""
+        assert is_stale(None, 90) is True
+
+    def test_is_stale_boundary(self) -> None:
+        """Test stale check at exact boundary."""
+        # Exactly 90 days old should be stale
+        old_date = (datetime.date.today() - datetime.timedelta(days=90)).isoformat()
+        assert is_stale(old_date, 90) is True
+
+    def test_is_stale_one_day_fresh(self) -> None:
+        """Test stale check for 1 day old with 90 day TTL."""
+        old_date = (datetime.date.today() - datetime.timedelta(days=1)).isoformat()
+        assert is_stale(old_date, 90) is False
