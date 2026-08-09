@@ -9,6 +9,9 @@ on:
 jobs:
   fetch:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
     steps:
       - uses: actions/checkout@v4
 
@@ -22,17 +25,41 @@ jobs:
           python -m pip install --upgrade pip
           pip install -e .
 
+      - name: Create data directory
+        run: mkdir -p data
+
       - name: Fetch projects
         run: cordis-data fetch-projects
+        continue-on-error: true
+
+      - name: Check if data exists
+        id: check
+        run: |
+          if [ -f data/projects.json ]; then
+            echo "has_data=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_data=false" >> $GITHUB_OUTPUT
+          fi
 
       - name: Commit and push changes
+        if: steps.check.outputs.has_data == 'true'
         run: |
-          git config user.name "GitHub Actions"
-          git config user.email "actions@github.com"
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
           git add data/projects.json data/.metadata.json
-          if git diff --cached --quiet; then
-            echo "No changes to commit"
-          else
-            git commit -m "Update projects data"
+          if ! git diff --cached --quiet; then
+            git commit -m "chore(data): update funded projects data with CORDIS enrichment [$(date -u +'%Y-%m-%d %H:%M:%S UTC')]"
             git push
+          else
+            echo "No changes in projects data"
+          fi
+
+      - name: Workflow summary
+        run: |
+          echo "## Projects Data Fetch" >> $GITHUB_STEP_SUMMARY
+          if [ -f data/projects.json ]; then
+            echo "Status: Success" >> $GITHUB_STEP_SUMMARY
+            echo "Projects file size: $(wc -c < data/projects.json | numfmt --to=iec-i --suffix=B)" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "Status: Failed - projects.json not found" >> $GITHUB_STEP_SUMMARY
           fi

@@ -9,6 +9,9 @@ on:
 jobs:
   fetch:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
     steps:
       - uses: actions/checkout@v4
 
@@ -22,17 +25,41 @@ jobs:
           python -m pip install --upgrade pip
           pip install -e .
 
+      - name: Create data directory
+        run: mkdir -p data
+
       - name: Fetch calls
         run: cordis-data fetch-calls
+        continue-on-error: true
+
+      - name: Check if data exists
+        id: check
+        run: |
+          if [ -f data/calls.json ]; then
+            echo "has_data=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_data=false" >> $GITHUB_OUTPUT
+          fi
 
       - name: Commit and push changes
+        if: steps.check.outputs.has_data == 'true'
         run: |
-          git config user.name "GitHub Actions"
-          git config user.email "actions@github.com"
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
           git add data/calls.json data/.metadata.json
-          if git diff --cached --quiet; then
-            echo "No changes to commit"
-          else
-            git commit -m "Update calls data"
+          if ! git diff --cached --quiet; then
+            git commit -m "chore(data): update EU funding calls data [$(date -u +'%Y-%m-%d %H:%M:%S UTC')]"
             git push
+          else
+            echo "No changes in calls data"
+          fi
+
+      - name: Workflow summary
+        run: |
+          echo "## Calls Data Fetch" >> $GITHUB_STEP_SUMMARY
+          if [ -f data/calls.json ]; then
+            echo "Status: Success" >> $GITHUB_STEP_SUMMARY
+            echo "Calls file size: $(wc -c < data/calls.json | numfmt --to=iec-i --suffix=B)" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "Status: Failed - calls.json not found" >> $GITHUB_STEP_SUMMARY
           fi
