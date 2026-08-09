@@ -1,12 +1,11 @@
 """Fetch and track committee documents with change detection."""
 
 import json
-import math
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, Optional
 
-from cordis_data.data.changelog import ChangeEvent
+from cordis_data.data.changelog import ChangeEvent, generate_changelog
 from cordis_data.data.committees.client import CommitteeDocumentsClient
 from cordis_data.data.metadata import update_timestamp
 
@@ -181,3 +180,26 @@ class CommitteeDocumentsFetcher:
                     )
 
         return new_docs, events
+
+    def save_changelog(self, events: list[ChangeEvent], changelog_dir: Path) -> None:
+        """Save changelog with all events."""
+        changelog_dir.mkdir(parents=True, exist_ok=True)
+
+        today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+        changelog_file = changelog_dir / f"{today}.json"
+
+        new_count = sum(1 for e in events if e.event_type == "NEW")
+        changed_count = sum(1 for e in events if e.event_type in ["NEW", "UPDATED"])
+
+        changelog = {
+            "fetch_date": today,
+            "fetch_timestamp": datetime.now(timezone.utc).isoformat() + "Z",
+            "summary": {
+                "new": new_count,
+                "updated": changed_count - new_count,
+                "total_events": len(events),
+            },
+            "events": [e.to_dict() for e in events],
+        }
+
+        changelog_file.write_text(json.dumps(changelog, indent=2, ensure_ascii=False))
