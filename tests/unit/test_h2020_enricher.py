@@ -1,7 +1,6 @@
 """Tests for H2020Enricher."""
 
-import json
-from unittest.mock import Mock, patch
+from unittest.mock import Mock
 
 from cordis_data.data.h2020 import H2020Enricher
 
