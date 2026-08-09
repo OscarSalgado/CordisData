@@ -1,6 +1,6 @@
 """Change detection and changelog generation for call updates."""
 
-from dataclasses import dataclass, field, asdict
+from dataclasses import dataclass, field as dataclass_field, asdict
 from datetime import datetime
 from typing import Any, Optional
 
@@ -31,7 +31,7 @@ class ChangeEvent:
     new_value: Optional[Any] = None
     snapshot: Optional[dict[str, Any]] = None
     snapshot_after: Optional[dict[str, Any]] = None
-    changed_fields: list[str] = field(default_factory=list)
+    changed_fields: list[str] = dataclass_field(default_factory=list)
     changes: Optional[dict[str, dict[str, Any]]] = None
     reason: Optional[str] = None
     days_overdue: Optional[int] = None
