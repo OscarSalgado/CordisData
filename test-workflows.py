@@ -162,11 +162,11 @@ class WorkflowTester:
 
     def test_quality(self) -> None:
         """Test code quality checks."""
-        print(Colors.blue("\n[TEST 3] Code Quality Checks"))
+        print(Colors.blue("\n[TEST 3] Code Quality Checks\n"))
 
         # Tests
         print("  Running pytest...")
-        exit_code, _ = self.run_cmd(
+        exit_code = subprocess.run(
             [
                 "python",
                 "-m",
@@ -174,33 +174,36 @@ class WorkflowTester:
                 "--cov=src/cordis_data",
                 "--cov-report=term-missing",
                 "-q",
-            ]
-        )
+            ],
+            cwd=self.project_root,
+        ).returncode
         self.tests_pass = exit_code == 0
         status = Colors.green("PASS") if self.tests_pass else Colors.yellow(
             "FAIL"
         )
-        print(f"    Tests: {status}")
+        print(f"  Tests: {status}\n")
 
         # Flake8
         print("  Running flake8...")
-        exit_code, _ = self.run_cmd(
-            ["python", "-m", "flake8", "src/", "tests/"]
-        )
+        exit_code = subprocess.run(
+            ["python", "-m", "flake8", "src/", "tests/"],
+            cwd=self.project_root,
+        ).returncode
         self.flake8_pass = exit_code == 0
         status = Colors.green("PASS") if self.flake8_pass else Colors.yellow(
             "FAIL"
         )
-        print(f"    Flake8: {status}")
+        print(f"  Flake8: {status}\n")
 
         # Pyright
         print("  Running pyright...")
-        exit_code, _ = self.run_cmd(
-            ["python", "-m", "pyright", "src/cordis_data"]
-        )
+        exit_code = subprocess.run(
+            ["python", "-m", "pyright", "src/cordis_data"],
+            cwd=self.project_root,
+        ).returncode
         # Pyright exits with warnings, so we accept non-zero exit
         self.pyright_pass = True
-        print(f"    Pyright: {Colors.yellow('PASS (with warnings)')}")
+        print(f"  Pyright: {Colors.yellow('PASS (with warnings)')}\n")
 
     def test_logs(self) -> None:
         """Test log files exist."""
