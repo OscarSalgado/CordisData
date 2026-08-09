@@ -298,6 +298,39 @@ class TestCallsFetcher:
         assert transformed["programme"] == ""
         assert transformed["programmeId"] == ""
 
+    def test_main_generates_changelog(
+        self, mock_sedia_client: Mock, temp_dir: Path
+    ) -> None:
+        """Test main() writes a valid changelog JSON file alongside calls.json."""
+        output_file = temp_dir / "calls.json"
+
+        new_call = {
+            "reference": "NEW-001",
+            "metadata": {
+                "identifier": ["HORIZON-NEW"],
+                "title": ["New Call"],
+                "status": ["31094502"],
+                "frameworkProgramme": ["43108390"],
+            },
+        }
+        mock_sedia_client.search.return_value = {
+            "results": [new_call],
+            "totalResults": 1,
+        }
+
+        fetcher = CallsFetcher(sedia_client=mock_sedia_client)
+        fetcher.main(output_path=output_file, force=True)
+
+        import datetime
+
+        changelog_file = output_file.parent / "changelog" / f"{datetime.date.today().isoformat()}.json"
+        assert changelog_file.exists()
+
+        changelog = json.loads(changelog_file.read_text())
+        assert "events" in changelog
+        assert "summary" in changelog
+        assert changelog["summary"]["new"] == 1
+
     def test_build_query_includes_types(self) -> None:
         """Test query builder includes correct types."""
         fetcher = CallsFetcher()

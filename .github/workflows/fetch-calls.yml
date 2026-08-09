@@ -72,6 +72,17 @@ jobs:
             echo "metadata.json not found" | tee -a logs/fetch-calls.log
           fi
 
+          changelog_file="data/changelog/$(date -u +'%Y-%m-%d').json"
+          if [ -f "$changelog_file" ]; then
+            echo "changelog exists: $changelog_file" | tee -a logs/fetch-calls.log
+            summary=$(python -c "import json; s=json.load(open('$changelog_file'))['summary']; print(f\"{s['new']} new, {s['changed']} changed, {s['auto_closed']} auto-closed\")" 2>/dev/null || echo "unknown")
+            echo "  Summary: $summary" | tee -a logs/fetch-calls.log
+            echo "changelog_summary=$summary" >> $GITHUB_OUTPUT
+          else
+            echo "changelog not found" | tee -a logs/fetch-calls.log
+            echo "changelog_summary=" >> $GITHUB_OUTPUT
+          fi
+
       - name: Commit and push changes
         id: commit
         if: steps.validate.outputs.has_data == 'true'
@@ -79,11 +90,16 @@ jobs:
           echo "=== Git Operations ===" | tee -a logs/fetch-calls.log
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data/calls.json data/.metadata.json
+          git add data/calls.json data/.metadata.json data/changelog/*.json
 
           if ! git diff --cached --quiet; then
-            git commit -m "chore(data): update EU funding calls data [$(date -u +'%Y-%m-%d %H:%M:%S UTC')]" \
-              2>&1 | tee -a logs/fetch-calls.log
+            summary="${{ steps.validate.outputs.changelog_summary }}"
+            if [ -n "$summary" ]; then
+              message="chore(data): fetch calls: $summary [$(date -u +'%Y-%m-%d %H:%M:%S UTC')]"
+            else
+              message="chore(data): update EU funding calls data [$(date -u +'%Y-%m-%d %H:%M:%S UTC')]"
+            fi
+            git commit -m "$message" 2>&1 | tee -a logs/fetch-calls.log
             git push 2>&1 | tee -a logs/fetch-calls.log
             echo "Commit and push successful" | tee -a logs/fetch-calls.log
             echo "commit_status=pushed" >> $GITHUB_OUTPUT

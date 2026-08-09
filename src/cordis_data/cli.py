@@ -40,6 +40,10 @@ def fetch_calls(full_history: bool, force: bool, output: str | None) -> None:
     existing data. Use --full-history to fetch complete dataset and replace.
     Use --force to skip freshness check and fetch unconditionally.
 
+    Also writes a daily changelog to data/changelog/YYYY-MM-DD.json recording
+    NEW/STATUS_CHANGED/FIELD_CHANGED/METADATA_UPDATED events, and prunes
+    changelog files older than 90 days.
+
     Args:
         full_history: If True, fetch complete dataset (no date limit)
         force: If True, skip freshness check and always fetch

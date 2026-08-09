@@ -8,6 +8,7 @@ from pathlib import Path
 from typing import Any, Optional, cast
 
 from cordis_data.api.sedia import SediaClient
+from cordis_data.data.archival import RETENTION_DAYS, cleanup_old_changelogs
 from cordis_data.data.changelog import generate_changelog
 from cordis_data.config import (
     DEFAULT_WINDOW_DAYS,
@@ -341,7 +342,12 @@ class CallsFetcher:
             json.dump(changelog, f, separators=(",", ":"), ensure_ascii=False)
         print(f"\nChangelog: {changelog['summary']['new']} new, "
               f"{changelog['summary']['changed']} changed "
-              f"→ data/changelog/{today_str}.json")
+              f"-> data/changelog/{today_str}.json")
+
+        deleted_changelogs = cleanup_old_changelogs(changelog_path.parent, datetime.date.today())
+        if deleted_changelogs:
+            print(f"\nArchival: deleted {len(deleted_changelogs)} changelog(s) older than "
+                  f"{RETENTION_DAYS} days: {', '.join(deleted_changelogs)}")
 
         output_path.parent.mkdir(parents=True, exist_ok=True)
         with open(output_path, "w", encoding="utf-8") as f:
