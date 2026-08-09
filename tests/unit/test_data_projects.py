@@ -2,7 +2,7 @@
 
 import json
 from pathlib import Path
-from unittest.mock import Mock
+from unittest.mock import Mock, patch
 
 import pytest
 
@@ -384,9 +384,17 @@ class TestProjectsFetcher:
             "totalResults": 0,
         }
 
+        fake_module_file = temp_dir / "src" / "cordis_data" / "data" / "projects.py"
+        fake_module_file.parent.mkdir(parents=True)
+
         fetcher = ProjectsFetcher(sedia_client=mock_sedia_client)
         # Call with None to trigger default path logic
-        fetcher.main(output_path=None, calls_path=calls_file)
+        with patch("cordis_data.data.projects.__file__", str(fake_module_file)):
+            fetcher.main(output_path=None, calls_path=calls_file)
+
+        # No projects fetched, so nothing is written; the important check is
+        # that the default path resolution didn't touch the real repo.
+        assert not Path("data/projects.json").exists()
 
     def test_transform_project_with_all_fields(self) -> None:
         """Test project transformation with all fields present."""

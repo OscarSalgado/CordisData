@@ -237,7 +237,7 @@ class CallsFetcher:
             force: If True, skip freshness check and fetch unconditionally
         """
         if output_path is None:
-            project_root = Path(__file__).resolve().parent.parent.parent
+            project_root = Path(__file__).resolve().parent.parent.parent.parent
             output_path = project_root / "data" / "calls.json"
         else:
             output_path = Path(output_path)

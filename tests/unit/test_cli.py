@@ -31,8 +31,10 @@ class TestCLI:
         """Test fetch-calls command execution."""
         runner = CliRunner()
         with runner.isolated_filesystem():
-            result = runner.invoke(main, ["fetch-calls", "--force"])
-            assert result.exit_code in (0, 1)
+            with patch("cordis_data.cli.CallsFetcher.main") as mock_main:
+                result = runner.invoke(main, ["fetch-calls", "--force"])
+                assert result.exit_code == 0
+                mock_main.assert_called()
 
     def test_fetch_calls_with_force_flag(self) -> None:
         """Test fetch-calls with --force flag."""

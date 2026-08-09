@@ -323,13 +323,13 @@ class ProjectsFetcher:
                 (default: None = all closed topics)
         """
         if output_path is None:
-            project_root = Path(__file__).resolve().parent.parent.parent
+            project_root = Path(__file__).resolve().parent.parent.parent.parent
             output_path = project_root / "data" / "projects.json"
         else:
             output_path = Path(output_path)
 
         if calls_path is None:
-            project_root = Path(__file__).resolve().parent.parent.parent
+            project_root = Path(__file__).resolve().parent.parent.parent.parent
             calls_path = project_root / "data" / "calls.json"
         else:
             calls_path = Path(calls_path)

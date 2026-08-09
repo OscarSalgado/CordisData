@@ -173,17 +173,22 @@ class TestCallsFetcher:
         assert len(data) == 2
 
     def test_main_default_output_path(
-        self, mock_sedia_client: Mock
+        self, mock_sedia_client: Mock, temp_dir: Path
     ) -> None:
-        """Test main() uses default output path."""
+        """Test main() resolves the default output path to <repo_root>/data/calls.json."""
         mock_sedia_client.search.return_value = {
             "results": [],
             "totalResults": 0,
         }
 
+        fake_module_file = temp_dir / "src" / "cordis_data" / "data" / "calls.py"
+        fake_module_file.parent.mkdir(parents=True)
+
         fetcher = CallsFetcher(sedia_client=mock_sedia_client)
-        with patch("cordis_data.data.calls.Path.open", create=True):
+        with patch("cordis_data.data.calls.__file__", str(fake_module_file)):
             fetcher.main(force=True)
+
+        assert (temp_dir / "data" / "calls.json").exists()
 
     def test_fetch_page(self, mock_sedia_client: Mock) -> None:
         """Test single page fetch."""
