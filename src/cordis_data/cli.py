@@ -5,6 +5,7 @@ from pathlib import Path
 
 import click
 
+from cordis_data.cli.explorer import explorer_cli
 from cordis_data.data.calls import CallsFetcher
 from cordis_data.data.metadata import load_metadata
 from cordis_data.data.projects import ProjectsFetcher
@@ -140,6 +141,10 @@ def status(data_dir: str | None) -> None:
     except Exception as e:
         click.echo(f"Error reading status: {e}", err=True)
         sys.exit(1)
+
+
+# Add explorer commands as subgroup
+main.add_command(explorer_cli, name="explore")
 
 
 if __name__ == "__main__":  # pragma: no cover
