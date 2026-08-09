@@ -8,6 +8,7 @@ from pathlib import Path
 from typing import Any, Optional, cast
 
 from cordis_data.api.sedia import SediaClient
+from cordis_data.data.changelog import generate_changelog
 from cordis_data.config import (
     DEFAULT_WINDOW_DAYS,
     PROGRAMME_NAMES,
@@ -330,6 +331,17 @@ class CallsFetcher:
         status_dist = get_status_distribution(merged_calls)
         for s, cnt in status_dist.items():
             print(f"  {s}: {cnt}")
+
+        # Generate changelog
+        changelog = generate_changelog(existing_calls, merged_calls, marked_closed)
+        today_str = datetime.date.today().isoformat()
+        changelog_path = output_path.parent / "changelog" / f"{today_str}.json"
+        changelog_path.parent.mkdir(parents=True, exist_ok=True)
+        with open(changelog_path, "w", encoding="utf-8") as f:
+            json.dump(changelog, f, separators=(",", ":"), ensure_ascii=False)
+        print(f"\nChangelog: {changelog['summary']['new']} new, "
+              f"{changelog['summary']['changed']} changed "
+              f"→ data/changelog/{today_str}.json")
 
         output_path.parent.mkdir(parents=True, exist_ok=True)
         with open(output_path, "w", encoding="utf-8") as f:
