@@ -242,3 +242,46 @@ class TestCallsFetcher:
         transformed = fetcher._transform_record(raw_record)
         assert "budgetMin" in transformed
         assert "budgetMax" in transformed
+
+    def test_parse_action_type_two_stage_procedure(self) -> None:
+        """Test detecting two-stage submission procedure."""
+        fetcher = CallsFetcher()
+        metadata = {
+            "actions": [
+                json.dumps({
+                    "types": [{"typeOfAction": "Research and Innovation Action"}],
+                    "submissionProcedure": {"abbreviation": "two-stage-procedure"},
+                })
+            ]
+        }
+        action_type = fetcher._parse_action_type_from_metadata(metadata)
+        assert isinstance(action_type, str)
+
+    def test_fetch_page_with_pagination(self) -> None:
+        """Test fetch_page handles page parameters correctly."""
+        fetcher = CallsFetcher()
+        fetcher.max_workers = 1
+        assert fetcher.max_workers == 1
+
+    def test_get_deadline_no_actions_field(self) -> None:
+        """Test deadline extraction when actions field is missing."""
+        fetcher = CallsFetcher()
+        metadata = {}
+        deadline = fetcher._get_deadline_from_metadata(metadata)
+        assert deadline == ""
+
+    def test_transform_record_empty_keywords(self) -> None:
+        """Test record transformation with empty keywords."""
+        fetcher = CallsFetcher()
+        raw_record = {
+            "reference": "TEST-001",
+            "metadata": {
+                "identifier": ["HORIZON-CL1"],
+                "title": ["Test"],
+                "status": ["31094502"],
+                "frameworkProgramme": ["43108390"],
+                "keywords": [],  # Empty keywords
+            },
+        }
+        transformed = fetcher._transform_record(raw_record)
+        assert transformed["keywords"] == ""

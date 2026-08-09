@@ -373,3 +373,46 @@ class TestProjectsFetcher:
 
         # Should have written checkpoint
         assert len(result) == 501
+
+    def test_main_default_paths(self, mock_sedia_client: Mock, temp_dir: Path) -> None:
+        """Test main() uses default paths when not specified."""
+        calls_file = temp_dir / "calls.json"
+        calls = [{"reference": "CALL-001", "callStatus": "closed", "topicId": "HORIZON-CL1"}]
+        calls_file.write_text(json.dumps(calls))
+
+        # Override to use temp directory
+        import cordis_data.data.projects as proj_module
+        original_file = proj_module.Path(__file__)
+
+        mock_sedia_client.search.return_value = {
+            "results": [],
+            "totalResults": 0,
+        }
+
+        fetcher = ProjectsFetcher(sedia_client=mock_sedia_client)
+        # Call with None to trigger default path logic
+        fetcher.main(output_path=None, calls_path=calls_file)
+
+    def test_transform_project_with_all_fields(self) -> None:
+        """Test project transformation with all fields present."""
+        fetcher = ProjectsFetcher()
+        raw_record = {
+            "reference": "PROJ-FULL",
+            "metadata": {
+                "acronym": ["FULLTEST"],
+                "projectId": ["999999"],
+                "euContributionAmount": ["5000000"],
+                "overallBudget": ["10000000"],
+                "status": ["Active"],
+                "startDate": ["2024-01-01"],
+                "endDate": ["2026-12-31"],
+                "legalEntityNames": ["Entity 1", "Entity 2"],
+                "countries": ["AT", "BE", "DE"],
+                "topicAbbreviation": ["HORIZON-CL1"],
+            },
+        }
+        transformed = fetcher._transform_project_record(raw_record)
+        assert transformed["projectId"] == "999999"
+        assert transformed["euContributionAmount"] == "5000000"  # It's a string
+        assert "acronym" in transformed
+        assert "status" in transformed

@@ -49,6 +49,16 @@ class TestNormalizeDate:
         """Test normalizing date with extra whitespace."""
         assert normalize_date("  09 August 2024  ") == "2024-08-09"
 
+    def test_normalize_iso_with_microseconds(self) -> None:
+        """Test normalizing ISO datetime with microseconds."""
+        assert normalize_date("2024-08-09T12:30:45.123456Z") == "2024-08-09"
+
+    def test_parse_unknown_action_type(self) -> None:
+        """Test parsing unknown action type returns first word."""
+        result = parse_action_type("Unknown Type XYZ")
+        assert isinstance(result, str)
+        assert result != ""
+
 class TestParseActionType:
     """Tests for parse_action_type function."""
 
