@@ -15,8 +15,8 @@ class DataExplorer:
         self.data_dir = Path(data_dir)
         self.calls: list[dict[str, Any]] = []
         self.projects: list[dict[str, Any]] = []
-        self.calls_by_id = {}
-        self.projects_by_id = {}
+        self.calls_by_id: dict[str, dict[str, Any]] = {}
+        self.projects_by_id: dict[str, dict[str, Any]] = {}
         self.calls_by_cluster: dict[str, list[dict[str, Any]]] = {}
 
     def load(self) -> bool:

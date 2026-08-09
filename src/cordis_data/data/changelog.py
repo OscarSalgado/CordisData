@@ -1,7 +1,7 @@
 """Change detection and changelog generation for call updates."""
 
 from dataclasses import dataclass, field as dataclass_field, asdict
-from datetime import datetime
+from datetime import UTC, datetime
 from typing import Any, Optional
 
 RELEVANT_FIELDS = {
@@ -84,7 +84,7 @@ def detect_changes(
                     reference=merged_call.get("reference", ""),
                     topicId=merged_call.get("topicId", ""),
                     event_type="NEW",
-                    detected_at=datetime.utcnow().isoformat() + "Z",
+                    detected_at=datetime.now(UTC).isoformat() + "Z",
                     snapshot=_get_snapshot_subset(merged_call),
                 )
             )
@@ -113,7 +113,7 @@ def detect_changes(
                         reference=merged_call.get("reference", ""),
                         topicId=merged_call.get("topicId", ""),
                         event_type="STATUS_CHANGED",
-                        detected_at=datetime.utcnow().isoformat() + "Z",
+                        detected_at=datetime.now(UTC).isoformat() + "Z",
                         field="callStatus",
                         old_value=existing_call.get("callStatus"),
                         new_value=merged_call.get("callStatus"),
@@ -128,7 +128,7 @@ def detect_changes(
                         reference=merged_call.get("reference", ""),
                         topicId=merged_call.get("topicId", ""),
                         event_type="FIELD_CHANGED",
-                        detected_at=datetime.utcnow().isoformat() + "Z",
+                        detected_at=datetime.now(UTC).isoformat() + "Z",
                         field=field_name,
                         old_value=existing_call.get(field_name),
                         new_value=merged_call.get(field_name),
@@ -142,7 +142,7 @@ def detect_changes(
                         reference=merged_call.get("reference", ""),
                         topicId=merged_call.get("topicId", ""),
                         event_type="METADATA_UPDATED",
-                        detected_at=datetime.utcnow().isoformat() + "Z",
+                        detected_at=datetime.now(UTC).isoformat() + "Z",
                         changed_fields=changed_fields,
                         changes=changes,
                         snapshot_after=_get_snapshot_subset(merged_call),
@@ -174,8 +174,8 @@ def generate_changelog(
     changed_count = sum(1 for e in events if e.event_type != "NEW")
 
     return {
-        "fetch_date": datetime.utcnow().date().isoformat(),
-        "fetch_timestamp": datetime.utcnow().isoformat() + "Z",
+        "fetch_date": datetime.now(UTC).date().isoformat(),
+        "fetch_timestamp": datetime.now(UTC).isoformat() + "Z",
         "total_calls": len(merged_calls),
         "summary": {
             "total_calls": len(merged_calls),

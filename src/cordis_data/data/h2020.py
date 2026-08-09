@@ -184,7 +184,7 @@ class H2020Enricher:
             return None
 
         best_match = None
-        best_ratio = 0
+        best_ratio = 0.0
         best_overlap = 0
 
         for h2020_proj in self.h2020_index.values():
