@@ -74,7 +74,7 @@ class CordisClient:
                         file=sys.stderr,
                     )
                     time.sleep(wait_seconds)
-            except Exception as e:
+            except Exception:
                 if attempt < retries - 1:
                     wait_seconds = self._get_backoff_seconds(0, attempt)
                     print(

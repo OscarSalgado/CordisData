@@ -12,6 +12,7 @@ from cordis_data.data.metadata import (
     update_timestamp,
 )
 
+
 class TestMetadata:
     """Tests for metadata functions."""
 

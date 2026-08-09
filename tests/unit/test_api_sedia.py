@@ -5,6 +5,7 @@ from unittest.mock import MagicMock, patch
 
 from cordis_data.api.sedia import SediaClient
 
+
 class TestSediaClient:
     """Tests for SEDIA API client."""
 

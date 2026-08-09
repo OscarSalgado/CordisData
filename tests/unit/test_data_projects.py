@@ -2,8 +2,7 @@
 
 import json
 from pathlib import Path
-from typing import Any
-from unittest.mock import MagicMock, Mock
+from unittest.mock import Mock
 
 import pytest
 
@@ -379,10 +378,6 @@ class TestProjectsFetcher:
         calls_file = temp_dir / "calls.json"
         calls = [{"reference": "CALL-001", "callStatus": "closed", "topicId": "HORIZON-CL1"}]
         calls_file.write_text(json.dumps(calls))
-
-        # Override to use temp directory
-        import cordis_data.data.projects as proj_module
-        original_file = proj_module.Path(__file__)
 
         mock_sedia_client.search.return_value = {
             "results": [],

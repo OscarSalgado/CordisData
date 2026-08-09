@@ -4,8 +4,6 @@ import json
 from pathlib import Path
 from unittest.mock import Mock
 
-import pytest
-
 from cordis_data.data.calls import CallsFetcher
 from cordis_data.data.projects import ProjectsFetcher
 
@@ -18,7 +16,6 @@ class TestEndToEnd:
     ) -> None:
         """Test full workflow: fetch calls then fetch projects."""
         calls_file = temp_dir / "calls.json"
-        projects_file = temp_dir / "projects.json"
 
         sample_call = {
             "reference": "CALL-001",

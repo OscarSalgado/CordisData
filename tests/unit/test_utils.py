@@ -1,7 +1,5 @@
 """Tests for cordis_data.utils."""
 
-import json
-
 from cordis_data.utils import (
     extract_budget,
     merge_calls,
@@ -10,6 +8,7 @@ from cordis_data.utils import (
     parse_action_type,
     summarize_changes,
 )
+
 
 class TestNormalizeDate:
     """Tests for normalize_date function."""
@@ -67,6 +66,7 @@ class TestNormalizeDate:
         result = extract_budget({}, "HORIZON-CL1-2024")
         assert result == (None, None, None)
 
+
 class TestParseActionType:
     """Tests for parse_action_type function."""
 
@@ -102,6 +102,7 @@ class TestParseActionType:
         """Test parsing MSCA-SE action type."""
         assert parse_action_type("MSCA-SE") == "MSCA-SE"
 
+
 class TestMergeCalls:
     """Tests for merge_calls function."""
 
@@ -122,6 +123,7 @@ class TestMergeCalls:
         assert "REF-1" in result
         assert "REF-2" in result
 
+
 class TestMergeProjects:
     """Tests for merge_projects function."""
 
@@ -131,6 +133,7 @@ class TestMergeProjects:
         new = [{"projectId": "PROJ-1", "acronym": "NEW"}]
         result = merge_projects(existing, new)
         assert result["PROJ-1"]["acronym"] == "NEW"
+
 
 class TestSummarizeChanges:
     """Tests for summarize_changes function."""

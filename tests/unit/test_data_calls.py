@@ -2,10 +2,7 @@
 
 import json
 from pathlib import Path
-from typing import Any
-from unittest.mock import MagicMock, Mock, patch
-
-import pytest
+from unittest.mock import Mock, patch
 
 from cordis_data.data.calls import CallsFetcher
 
@@ -144,7 +141,6 @@ class TestCallsFetcher:
     ) -> None:
         """Test main() merges with existing data."""
         output_file = temp_dir / "calls.json"
-        metadata_file = temp_dir.parent / ".metadata.json"
 
         existing_call = {
             "reference": "EXISTING-001",

@@ -8,6 +8,7 @@ from cordis_data.data.merger import (
     get_status_distribution,
 )
 
+
 class TestMarkExpiredClosed:
     """Tests for marking expired calls as closed."""
 
@@ -55,6 +56,7 @@ class TestMarkExpiredClosed:
         assert calls[0]["callStatus"] == "open"
         assert marked == 0
 
+
 class TestProgrammeDistribution:
     """Tests for programme distribution counting."""
 
@@ -68,6 +70,7 @@ class TestProgrammeDistribution:
         dist = get_programme_distribution(calls)
         assert dist["Horizon Europe"] == 2
         assert dist["Digital Europe"] == 1
+
 
 class TestStatusDistribution:
     """Tests for status distribution counting."""

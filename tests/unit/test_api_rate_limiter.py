@@ -5,6 +5,7 @@ import threading
 
 from cordis_data.api.rate_limiter import TokenBucket
 
+
 class TestTokenBucket:
     """Tests for TokenBucket rate limiter."""
 

@@ -92,7 +92,6 @@ class CallsFetcher:
             Normalized action type code
         """
         action_type = ""
-        stage = "single"
         try:
             actions_str = (m.get("actions") or ["[]"])[0]
             actions = json.loads(actions_str)
@@ -103,7 +102,7 @@ class CallsFetcher:
                     action_type = parse_action_type(types[0].get("typeOfAction", ""))
                 proc = act.get("submissionProcedure", {}).get("abbreviation", "")
                 if "two" in proc.lower():
-                    stage = "two-stage"
+                    pass
         except (json.JSONDecodeError, KeyError, AttributeError, TypeError):
             pass
         return action_type

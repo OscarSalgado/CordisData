@@ -2,6 +2,7 @@
 
 from cordis_data.models import Call, Project
 
+
 class TestCall:
     """Tests for Call model."""
 
@@ -16,6 +17,7 @@ class TestCall:
         call = Call(reference="REF-123", topicId="TOPIC-123", title="Test Call")
         assert call.reference == "REF-123"
         assert call.topicId == "TOPIC-123"
+
 
 class TestProject:
     """Tests for Project model."""

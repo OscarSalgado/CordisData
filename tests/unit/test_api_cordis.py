@@ -8,6 +8,7 @@ import urllib.error
 from cordis_data.api.cordis import CordisClient
 from cordis_data.api.rate_limiter import TokenBucket
 
+
 class TestCordisClient:
     """Tests for CORDIS API client."""
 

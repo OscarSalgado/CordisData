@@ -17,12 +17,6 @@ from cordis_data.config import (
     PROJECTS_BATCH_SIZE,
     SEDIA_API_URL,
 )
-from cordis_data.data.metadata import (
-    is_stale,
-    load_metadata,
-    save_metadata,
-    update_timestamp,
-)
 from cordis_data.utils import merge_projects, normalize_date, summarize_changes
 
 
