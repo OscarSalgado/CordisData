@@ -27,17 +27,19 @@ jobs:
         run: |
           echo "Running flake8..."
           flake8 src/ tests/ --config=.flake8
+          echo "✓ Flake8 passed"
 
       - name: Run pyright
         run: |
           echo "Running pyright..."
-          pyright src/ --outputjson > pyright-report.json || true
-          python -c "import json; report = json.load(open('pyright-report.json')); print(f'Pyright: {report.get(\"summary\", {}).get(\"errorCount\", 0)} errors, {report.get(\"summary\", {}).get(\"warningCount\", 0)} warnings')"
+          pyright src/ --outputjson > pyright-report.json
+          python -c "import json; report = json.load(open('pyright-report.json')); errors = report.get('summary', {}).get('errorCount', 0); print(f'Pyright: {errors} errors, {report.get(\"summary\", {}).get(\"warningCount\", 0)} warnings'); exit(1) if errors > 0 else None"
 
       - name: Run mypy (static type checker)
         run: |
           echo "Running mypy..."
-          mypy src/ --ignore-missing-imports --show-error-codes || true
+          mypy src/ --ignore-missing-imports --show-error-codes
+          echo "✓ Mypy passed"
 
       - name: Upload lint results
         if: always()
