@@ -35,6 +35,7 @@ htmlcov/
 .tox/
 *.cover
 .hypothesis/
+.mypy_cache/
 
 # IDE
 .vscode/
