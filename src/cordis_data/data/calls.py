@@ -9,7 +9,7 @@ from typing import Any, Optional, cast
 
 from cordis_data.api.sedia import SediaClient
 from cordis_data.data.archival import RETENTION_DAYS, cleanup_old_changelogs
-from cordis_data.data.changelog import generate_changelog
+from cordis_data.data.changelog import generate_compact_changelog_calls
 from cordis_data.data.html_clean import clean_html_to_text
 from cordis_data.config import (
     DEFAULT_WINDOW_DAYS,
@@ -401,7 +401,7 @@ class CallsFetcher:
             print(f"  {s}: {cnt}")
 
         # Generate changelog
-        changelog = generate_changelog(existing_calls, merged_by_id, marked_closed)
+        changelog = generate_compact_changelog_calls(existing_calls, merged_by_id, marked_closed)
         today_str = datetime.date.today().isoformat()
         changelog_path = output_path.parent / "changelog" / f"{today_str}.json"
         changelog_path.parent.mkdir(parents=True, exist_ok=True)

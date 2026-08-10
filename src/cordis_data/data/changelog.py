@@ -185,3 +185,130 @@ def generate_changelog(
         },
         "events": [e.to_dict() for e in events],
     }
+
+
+def generate_compact_changelog_calls(
+    existing_calls: list[dict[str, Any]],
+    merged_calls: dict[str, dict[str, Any]],
+    marked_closed: int,
+) -> dict[str, Any]:
+    """Generate compact changelog for calls (no snapshots).
+
+    Args:
+        existing_calls: Previously fetched calls
+        merged_calls: Merged state after fetch
+        marked_closed: Number of calls auto-closed due to deadline
+
+    Returns:
+        Compact changelog dict with minimal event data
+    """
+    events = detect_changes(existing_calls, merged_calls)
+    compact_events = []
+
+    for event in events:
+        if event.event_type == "NEW":
+            compact_events.append({
+                "type": "NEW",
+                "topicId": event.topicId,
+                "name": event.reference,
+            })
+        elif event.event_type == "STATUS_CHANGED":
+            compact_events.append({
+                "type": "STATUS_CHANGED",
+                "topicId": event.topicId,
+                "name": event.reference,
+                "from": event.old_value,
+                "to": event.new_value,
+            })
+        elif event.event_type in ("FIELD_CHANGED", "METADATA_UPDATED"):
+            compact_events.append({
+                "type": "METADATA_UPDATED",
+                "topicId": event.topicId,
+                "name": event.reference,
+                "changed_fields": event.changed_fields,
+            })
+
+    new_count = sum(1 for e in events if e.event_type == "NEW")
+    changed_count = sum(1 for e in events if e.event_type != "NEW")
+
+    return {
+        "date": datetime.now(UTC).date().isoformat(),
+        "summary": {
+            "new": new_count,
+            "changed": changed_count,
+            "auto_closed": marked_closed,
+        },
+        "events": compact_events,
+    }
+
+
+def generate_compact_changelog_documents(
+    existing_docs: list[dict[str, Any]],
+    merged_docs: dict[str, dict[str, Any]],
+) -> dict[str, Any]:
+    """Generate compact changelog for documents (no snapshots).
+
+    Args:
+        existing_docs: Previously fetched documents
+        merged_docs: Merged state after fetch
+
+    Returns:
+        Compact changelog dict with minimal event data
+    """
+    existing_by_ref = {doc.get("documentReference"): doc for doc in existing_docs}
+    compact_events = []
+    new_count = 0
+    changed_count = 0
+
+    for doc_ref, merged_doc in merged_docs.items():
+        if doc_ref not in existing_by_ref:
+            # NEW document
+            compact_events.append({
+                "type": "NEW",
+                "documentReference": doc_ref,
+                "title": merged_doc.get("title", ""),
+                "committee": merged_doc.get("committeeCode", ""),
+            })
+            new_count += 1
+        else:
+            # Check if attachments changed
+            existing_doc = existing_by_ref[doc_ref]
+            existing_attachments = {a["id"]: a for a in existing_doc.get("attachments", [])}
+            merged_attachments = {a["id"]: a for a in merged_doc.get("attachments", [])}
+
+            for att_id, att in merged_attachments.items():
+                if att_id not in existing_attachments:
+                    # NEW attachment
+                    compact_events.append({
+                        "type": "ATTACHMENT_ADDED",
+                        "documentReference": doc_ref,
+                        "title": merged_doc.get("title", ""),
+                        "committee": merged_doc.get("committeeCode", ""),
+                        "attachment_id": att_id,
+                        "filename": att.get("filename", ""),
+                    })
+                    changed_count += 1
+                    break  # Count document as changed once per session
+
+            # Check for metadata changes (non-attachment)
+            if not changed_count or doc_ref not in [e.get("documentReference") for e in compact_events if e["type"] == "ATTACHMENT_ADDED"]:
+                for key in ["title", "updateDate"]:
+                    if existing_doc.get(key) != merged_doc.get(key):
+                        compact_events.append({
+                            "type": "METADATA_UPDATED",
+                            "documentReference": doc_ref,
+                            "title": merged_doc.get("title", ""),
+                            "committee": merged_doc.get("committeeCode", ""),
+                            "changed_fields": [key],
+                        })
+                        changed_count += 1
+                        break
+
+    return {
+        "date": datetime.now(UTC).date().isoformat(),
+        "summary": {
+            "new": new_count,
+            "changed": changed_count,
+        },
+        "events": compact_events,
+    }

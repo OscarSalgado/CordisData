@@ -1,0 +1,39 @@
+{
+  "date": "2026-08-10",
+  "summary": {
+    "new": 5,
+    "changed": 0
+  },
+  "events": [
+    {
+      "type": "NEW",
+      "documentReference": "108662",
+      "title": "Commission Implementing Decision amending Implementing Decision C(2025)8493 on the adoption of the main work programme 2026–2027 within the framework of the Specific Programme implementing Horizon Europe – the Framework Programme for Research and Innovation and on its financing, and amending Implementing Decision C(2025) 2779 on the financing of the Specific Programme implementing Horizon Europe and the adoption of two parts of the main work programme 2025 (Cluster 5 and Cluster 6) – part 6 Civil Security for Society\n\n",
+      "committee": "C70407"
+    },
+    {
+      "type": "NEW",
+      "documentReference": "115416",
+      "title": "Commission Implementing Decision amending Implementing Decision C(2025) 8493 on the adoption of the main work programme 2026–2027 within the framework of the Specific Programme implementing Horizon Europe – the Framework Programme for Research and Innovation and on its financing, and amending Implementing Decision C(2025) 2779 on the financing of the Specific Programme implementing Horizon Europe and the adoption of two parts of the main work programme 2025 (Cluster 5 and Cluster 6) - Part. 7 Digital, Industry and Space",
+      "committee": "C70408"
+    },
+    {
+      "type": "NEW",
+      "documentReference": "115705",
+      "title": "Draft Commission Implementing Decision on the approval of 4 actions following the call for proposals HORIZON-CL4-2025-04 (HADEA)- BATCH 2 - MAIN LIST",
+      "committee": "C70408"
+    },
+    {
+      "type": "NEW",
+      "documentReference": "115733",
+      "title": "Draft Commission Implementing Decision on the award of grants, EIC and European Innovation ecosystems, Calls for proposals: HORIZON-EIC-2025-PATHFINDER CHALLENGES, Call deadline 29 October 2025, Batch 2 (17 proposals)",
+      "committee": "C70411"
+    },
+    {
+      "type": "NEW",
+      "documentReference": "115767",
+      "title": "Draft Commission Implementing Decision on the provision of financial support, EIC and European Innovation ecosystems, call for proposals HORIZON-EIC-2023-ACCELERATOR-01, Batch 16 Grant First (3 proposals)",
+      "committee": "C70411"
+    }
+  ]
+}

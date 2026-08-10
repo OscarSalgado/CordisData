@@ -237,24 +237,40 @@ class CommitteeDocumentsFetcher:
         return new_docs, events
 
     def save_changelog(self, events: list[ChangeEvent], changelog_dir: Path) -> None:
-        """Save changelog with all events."""
+        """Save compact changelog with minimal event data."""
         changelog_dir.mkdir(parents=True, exist_ok=True)
 
         today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
         changelog_file = changelog_dir / f"{today}.json"
 
         new_count = sum(1 for e in events if e.event_type == "NEW")
-        changed_count = sum(1 for e in events if e.event_type in ["NEW", "UPDATED"])
+        changed_count = sum(1 for e in events if e.event_type != "NEW")
+
+        compact_events = []
+        for event in events:
+            if event.event_type == "NEW":
+                compact_events.append({
+                    "type": "NEW",
+                    "documentReference": event.reference,
+                    "title": event.snapshot.get("title", "") if event.snapshot else "",
+                    "committee": event.snapshot.get("committeeCode", "") if event.snapshot else "",
+                })
+            else:
+                # Other event types
+                compact_events.append({
+                    "type": "METADATA_UPDATED",
+                    "documentReference": event.reference,
+                    "title": event.snapshot_after.get("title", "") if event.snapshot_after else "",
+                    "committee": event.snapshot_after.get("committeeCode", "") if event.snapshot_after else "",
+                })
 
         changelog = {
-            "fetch_date": today,
-            "fetch_timestamp": datetime.now(timezone.utc).isoformat() + "Z",
+            "date": today,
             "summary": {
                 "new": new_count,
-                "updated": changed_count - new_count,
-                "total_events": len(events),
+                "changed": changed_count,
             },
-            "events": [e.to_dict() for e in events],
+            "events": compact_events,
         }
 
         changelog_file.write_text(json.dumps(changelog, indent=2, ensure_ascii=False))

@@ -1,6 +1,11 @@
 """Tests for change detection and changelog generation."""
 
-from cordis_data.data.changelog import detect_changes, generate_changelog
+from cordis_data.data.changelog import (
+    detect_changes,
+    generate_changelog,
+    generate_compact_changelog_calls,
+    generate_compact_changelog_documents,
+)
 
 
 class TestDetectChanges:
@@ -153,3 +158,92 @@ class TestGenerateChangelog:
         assert "old_value" not in event
         assert "new_value" not in event
         assert "field" not in event
+
+
+class TestCompactCallsChangelog:
+    """Tests for generate_compact_changelog_calls()."""
+
+    def test_compact_structure(self) -> None:
+        """Compact changelog has date, summary, events (no snapshots)."""
+        merged = {"A": {"reference": "A", "topicId": "T-A", "callStatus": "open"}}
+        changelog = generate_compact_changelog_calls([], merged, marked_closed=0)
+
+        assert set(changelog.keys()) == {"date", "summary", "events"}
+        assert set(changelog["summary"].keys()) == {"new", "changed", "auto_closed"}
+        assert "fetch_timestamp" not in changelog
+        assert "total_calls" not in changelog
+
+    def test_compact_new_event(self) -> None:
+        """NEW event contains type, topicId, name (no snapshot)."""
+        merged = {"A": {"reference": "A", "topicId": "T-A", "callStatus": "open"}}
+        changelog = generate_compact_changelog_calls([], merged, marked_closed=0)
+        event = changelog["events"][0]
+
+        assert event["type"] == "NEW"
+        assert event["topicId"] == "T-A"
+        assert event["name"] == "A"
+        assert "snapshot" not in event
+        assert "detected_at" not in event
+
+    def test_compact_status_changed_event(self) -> None:
+        """STATUS_CHANGED event includes from/to values."""
+        existing = {"reference": "A", "topicId": "T-A", "callStatus": "open"}
+        merged = {"A": {"reference": "A", "topicId": "T-A", "callStatus": "closed"}}
+        changelog = generate_compact_changelog_calls([existing], merged, marked_closed=0)
+        event = changelog["events"][0]
+
+        assert event["type"] == "STATUS_CHANGED"
+        assert event["from"] == "open"
+        assert event["to"] == "closed"
+        assert "snapshot" not in event
+
+    def test_compact_counts(self) -> None:
+        """Summary counts are accurate."""
+        existing = {"reference": "A", "topicId": "T-A", "callStatus": "open"}
+        merged = {
+            "A": {"reference": "A", "topicId": "T-A", "callStatus": "closed"},
+            "B": {"reference": "B", "topicId": "T-B", "callStatus": "open"},
+        }
+        changelog = generate_compact_changelog_calls([existing], merged, marked_closed=1)
+
+        assert changelog["summary"]["new"] == 1
+        assert changelog["summary"]["changed"] == 1
+        assert changelog["summary"]["auto_closed"] == 1
+
+
+class TestCompactDocumentsChangelog:
+    """Tests for generate_compact_changelog_documents()."""
+
+    def test_compact_structure(self) -> None:
+        """Compact changelog has date, summary, events."""
+        merged = {
+            "115416": {
+                "documentReference": "115416",
+                "title": "Test Doc",
+                "committeeCode": "C70407",
+                "attachments": [],
+            }
+        }
+        changelog = generate_compact_changelog_documents([], merged)
+
+        assert set(changelog.keys()) == {"date", "summary", "events"}
+        assert set(changelog["summary"].keys()) == {"new", "changed"}
+
+    def test_compact_new_document(self) -> None:
+        """NEW document event includes documentReference, title, committee."""
+        merged = {
+            "115416": {
+                "documentReference": "115416",
+                "title": "Commission Implementing Decision",
+                "committeeCode": "C70407",
+                "attachments": [],
+            }
+        }
+        changelog = generate_compact_changelog_documents([], merged)
+        event = changelog["events"][0]
+
+        assert event["type"] == "NEW"
+        assert event["documentReference"] == "115416"
+        assert event["title"] == "Commission Implementing Decision"
+        assert event["committee"] == "C70407"
+        assert "snapshot" not in event
