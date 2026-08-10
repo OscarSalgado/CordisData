@@ -117,7 +117,6 @@ def fetch(window: int) -> None:
 def discover(dry_run: bool, clear_log: bool) -> None:
     """Discover new EU committees from the register."""
     import sys
-    import io
 
     try:
         discovery = CommitteeDiscovery()
@@ -157,7 +156,7 @@ def discover(dry_run: bool, clear_log: bool) -> None:
 
     except SystemExit:
         raise
-    except Exception as e:
+    except Exception:
         import traceback
         traceback.print_exc(file=sys.stderr)
         raise click.Abort()

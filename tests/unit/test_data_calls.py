@@ -267,7 +267,7 @@ class TestCallsFetcher:
     def test_get_deadline_no_actions_field(self) -> None:
         """Test deadline extraction when actions field is missing."""
         fetcher = CallsFetcher()
-        metadata = {}
+        metadata: dict[str, str] = {}
         deadline = fetcher._get_deadline_from_metadata(metadata)
         assert deadline == ""
 

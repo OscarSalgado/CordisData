@@ -1,46 +1,15 @@
 {
   "committees": [
     {
-      "code": "C70403",
-      "name": "Programme Committee for the specific programme implementing Horizon Europe - the Framework Programme for Research and Innovation – MSCA",
-      "enabled": true
-    },
-    {
-      "code": "C70405",
-      "name": "Programme Committee for the specific programme implementing Horizon Europe - the Framework Programme for Research and Innovation – Health",
-      "enabled": true
-    },
-    {
-      "code": "C70406",
-      "name": "Programme Committee for the specific programme implementing Horizon Europe - the Framework Programme for Research and Innovation – Culture, Creativity and Inclusive Society",
-      "enabled": true
-    },
-    {
-      "code": "C70407",
-      "name": "Programme Committee for the specific programme implementing Horizon Europe - the Framework Programme for Research and Innovation – Civil Security for Society",
-      "enabled": true
-    },
-    {
       "code": "C70408",
-      "name": "Programme Committee for the specific programme implementing Horizon Europe - the Framework Programme for Research and Innovation – Digital, Industry and Space",
+      "name": "Test",
       "enabled": true
     },
     {
-      "code": "C70411",
-      "name": "Programme Committee for the specific programme implementing Horizon Europe - the Framework Programme for Research and Innovation – The EIC and European Innovation Ecosystems",
-      "enabled": true
-    },
-    {
-      "code": "C70412",
-      "name": "Programme Committee for the specific programme implementing Horizon Europe - the Framework Programme for Research and Innovation – Widening participation and strengthening the ERA",
+      "code": "INVALID",
+      "name": "Test",
       "enabled": true
     }
   ],
-  "alerts": {
-    "enabled": true,
-    "slack_webhook": null,
-    "email": null,
-    "github_issues": false
-  },
-  "last_check": null
+  "alerts": {}
 }

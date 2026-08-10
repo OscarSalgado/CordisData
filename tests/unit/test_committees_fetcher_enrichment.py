@@ -1,7 +1,6 @@
 """Tests for committee document enrichment with download URLs."""
 
 from unittest.mock import Mock
-import pytest
 from cordis_data.data.committees.fetcher import CommitteeDocumentsFetcher
 
 

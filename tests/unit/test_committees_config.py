@@ -11,7 +11,8 @@ class TestCommitteeConfig:
 
     def test_load_creates_default(self, tmp_path: Path) -> None:
         """Test loading creates default config."""
-        with patch.object(CommitteeConfig, "CONFIG_PATH", tmp_path / "config.json"):
+        config_path = tmp_path / "config.json"
+        with patch.object(CommitteeConfig, "_get_current_config_path", return_value=config_path):
             config = CommitteeConfig.load()
             assert config["committees"] == []
             assert config["alerts"]["enabled"] is True

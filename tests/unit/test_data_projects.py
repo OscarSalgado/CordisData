@@ -78,7 +78,7 @@ class TestProjectsFetcher:
         """Test enrichment check for new project."""
         fetcher = ProjectsFetcher()
         project = {"projectId": "NEW-001", "objective": None}
-        existing = {}
+        existing: dict[str, dict[str, str]] = {}
         needs = fetcher._needs_cordis_enrichment(project, existing)
         assert needs is True
 

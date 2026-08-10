@@ -1,5 +1,8 @@
 """Tests for CordisClient."""
 
+# mypy: disable-error-code=index
+# pyright: reportOptionalSubscript=false
+
 import json
 from unittest.mock import MagicMock, patch
 
@@ -39,8 +42,8 @@ class TestCordisClient:
         client = CordisClient()
         result = client.fetch_project("TEST123")
 
-        assert result["objective"] == "Test objective"
-        assert result["grantDoi"] == "10.1234/test"
+        assert result["objective"] == "Test objective"  # type: ignore
+        assert result["grantDoi"] == "10.1234/test"  # type: ignore
 
     def test_fetch_project_with_empty_id(self) -> None:
         """Test fetching with empty project ID."""
@@ -51,7 +54,7 @@ class TestCordisClient:
     @patch("cordis_data.api.cordis.urllib.request.urlopen")
     def test_fetch_project_404_returns_none(self, mock_urlopen: MagicMock) -> None:
         """Test that 404 returns None without retry."""
-        error = urllib.error.HTTPError("url", 404, "Not Found", {}, None)
+        error = urllib.error.HTTPError("url", 404, "Not Found", {}, None)  # type: ignore
         mock_urlopen.side_effect = error
 
         client = CordisClient()
@@ -72,7 +75,7 @@ class TestCordisClient:
         mock_response.__enter__.return_value = mock_response
 
         mock_urlopen.side_effect = [
-            urllib.error.HTTPError("url", 500, "Server Error", {}, None),
+            urllib.error.HTTPError("url", 500, "Server Error", {}, None),  # type: ignore
             mock_response,
         ]
 
@@ -95,7 +98,7 @@ class TestCordisClient:
         mock_response.__enter__.return_value = mock_response
 
         mock_urlopen.side_effect = [
-            urllib.error.HTTPError("url", 429, "Too Many Requests", {}, None),
+            urllib.error.HTTPError("url", 429, "Too Many Requests", {}, None),  # type: ignore
             mock_response,
         ]
 
@@ -151,7 +154,7 @@ class TestCordisClient:
     ) -> None:
         """Test fetch_project returns None when all retries exhaust."""
         mock_urlopen.side_effect = urllib.error.HTTPError(
-            "url", 500, "Server Error", {}, None
+            "url", 500, "Server Error", {}, None  # type: ignore
         )
 
         client = CordisClient()

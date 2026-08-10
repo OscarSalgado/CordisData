@@ -29,7 +29,7 @@ class TestCommitteeDiscoveryE2E:
                 ]
 
                 discovery = CommitteeDiscovery(mock_client)
-                discovery.DISCOVERY_LOG_PATH = log_path
+                discovery.DISCOVERY_LOG_PATH = log_path  # type: ignore
 
                 result = discovery.discover()
 
@@ -59,7 +59,7 @@ class TestCommitteeDiscoveryE2E:
                 ]
 
                 discovery = CommitteeDiscovery(mock_client)
-                discovery.DISCOVERY_LOG_PATH = log_path
+                discovery.DISCOVERY_LOG_PATH = log_path  # type: ignore
 
                 result = discovery.discover()
 
@@ -88,7 +88,7 @@ class TestCommitteeDiscoveryE2E:
                 ]
 
                 discovery = CommitteeDiscovery(mock_client)
-                discovery.DISCOVERY_LOG_PATH = log_path
+                discovery.DISCOVERY_LOG_PATH = log_path  # type: ignore
 
                 # First run - should find new committee
                 result1 = discovery.discover()
@@ -147,7 +147,7 @@ class TestCommitteeDiscoveryE2E:
                 ]
 
                 discovery = CommitteeDiscovery(mock_client)
-                discovery.DISCOVERY_LOG_PATH = log_path
+                discovery.DISCOVERY_LOG_PATH = log_path  # type: ignore
                 discovery.discover()
 
                 # Second discovery run
@@ -179,7 +179,7 @@ class TestCommitteeDiscoveryE2E:
                 ]
 
                 discovery = CommitteeDiscovery(mock_client)
-                discovery.DISCOVERY_LOG_PATH = log_path
+                discovery.DISCOVERY_LOG_PATH = log_path  # type: ignore
 
                 # Run discovery
                 discovery.discover()

@@ -203,7 +203,7 @@ def generate_compact_changelog_calls(
         Compact changelog dict with minimal event data
     """
     events = detect_changes(existing_calls, merged_calls)
-    compact_events = []
+    compact_events: list[dict[str, Any]] = []
 
     for event in events:
         if event.event_type == "NEW":
@@ -256,7 +256,7 @@ def generate_compact_changelog_documents(
         Compact changelog dict with minimal event data
     """
     existing_by_ref = {doc.get("documentReference"): doc for doc in existing_docs}
-    compact_events = []
+    compact_events: list[dict[str, Any]] = []
     new_count = 0
     changed_count = 0
 

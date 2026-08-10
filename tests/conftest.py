@@ -2,6 +2,7 @@
 
 import json
 import tempfile
+from collections.abc import Generator
 from pathlib import Path
 from typing import Any
 from unittest.mock import MagicMock, Mock
@@ -14,7 +15,7 @@ from cordis_data.api.sedia import SediaClient
 
 
 @pytest.fixture
-def temp_dir() -> Path:
+def temp_dir() -> Generator[Path, None, None]:
     """Provide a temporary directory for test data."""
     with tempfile.TemporaryDirectory() as tmpdir:
         yield Path(tmpdir)

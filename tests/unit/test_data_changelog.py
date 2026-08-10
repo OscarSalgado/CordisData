@@ -1,5 +1,8 @@
 """Tests for change detection and changelog generation."""
 
+# mypy: disable-error-code=index
+# pyright: reportOptionalSubscript=false
+
 from cordis_data.data.changelog import (
     detect_changes,
     generate_changelog,

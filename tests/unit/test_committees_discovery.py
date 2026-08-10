@@ -21,7 +21,7 @@ class TestCommitteeDiscovery:
             mock_config_class.load.return_value = mock_config
 
             discovery = CommitteeDiscovery(mock_client)
-            discovery.DISCOVERY_LOG_PATH = tmp_path / "discovery.json"
+            discovery.DISCOVERY_LOG_PATH = tmp_path / "discovery.json"  # type: ignore
             result = discovery.discover()
 
             assert isinstance(result, DiscoveryResult)
@@ -66,7 +66,7 @@ class TestCommitteeDiscovery:
         mock_client = Mock()
 
         discovery = CommitteeDiscovery(mock_client)
-        discovery.DISCOVERY_LOG_PATH = log_path
+        discovery.DISCOVERY_LOG_PATH = log_path  # type: ignore
 
         # Create empty log
         log = discovery._create_empty_log()
@@ -102,7 +102,7 @@ class TestCommitteeDiscovery:
         mock_client = Mock()
 
         discovery = CommitteeDiscovery(mock_client)
-        discovery.DISCOVERY_LOG_PATH = log_path
+        discovery.DISCOVERY_LOG_PATH = log_path  # type: ignore
 
         # Save initial discovery
         discovery._save_discovery_log([
@@ -122,7 +122,7 @@ class TestCommitteeDiscovery:
         mock_client = Mock()
 
         discovery = CommitteeDiscovery(mock_client)
-        discovery.DISCOVERY_LOG_PATH = log_path
+        discovery.DISCOVERY_LOG_PATH = log_path  # type: ignore
 
         # This would need more setup to mock time properly
         # Simplified version just tests the structure exists
@@ -136,7 +136,7 @@ class TestCommitteeDiscovery:
             new_committees=[{"code": "C1", "title": "New"}],
             total_committees=10,
             currently_monitored=5,
-            discovery_log_path=None,
+            discovery_log_path=None,  # type: ignore
         )
         assert result_with_new.has_new() is True
 
@@ -144,6 +144,6 @@ class TestCommitteeDiscovery:
             new_committees=[],
             total_committees=10,
             currently_monitored=10,
-            discovery_log_path=None,
+            discovery_log_path=None,  # type: ignore
         )
         assert result_no_new.has_new() is False

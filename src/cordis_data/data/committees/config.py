@@ -33,7 +33,7 @@ class CommitteeConfig:
     def _get_current_config_path(cls) -> Path:
         """Get config path relative to project root."""
         current = Path(__file__).resolve().parent
-        # Go up to project root (4 levels from this file)
+        # Go up to project root (5 levels from this file)
         project_root = current.parent.parent.parent.parent
         data_path = project_root / "data" / "committees" / "config.json"
         if data_path.exists() or (project_root / "data").exists():

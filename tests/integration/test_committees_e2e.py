@@ -16,7 +16,7 @@ class TestCommitteeMonitoringE2E:
         output_path = tmp_path / "documents.json"
 
         # Step 1: Configure committees
-        with patch.object(CommitteeConfig, "CONFIG_PATH", config_path):
+        with patch.object(CommitteeConfig, "_get_current_config_path", return_value=config_path):
             CommitteeConfig.add_committee("C70408", "Digital Committee")
             config = CommitteeConfig.load()
             assert len(config["committees"]) == 1

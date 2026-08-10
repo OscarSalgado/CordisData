@@ -47,7 +47,7 @@ class CommitteeDiscovery:
             client: CommitteeDocumentsClient instance
         """
         self.client = client or CommitteeDocumentsClient()
-        # Set discovery log path relative to project root (4 levels up)
+        # Set discovery log path relative to project root (5 levels up)
         current = Path(__file__).resolve().parent
         project_root = current.parent.parent.parent.parent
         data_path = project_root / "data" / "committees" / "discovery.json"
@@ -61,6 +61,11 @@ class CommitteeDiscovery:
     def DISCOVERY_LOG_PATH(self) -> Path:
         """Get discovery log path."""
         return self.discovery_log_path
+
+    @DISCOVERY_LOG_PATH.setter
+    def DISCOVERY_LOG_PATH(self, path: Path) -> None:
+        """Set discovery log path (for testing)."""
+        self.discovery_log_path = path
 
     def discover(self) -> DiscoveryResult:
         """Discover new committees not in local config.
