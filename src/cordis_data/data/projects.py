@@ -4,7 +4,7 @@ import datetime
 import json
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
-from typing import Any, Optional, cast
+from typing import Any, Generator, Optional, TypeVar, cast
 
 from cordis_data.api.cordis import CordisClient
 from cordis_data.api.rate_limiter import TokenBucket
@@ -19,6 +19,8 @@ from cordis_data.config import (
 )
 from cordis_data.data.h2020 import H2020Enricher
 from cordis_data.utils import merge_projects, normalize_date, summarize_changes
+
+T = TypeVar("T")
 
 
 class ProjectsFetcher:
@@ -275,7 +277,7 @@ class ProjectsFetcher:
 
         return len(new_projects), len(merged_projects)
 
-    def _chunk(self, items: list[str], size: int):
+    def _chunk(self, items: list[T], size: int) -> Generator[list[T], None, None]:
         """Yield successive chunks of items.
 
         Args:

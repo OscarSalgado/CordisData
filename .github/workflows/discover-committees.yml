@@ -1,0 +1,85 @@
+name: Discover Committees
+
+on:
+  schedule:
+    - cron: '0 7 * * *'  # Daily at 07:00 UTC
+  workflow_dispatch:
+
+jobs:
+  discover:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -e .
+
+      - name: Discover new committees
+        id: discover
+        run: |
+          cordis-data monitor discover > discovery-output.txt 2>&1
+          exit_code=$?
+          echo "exit_code=$exit_code" >> $GITHUB_OUTPUT
+          cat discovery-output.txt
+          exit $exit_code
+        continue-on-error: true
+
+      - name: Create GitHub issue for new committees
+        if: steps.discover.outputs.exit_code == '1'
+        run: |
+          # Extract new committees from output
+          output=$(cat discovery-output.txt)
+
+          # Create markdown formatted issue
+          issue_body=$(cat <<'EOF'
+          # New EU Committees Discovered
+
+          New committees have been found in the EU comitology register:
+
+          EOF
+          )
+
+          # Add the discovery output
+          issue_body="$issue_body
+
+          \`\`\`
+          $output
+          \`\`\`
+
+          ## Next Steps
+
+          To add a discovered committee to monitoring, use:
+
+          \`\`\`bash
+          cordis-data monitor add-committee <CODE> \"<TITLE>\"
+          \`\`\`
+
+          For example:
+
+          \`\`\`bash
+          cordis-data monitor add-committee C70409 \"Digital Governance\"
+          \`\`\`
+
+          ---
+          *Discovered at: $(date -u +'%Y-%m-%d %H:%M:%S UTC')*"
+          )
+
+          gh issue create \
+            --title "New EU committees discovered $(date -u +'%Y-%m-%d')" \
+            --body "$issue_body" \
+            --label discovery \
+            --label committees \
+            --label automated
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

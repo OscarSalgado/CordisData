@@ -42,12 +42,55 @@ cordis-data monitor fetch --window 90
 Options:
 - `--window DAYS`: Look back N days (default: 90)
 
+## Discover New Committees
+
+Don't know which committees to monitor? Discover new ones automatically!
+
+### Automatic Discovery
+
+A daily job discovers new committees from the EU register:
+
+- **Daily run:** 07:00 UTC (after document monitoring)
+- **Manual trigger:** 
+  ```bash
+  cordis-data monitor discover
+  ```
+
+When new committees are found, a GitHub issue is created with:
+- List of new committee codes and titles
+- Direct links to the EU register
+- Instructions for adding to monitoring
+
+### Manual Discovery
+
+Run discovery anytime to see what's new:
+
+```bash
+cordis-data monitor discover
+```
+
+Output shows:
+- Total committees in register
+- Currently monitored
+- New committees (if any)
+
+### Adding Discovered Committees
+
+Once you find an interesting committee in the discovery output or GitHub issue:
+
+```bash
+cordis-data monitor add-committee C70409 "Digital Governance"
+```
+
+Then it will be automatically monitored by the daily job.
+
 ## Automated Monitoring
 
 Committee monitoring runs automatically via GitHub Actions:
 
-- **Daily run:** 06:00 UTC
-- **Manual trigger:** Via GitHub Actions UI
+- **Document monitoring:** 06:00 UTC daily
+- **Committee discovery:** 07:00 UTC daily
+- **Manual trigger:** Via GitHub Actions UI or CLI
 - **Commit strategy:** Only commits if documents changed
 - **Alerts:** Sends Slack notifications + creates GitHub issues
 

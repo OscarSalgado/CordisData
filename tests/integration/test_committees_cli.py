@@ -79,3 +79,56 @@ class TestMonitorCLI:
             result = runner.invoke(monitor, ["fetch"])
             assert result.exit_code == 1
             assert "No committees configured" in result.output
+
+    def test_discover_no_new_committees(self) -> None:
+        """Test discover when no new committees found."""
+        runner = CliRunner()
+        with patch("cordis_data.cli.monitor.CommitteeDiscovery") as mock_discovery_class:
+            mock_discovery = Mock()
+            mock_discovery_class.return_value = mock_discovery
+            mock_result = Mock()
+            mock_result.has_new.return_value = False
+            mock_result.new_committees = []
+            mock_result.total_committees = 100
+            mock_result.currently_monitored = 5
+            mock_discovery.discover.return_value = mock_result
+
+            result = runner.invoke(monitor, ["discover"])
+            assert result.exit_code == 0
+            assert "No new committees" in result.output
+
+    def test_discover_finds_new_committees(self) -> None:
+        """Test discover when new committees found."""
+        runner = CliRunner()
+        with patch("cordis_data.cli.monitor.CommitteeDiscovery") as mock_discovery_class:
+            mock_discovery = Mock()
+            mock_discovery_class.return_value = mock_discovery
+            mock_result = Mock()
+            mock_result.has_new.return_value = True
+            mock_result.new_committees = [
+                {"code": "C70409", "title": "New Committee"}
+            ]
+            mock_result.total_committees = 100
+            mock_result.currently_monitored = 5
+            mock_discovery.discover.return_value = mock_result
+
+            result = runner.invoke(monitor, ["discover"])
+            assert result.exit_code == 1
+            assert "New committees found" in result.output
+            assert "C70409" in result.output
+
+    def test_discover_dry_run(self) -> None:
+        """Test discover with --dry-run option."""
+        runner = CliRunner()
+        with patch("cordis_data.cli.monitor.CommitteeDiscovery") as mock_discovery_class:
+            mock_discovery = Mock()
+            mock_discovery_class.return_value = mock_discovery
+            mock_result = Mock()
+            mock_result.has_new.return_value = False
+            mock_result.new_committees = []
+            mock_result.total_committees = 100
+            mock_result.currently_monitored = 5
+            mock_discovery.discover.return_value = mock_result
+
+            result = runner.invoke(monitor, ["discover", "--dry-run"])
+            assert result.exit_code == 0
