@@ -1,7 +1,7 @@
 """Alert senders for committee documents."""
 
 from abc import ABC, abstractmethod
-from typing import Optional
+from typing import Any, Optional
 
 import requests
 
@@ -39,7 +39,7 @@ class SlackAlertSender(AlertSender):
             return True
 
         try:
-            blocks = []
+            blocks: list[dict[str, Any]] = []
             for doc in documents[:5]:  # Limit to 5 per message
                 title = doc.get("title", "Unknown")
                 committee = doc.get("committeeCoding", "N/A")
@@ -58,7 +58,7 @@ class SlackAlertSender(AlertSender):
                     }
                 )
 
-            payload = {
+            payload: dict[str, Any] = {
                 "text": f"🆕 {len(documents)} new committee document(s)",
                 "blocks": blocks,
             }

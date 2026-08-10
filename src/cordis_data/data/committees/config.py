@@ -12,7 +12,7 @@ class CommitteeConfig:
     """Manage committee monitoring configuration."""
 
     CONFIG_PATH = Path.home() / ".cordis-data" / "committees-config.json"
-    DEFAULT_CONFIG = {
+    DEFAULT_CONFIG: dict[str, Any] = {
         "committees": [],
         "alerts": {"enabled": True, "slack_webhook": None, "email": None, "github_issues": False},
         "last_check": None,
