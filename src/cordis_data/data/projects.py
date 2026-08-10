@@ -2,6 +2,7 @@
 
 import datetime
 import json
+import logging
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 from typing import Any, Generator, Optional, TypeVar, cast
@@ -17,10 +18,11 @@ from cordis_data.config import (
     PROJECTS_BATCH_SIZE,
     SEDIA_API_URL,
 )
-from cordis_data.data.h2020 import H2020Enricher
-from cordis_data.utils import merge_projects, normalize_date, summarize_changes
+from cordis_data.utils import merge_projects
 
 T = TypeVar("T")
+
+log = logging.getLogger(__name__)
 
 
 class ProjectsFetcher:
@@ -53,7 +55,11 @@ class ProjectsFetcher:
             api_url=SEDIA_API_URL,
             api_key=PROJECTS_API_KEY,
         )
-        self.rate_limiter = rate_limiter or TokenBucket(rate=CORDIS_RATE_LIMIT)
+        # Rate limiter: create if not provided (always needed for CORDIS)
+        if rate_limiter is None:
+            rate_limiter = TokenBucket(rate=CORDIS_RATE_LIMIT)
+        self.rate_limiter = rate_limiter
+
         self.cordis_client = cordis_client or CordisClient(
             rate_limiter=self.rate_limiter,
         )
@@ -132,8 +138,8 @@ class ProjectsFetcher:
             "euContributionAmount": (m.get("euContributionAmount") or [None])[0],
             "overallBudget": (m.get("overallBudget") or [None])[0],
             "status": (m.get("status") or [""])[0],
-            "startDate": normalize_date((m.get("startDate") or [""])[0]),
-            "endDate": normalize_date((m.get("endDate") or [""])[0]),
+            "startDate": (m.get("startDate") or [""])[0],
+            "endDate": (m.get("endDate") or [""])[0],
             "legalEntityNames": m.get("legalEntityNames") or [],
             "countries": m.get("countries") or [],
             "objective": None,
@@ -290,40 +296,125 @@ class ProjectsFetcher:
         for i in range(0, len(items), size):
             yield items[i:i + size]
 
-    def _load_closed_topic_ids(
+    def _load_closed_calls(
         self,
-        calls_path: Path,
-        since_date: Optional[str] = None,
-    ) -> list[str]:
-        """Load topicIds for closed calls, optionally filtered by deadline.
+        calls_path: Optional[Path] = None,
+    ) -> list[dict[str, Any]]:
+        """Load closed calls from calls.closed.json.
 
         Args:
-            calls_path: Path to calls.json
-            since_date: Optional ISO YYYY-MM-DD string to filter by deadline
+            calls_path: Path to calls.closed.json (default: data/calls.closed.json)
 
         Returns:
-            List of topic identifiers for closed calls
+            List of closed call dicts (already filtered by callStatus="closed")
         """
+        if calls_path is None:
+            project_root = Path(__file__).resolve().parent.parent.parent.parent
+            calls_path = project_root / "data" / "calls.closed.json"
+        else:
+            calls_path = Path(calls_path)
+
         with open(calls_path, "r", encoding="utf-8") as f:
             calls = json.load(f)
-        closed = [c for c in calls if c.get("callStatus") == "closed"]
-        if since_date:
-            closed = [c for c in closed if not c.get("deadline") or c["deadline"] >= since_date]
-        return [c["topicId"] for c in closed]
+
+        return calls  # Already filtered (closed only)
+
+    def _load_existing_projects(
+        self,
+        output_path: Path,
+    ) -> list[dict[str, Any]]:
+        """Load existing projects from projects.json (or return empty list).
+
+        Args:
+            output_path: Path to projects.json
+
+        Returns:
+            List of project dicts (or empty list if file doesn't exist)
+        """
+        if not output_path.exists():
+            return []
+
+        with open(output_path, "r", encoding="utf-8") as f:
+            projects = json.load(f)
+
+        return projects
+
+    def _build_dedup_index(
+        self,
+        projects: list[dict[str, Any]],
+    ) -> dict[tuple[str, str], bool]:
+        """Build deduplication index from existing projects.
+
+        Args:
+            projects: List of project dicts
+
+        Returns:
+            {(topicId, projectId): True, ...} for O(1) lookups
+        """
+        index = {}
+        for p in projects:
+            key = (p.get("topicId") or "", p.get("projectId") or "")
+            index[key] = True
+
+        return index
+
+    def _fetch_projects_for_single_topic(
+        self,
+        topic_id: str,
+    ) -> list[dict[str, Any]]:
+        """Fetch projects from SEDIA for a single topicId.
+
+        Args:
+            topic_id: Topic identifier (topicAbbreviation or topicId)
+
+        Returns:
+            List of raw project dicts from SEDIA (or empty list if none found)
+        """
+        query = self._build_projects_query([topic_id])
+        response = self.sedia_client.search(query, {}, 1, 10000, retries=3)
+        return response.get("results", [])
+
+    def _enrich_with_cordis(
+        self,
+        project: dict[str, Any],
+    ) -> dict[str, Any]:
+        """Enrich single project with CORDIS data (objective, grantDoi).
+
+        Args:
+            project: Project dict from SEDIA
+
+        Returns:
+            Enriched project dict (with objective and grantDoi added if available)
+        """
+        project_id = project.get("projectId")
+        if not project_id:
+            return project
+
+        try:
+            enrichment = self.cordis_client.fetch_project(project_id)
+            if enrichment:
+                project["objective"] = enrichment.get("objective")
+                project["grantDoi"] = enrichment.get("grantDoi")
+        except Exception as e:
+            log.warning(f"CORDIS enrichment failed for {project_id}: {e}")
+            # Partial enrichment is OK; continue without these fields
+
+        project["lastEnrichedAt"] = datetime.date.today().isoformat()
+        return project
 
     def main(
         self,
         output_path: Optional[Path] = None,
         calls_path: Optional[Path] = None,
-        years: Optional[int] = None,
     ) -> None:
-        """Fetch projects from SEDIA and enrich with CORDIS data.
+        """Fetch and enrich projects for closed calls (rolling 1-year window).
+
+        Fetches projects from SEDIA for closed calls with deadline within last 1 year,
+        deduplicates by (topicId, projectId), and enriches with CORDIS data.
 
         Args:
             output_path: Path to write projects.json (default: data/projects.json)
-            calls_path: Path to calls.json (default: data/calls.json)
-            years: Limit to closed topics whose deadline is within last N years
-                (default: None = all closed topics)
+            calls_path: Path to calls.closed.json (default: data/calls.closed.json)
         """
         if output_path is None:
             project_root = Path(__file__).resolve().parent.parent.parent.parent
@@ -331,106 +422,80 @@ class ProjectsFetcher:
         else:
             output_path = Path(output_path)
 
-        if calls_path is None:
-            project_root = Path(__file__).resolve().parent.parent.parent.parent
-            calls_path = project_root / "data" / "calls.json"
-        else:
-            calls_path = Path(calls_path)
+        # Load closed calls and existing projects
+        closed_calls = self._load_closed_calls(calls_path)
+        projects_existing = self._load_existing_projects(output_path)
+        dedup_index = self._build_dedup_index(projects_existing)
 
-        since_date = None
-        if years:
-            since_date = (datetime.date.today() - datetime.timedelta(days=365 * years)).isoformat()
-            print(f"Limiting to closed topics with deadline >= {since_date} "
-                  f"(--years={years})", flush=True)
+        print(f"Found {len(closed_calls)} closed calls", flush=True)
+        print(f"Existing projects: {len(projects_existing)}", flush=True)
 
-        topic_ids = self._load_closed_topic_ids(calls_path, since_date=since_date)
-        print(f"Found {len(topic_ids)} closed topics", flush=True)
+        # Rolling window: 1 year
+        one_year_ago = (datetime.date.today() - datetime.timedelta(days=365)).isoformat()
 
-        existing_projects = []
-        if output_path.exists():
-            with open(output_path, "r", encoding="utf-8") as f:
-                existing_projects = json.load(f)
-        existing_by_id = {p["projectId"]: p for p in existing_projects if p.get("projectId")}
+        topics_processed = 0
+        topics_without_projects = 0
+        projects_new = []
 
-        all_results = []
-        batches = list(self._chunk(topic_ids, self.batch_size))
-        print(f"Fetching {len(batches)} batches of projects...", flush=True)
-        with ThreadPoolExecutor(max_workers=6) as executor:
-            futures = {executor.submit(self._fetch_batch_all_pages, batch): i
-                       for i, batch in enumerate(batches, start=1)}
-            completed = 0
-            for future in as_completed(futures):
-                completed += 1
-                print(f"Batch {completed}/{len(batches)} done...", flush=True)
-                all_results.extend(future.result())
+        # Main iteration loop: fetch projects for each recent call
+        for call in closed_calls:
+            topic_id = call.get("topicId", "")
+            deadline = call.get("deadline", "")
 
-        print(f"\nFetched {len(all_results)} raw awarded-project results", flush=True)
+            # Skip if too old (>1 year)
+            if deadline < one_year_ago:
+                continue
 
-        projects = [self._transform_project_record(r) for r in all_results]
-        projects = [p for p in projects if p["topicId"] and p["projectId"]]
-        print(f"Transformed {len(projects)} valid projects", flush=True)
+            # Fetch projects for this topicId (always, may have new projects)
+            try:
+                raw_projects = self._fetch_projects_for_single_topic(topic_id)
+            except Exception as e:
+                log.warning(f"Error fetching projects for {topic_id}: {e}")
+                continue  # Skip this topic, continue with next
 
-        to_enrich = [p for p in projects if self._needs_cordis_enrichment(p, existing_by_id)]
-        print(
-            f"{len(to_enrich)}/{len(projects)} projects needed CORDIS enrichment "
-            "(rest already enriched)", flush=True,
-        )
+            if not raw_projects:
+                # No projects for this topic (closed call without awards)
+                topics_without_projects += 1
+                topics_processed += 1
+                continue
 
-        # Copy existing enrichment data to non-new projects
-        to_enrich_ids = {p["projectId"] for p in to_enrich}
-        for p in projects:
-            if p["projectId"] not in to_enrich_ids:
-                existing = existing_by_id.get(p["projectId"])
-                if existing:
-                    p["objective"] = existing.get("objective")
-                    p["grantDoi"] = existing.get("grantDoi")
-                    p["lastEnrichedAt"] = existing.get("lastEnrichedAt")
+            # Transform and enrich each project
+            for raw_project in raw_projects:
+                project_id = raw_project.get("projectId", "")
+                dedup_key = (topic_id, project_id)
 
-        # Enrich with CORDIS and write incrementally (checkpoint every 500 projects)
-        if to_enrich:
-            self._enrich_projects_with_cordis(to_enrich, output_path=output_path)
+                # Skip if already in projects.json (dedup)
+                if dedup_key in dedup_index:
+                    continue
 
-        # Final write for non-enriched projects
-        non_enriched = [p for p in projects if p["projectId"] not in to_enrich_ids]
-        if non_enriched:
-            self._write_and_merge_projects(non_enriched, output_path)
+                # Transform record
+                enriched = self._transform_project_record(raw_project)
+                if not enriched.get("topicId") or not enriched.get("projectId"):
+                    continue
 
-        # H2020 enrichment (optional, non-blocking)
-        print("\nEnriching projects with H2020 data...", flush=True)
-        try:
-            h2020_enricher = H2020Enricher(cordis_client=self.cordis_client)
-            if h2020_enricher.load_index():
-                # Read current projects and enrich with H2020
-                if output_path.exists():
-                    with open(output_path, "r", encoding="utf-8") as f:
-                        current_projects = json.load(f)
+                # Enrich with CORDIS data
+                enriched = self._enrich_with_cordis(enriched)
+                projects_new.append(enriched)
+                dedup_index[dedup_key] = True
 
-                    h2020_enriched = 0
-                    for proj in current_projects:
-                        h2020_data = h2020_enricher.enrich(proj)
-                        if h2020_data:
-                            proj["h2020_related"] = h2020_data
-                            h2020_enriched += 1
+            topics_processed += 1
 
-                    # Write back enriched projects
-                    with open(output_path, "w", encoding="utf-8") as f:
-                        json.dump(current_projects, f, separators=(",", ":"), ensure_ascii=False)
+        # Final write: merge existing with new projects
+        projects_final = projects_existing + projects_new
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        with open(output_path, "w", encoding="utf-8") as f:
+            json.dump(projects_final, f, indent=2, ensure_ascii=False)
 
-                    print(f"H2020-enriched {h2020_enriched} projects", flush=True)
-            else:
-                print("H2020 index load failed; skipping H2020 enrichment", flush=True)
-        except Exception as e:
-            print(f"H2020 enrichment error: {e}; continuing without H2020 data", flush=True)
+        # Update metadata
+        from cordis_data.data.metadata import load_metadata, save_metadata
+        metadata_path = output_path.parent / ".metadata.json"
+        metadata = load_metadata(metadata_path)
+        metadata["projects_topics_processed_count"] = topics_processed
+        metadata["projects_fetched_at"] = datetime.datetime.now(datetime.timezone.utc).isoformat()
+        metadata["projects_rolling_window_days"] = 365
+        metadata["projects_topics_without_projects_count"] = topics_without_projects
+        save_metadata(metadata, metadata_path)
 
-        # Final summary
-        if output_path.exists():
-            with open(output_path, "r", encoding="utf-8") as f:
-                final_projects = json.load(f)
-            merged_by_id = {p["projectId"]: p for p in final_projects}
-            change_summary = summarize_changes(existing_by_id, merged_by_id)
-            print(
-                f"\nChanges: {change_summary['added']} added, {change_summary['changed']} changed, "
-                f"{change_summary['unchanged']} unchanged", flush=True,
-            )
-            size_kb = output_path.stat().st_size / 1024
-            print(f"\nWritten {output_path} ({len(final_projects)} projects, {size_kb:.0f} KB)")
+        print(f"Completed: {topics_processed} topics processed, "
+              f"{len(projects_new)} new projects, {len(projects_final)} total, "
+              f"{topics_without_projects} without projects", flush=True)

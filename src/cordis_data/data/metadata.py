@@ -12,10 +12,15 @@ def load_metadata(metadata_path: Path) -> dict[str, Any]:
         with open(metadata_path, "r", encoding="utf-8") as f:
             return json.load(f)
     return {
-        "calls_fetched_at": None,
-        "calls_freshness_ttl_days": 90,
+        "calls_open_fetched_at": None,
+        "calls_open_freshness_ttl_days": 3,
+        "calls_closed_fetched_at": None,
+        "calls_closed_freshness_ttl_days": 7,
         "projects_fetched_at": None,
         "projects_freshness_ttl_days": 30,
+        "projects_topics_processed_count": 0,
+        "projects_rolling_window_days": 365,
+        "projects_topics_without_projects_count": 0,
     }
 
 

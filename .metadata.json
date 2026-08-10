@@ -1,0 +1,8 @@
+{
+  "calls_open_fetched_at": "2026-08-10",
+  "calls_open_freshness_ttl_days": 3,
+  "calls_closed_fetched_at": "2026-08-10",
+  "calls_closed_freshness_ttl_days": 7,
+  "projects_fetched_at": null,
+  "projects_freshness_ttl_days": 30
+}

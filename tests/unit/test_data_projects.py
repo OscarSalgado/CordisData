@@ -93,21 +93,19 @@ class TestProjectsFetcher:
         assert isinstance(result, bool)
 
     def test_load_closed_topic_ids(self, temp_dir: Path) -> None:
-        """Test loading closed topic IDs from calls file."""
-        calls_file = temp_dir / "calls.json"
+        """Test loading closed calls from calls.closed.json file."""
+        calls_file = temp_dir / "calls.closed.json"
         calls = [
-            {"reference": "CALL-001", "callStatus": "closed", "topicId": "HORIZON-CL1"},
-            {"reference": "CALL-002", "callStatus": "open", "topicId": "HORIZON-CL2"},
-            {"reference": "CALL-003", "callStatus": "closed", "topicId": "HORIZON-CL3"},
+            {"reference": "CALL-001", "callStatus": "closed", "topicId": "HORIZON-CL1", "deadline": "2024-01-01"},
+            {"reference": "CALL-003", "callStatus": "closed", "topicId": "HORIZON-CL3", "deadline": "2024-03-01"},
         ]
         calls_file.write_text(json.dumps(calls))
 
         fetcher = ProjectsFetcher()
-        topic_ids = fetcher._load_closed_topic_ids(calls_file)
-        assert len(topic_ids) == 2
-        assert "HORIZON-CL1" in topic_ids
-        assert "HORIZON-CL3" in topic_ids
-        assert "HORIZON-CL2" not in topic_ids
+        loaded_calls = fetcher._load_closed_calls(calls_file)
+        assert len(loaded_calls) == 2
+        assert loaded_calls[0]["topicId"] == "HORIZON-CL1"
+        assert loaded_calls[1]["topicId"] == "HORIZON-CL3"
 
     def test_fetch_projects_batch(self, mock_sedia_client: Mock) -> None:
         """Test single batch fetch."""
@@ -159,14 +157,14 @@ class TestProjectsFetcher:
     def test_main_with_years_filter(
         self, mock_sedia_client: Mock, temp_dir: Path
     ) -> None:
-        """Test main() with years filter."""
-        calls_file = temp_dir / "calls.json"
+        """Test main() with calls.closed.json (rolling window filter applied internally)."""
+        calls_file = temp_dir / "calls.closed.json"
         calls = [
             {
                 "reference": "CALL-001",
                 "callStatus": "closed",
                 "topicId": "HORIZON-CL1",
-                "deadline": "2020-01-01",
+                "deadline": "2020-01-01",  # Old call, will be skipped by rolling window
             }
         ]
         calls_file.write_text(json.dumps(calls))
@@ -179,7 +177,8 @@ class TestProjectsFetcher:
         }
 
         fetcher = ProjectsFetcher(sedia_client=mock_sedia_client)
-        fetcher.main(output_path=output_file, calls_path=calls_file, years=10)
+        fetcher.main(output_path=output_file, calls_path=calls_file)
+        # Old call should be skipped (deadline < 1 year ago)
 
     def test_handle_missing_calls_file(self, temp_dir: Path) -> None:
         """Test handling of missing calls file."""
@@ -261,31 +260,30 @@ class TestProjectsFetcher:
         assert transformed.get("projectId") == ""
 
     def test_load_closed_topic_ids_with_year_filter(self, temp_dir: Path) -> None:
-        """Test loading closed topics with year filter."""
-        calls_file = temp_dir / "calls.json"
-        old_date = "2020-01-01"
-        recent_date = "2026-01-01"
+        """Test loading closed calls from calls.closed.json (already filtered)."""
+        calls_file = temp_dir / "calls.closed.json"
         calls = [
             {
                 "reference": "OLD",
                 "callStatus": "closed",
                 "topicId": "OLD-CALL",
-                "deadline": old_date
+                "deadline": "2020-01-01"
             },
             {
                 "reference": "RECENT",
                 "callStatus": "closed",
                 "topicId": "RECENT-CALL",
-                "deadline": recent_date
+                "deadline": "2026-01-01"
             },
         ]
         calls_file.write_text(json.dumps(calls))
 
         fetcher = ProjectsFetcher()
-        # Filter for calls closed in last 1 year
-        topic_ids = fetcher._load_closed_topic_ids(calls_file, since_date=recent_date)
-        # Should only get the recent one
-        assert "RECENT-CALL" in topic_ids or "OLD-CALL" in topic_ids  # Depends on date logic
+        # Load calls (already filtered by closed status in file)
+        loaded_calls = fetcher._load_closed_calls(calls_file)
+        assert len(loaded_calls) == 2
+        assert loaded_calls[0]["topicId"] == "OLD-CALL"
+        assert loaded_calls[1]["topicId"] == "RECENT-CALL"
 
     def test_needs_cordis_enrichment_with_stale_enrichment(self) -> None:
         """Test that projects with old enrichment are re-enriched."""

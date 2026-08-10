@@ -8,7 +8,9 @@ import click
 from cordis_data.cli.explorer import explorer_cli
 from cordis_data.cli.monitor import monitor
 from cordis_data.data.calls import CallsFetcher
+from cordis_data.data.closed_calls import ClosedCallsFetcher
 from cordis_data.data.metadata import load_metadata
+from cordis_data.data.open_calls import OpenCallsFetcher
 from cordis_data.data.projects import ProjectsFetcher
 
 
@@ -64,11 +66,77 @@ def fetch_calls(full_history: bool, force: bool, output: str | None) -> None:
 
 @main.command()
 @click.option(
-    "--years",
-    type=int,
-    default=None,
-    help="Only fetch projects for calls closed in last N years",
+    "--force",
+    is_flag=True,
+    help="Skip freshness check and fetch unconditionally",
 )
+@click.option(
+    "--output",
+    type=click.Path(),
+    default=None,
+    help="Output file path (default: data/calls.open.json)",
+)
+def fetch_open_calls(force: bool, output: str | None) -> None:
+    """Fetch open/forthcoming EU grant calls from SEDIA API.
+
+    Fetches calls published in the last 9 months (rolling window) and merges
+    into existing data. Use --force to skip freshness check and fetch
+    unconditionally.
+
+    Writes calls.open.json and daily changelog to data/changelog/open/YYYY-MM-DD.json
+
+    Args:
+        force: If True, skip freshness check and always fetch
+        output: Output file path (default: data/calls.open.json)
+
+    Exits with code 1 if fetch fails.
+    """
+    try:
+        fetcher = OpenCallsFetcher()
+        output_path = Path(output) if output else None
+        fetcher.main(output_path=output_path, force=force)
+    except Exception as e:
+        click.echo(f"Error fetching open calls: {e}", err=True)
+        sys.exit(1)
+
+
+@main.command()
+@click.option(
+    "--force",
+    is_flag=True,
+    help="Skip freshness check and fetch unconditionally",
+)
+@click.option(
+    "--output",
+    type=click.Path(),
+    default=None,
+    help="Output file path (default: data/calls.closed.json)",
+)
+def fetch_closed_calls(force: bool, output: str | None) -> None:
+    """Fetch closed EU grant calls from SEDIA API (for project discovery).
+
+    Fetches closed calls from dataset start to 3 months ago and merges
+    into existing data. Use --force to skip freshness check and fetch
+    unconditionally.
+
+    Writes calls.closed.json and daily changelog to data/changelog/closed/YYYY-MM-DD.json
+
+    Args:
+        force: If True, skip freshness check and always fetch
+        output: Output file path (default: data/calls.closed.json)
+
+    Exits with code 1 if fetch fails.
+    """
+    try:
+        fetcher = ClosedCallsFetcher()
+        output_path = Path(output) if output else None
+        fetcher.main(output_path=output_path, force=force)
+    except Exception as e:
+        click.echo(f"Error fetching closed calls: {e}", err=True)
+        sys.exit(1)
+
+
+@main.command()
 @click.option(
     "--output",
     type=click.Path(),
@@ -76,35 +144,33 @@ def fetch_calls(full_history: bool, force: bool, output: str | None) -> None:
     help="Output file path (default: data/projects.json)",
 )
 @click.option(
-    "--calls",
+    "--calls-closed",
     type=click.Path(),
     default=None,
-    help="Path to calls.json (default: data/calls.json)",
+    help="Path to calls.closed.json (default: data/calls.closed.json)",
 )
 def fetch_projects(
-    years: int | None, output: str | None, calls: str | None
+    output: str | None, calls_closed: str | None
 ) -> None:
     """Fetch awarded projects for closed calls and enrich with CORDIS data.
 
-    Fetches projects from SEDIA for all closed calls, then enriches with
-    objective and DOI from CORDIS API using rate limiting (max 2 req/s).
-    Checkpoints after every 500 projects to enable resumption on failure.
+    Fetches projects from SEDIA for closed calls with deadline within last 1 year
+    (rolling window), deduplicates by (topicId, projectId), and enriches with
+    CORDIS data. Appends new projects to existing projects.json.
 
     Args:
-        years: Limit to calls closed within last N years (optional)
         output: Output file path (default: data/projects.json)
-        calls: Path to calls.json (default: data/calls.json)
+        calls_closed: Path to calls.closed.json (default: data/calls.closed.json)
 
     Exits with code 1 if fetch fails.
     """
     try:
         fetcher = ProjectsFetcher()
         output_path = Path(output) if output else None
-        calls_path = Path(calls) if calls else None
+        calls_path = Path(calls_closed) if calls_closed else None
         fetcher.main(
             output_path=output_path,
             calls_path=calls_path,
-            years=years,
         )
     except Exception as e:
         click.echo(f"Error fetching projects: {e}", err=True)
@@ -121,8 +187,8 @@ def fetch_projects(
 def status(data_dir: str | None) -> None:
     """Display metadata about fetched data and freshness status.
 
-    Shows last fetch timestamps and TTL (time-to-live) for calls and projects
-    data, allowing users to check if a fresh fetch is needed.
+    Shows last fetch timestamps and TTL (time-to-live) for open/closed calls
+    and projects data, allowing users to check if a fresh fetch is needed.
 
     Args:
         data_dir: Data directory path (default: ./data)
@@ -135,10 +201,20 @@ def status(data_dir: str | None) -> None:
         metadata = load_metadata(metadata_path)
 
         click.echo("=== CORDIS Data Status ===")
-        click.echo(f"Calls fetched: {metadata.get('calls_fetched_at', 'Never')}")
-        click.echo(f"  Freshness TTL: {metadata.get('calls_freshness_ttl_days')} days")
-        click.echo(f"Projects fetched: {metadata.get('projects_fetched_at', 'Never')}")
-        click.echo(f"  CORDIS enrichment TTL: {metadata.get('projects_freshness_ttl_days')} days")
+        click.echo("\nOpen Calls (active opportunities):")
+        click.echo(f"  Last fetched: {metadata.get('calls_open_fetched_at', 'Never')}")
+        click.echo(f"  Freshness TTL: {metadata.get('calls_open_freshness_ttl_days', 3)} days")
+
+        click.echo("\nClosed Calls (for project discovery):")
+        click.echo(f"  Last fetched: {metadata.get('calls_closed_fetched_at', 'Never')}")
+        click.echo(f"  Freshness TTL: {metadata.get('calls_closed_freshness_ttl_days', 7)} days")
+
+        click.echo("\nProjects:")
+        click.echo(f"  Last fetched: {metadata.get('projects_fetched_at', 'Never')}")
+        click.echo(f"  Topics processed: {metadata.get('projects_topics_processed_count', 0)}")
+        click.echo(f"  Topics without projects: {metadata.get('projects_topics_without_projects_count', 0)}")
+        click.echo(f"  Rolling window: {metadata.get('projects_rolling_window_days', 365)} days")
+        click.echo(f"  Freshness TTL: {metadata.get('projects_freshness_ttl_days', 30)} days")
     except Exception as e:
         click.echo(f"Error reading status: {e}", err=True)
         sys.exit(1)

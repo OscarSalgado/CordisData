@@ -30,7 +30,11 @@ from cordis_data.utils import extract_budget, merge_calls, normalize_date, parse
 
 
 class CallsFetcher:
-    """Fetches EU research funding calls from SEDIA Search API.
+    """Fetches all EU research funding calls from SEDIA Search API (DEPRECATED).
+
+    DEPRECATED: Use OpenCallsFetcher (active calls) and ClosedCallsFetcher
+    (closed calls) instead. This class is maintained for backward compatibility
+    and calls both fetchers internally.
 
     Fetches open + forthcoming + closed EU grant calls and writes them to
     data/calls.json. By default, only fetches calls published in the last

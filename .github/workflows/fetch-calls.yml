@@ -28,22 +28,50 @@ jobs:
       - name: Create data directory
         run: mkdir -p data logs
 
-      - name: Fetch calls with logging
-        id: fetch
+      - name: Fetch open calls with logging
+        id: fetch_open
         run: |
           set -o pipefail
-          echo "=== Starting calls fetch ===" | tee -a logs/fetch-calls.log
+          echo "=== Starting open calls fetch ===" | tee -a logs/fetch-calls.log
           echo "Timestamp: $(date -u +'%Y-%m-%d %H:%M:%S UTC')" | tee -a logs/fetch-calls.log
           echo "Python version: $(python --version)" | tee -a logs/fetch-calls.log
-          echo "Installed packages:" | tee -a logs/fetch-calls.log
-          pip list | tee -a logs/fetch-calls.log
           echo "" | tee -a logs/fetch-calls.log
 
-          if cordis-data fetch-calls --force 2>&1 | tee -a logs/fetch-calls.log; then
-            echo "Fetch completed successfully" | tee -a logs/fetch-calls.log
+          if cordis-data fetch-open-calls --force 2>&1 | tee -a logs/fetch-calls.log; then
+            echo "Open calls fetch completed successfully" | tee -a logs/fetch-calls.log
             echo "status=success" >> $GITHUB_OUTPUT
           else
-            echo "Fetch failed" | tee -a logs/fetch-calls.log
+            echo "Open calls fetch failed" | tee -a logs/fetch-calls.log
+            echo "status=failed" >> $GITHUB_OUTPUT
+          fi
+        continue-on-error: true
+
+      - name: Fetch closed calls with logging
+        id: fetch_closed
+        run: |
+          set -o pipefail
+          echo "=== Starting closed calls fetch ===" | tee -a logs/fetch-calls.log
+
+          if cordis-data fetch-closed-calls --force 2>&1 | tee -a logs/fetch-calls.log; then
+            echo "Closed calls fetch completed successfully" | tee -a logs/fetch-calls.log
+            echo "status=success" >> $GITHUB_OUTPUT
+          else
+            echo "Closed calls fetch failed" | tee -a logs/fetch-calls.log
+            echo "status=failed" >> $GITHUB_OUTPUT
+          fi
+        continue-on-error: true
+
+      - name: Discover projects from closed calls
+        id: fetch_projects
+        run: |
+          set -o pipefail
+          echo "=== Starting projects discovery ===" | tee -a logs/fetch-calls.log
+
+          if cordis-data fetch-projects 2>&1 | tee -a logs/fetch-calls.log; then
+            echo "Projects discovery completed successfully" | tee -a logs/fetch-calls.log
+            echo "status=success" >> $GITHUB_OUTPUT
+          else
+            echo "Projects discovery failed" | tee -a logs/fetch-calls.log
             echo "status=failed" >> $GITHUB_OUTPUT
           fi
         continue-on-error: true
@@ -53,15 +81,34 @@ jobs:
         run: |
           echo "=== Data Validation ===" | tee -a logs/fetch-calls.log
 
-          if [ -f data/calls.json ]; then
-            size=$(wc -c < data/calls.json)
-            count=$(python -c "import json; print(len(json.load(open('data/calls.json'))))" 2>/dev/null || echo "unknown")
-            echo "calls.json exists" | tee -a logs/fetch-calls.log
-            echo "  Size: $(numfmt --to=iec-i --suffix=B <<< $size)" | tee -a logs/fetch-calls.log
+          open_found=false
+          closed_found=false
+
+          if [ -f data/calls.open.json ]; then
+            size=$(wc -c < data/calls.open.json)
+            count=$(python -c "import json; print(len(json.load(open('data/calls.open.json'))))" 2>/dev/null || echo "unknown")
+            echo "calls.open.json exists" | tee -a logs/fetch-calls.log
+            echo "  Size: $size bytes" | tee -a logs/fetch-calls.log
             echo "  Records: $count" | tee -a logs/fetch-calls.log
+            open_found=true
+          else
+            echo "calls.open.json not found" | tee -a logs/fetch-calls.log
+          fi
+
+          if [ -f data/calls.closed.json ]; then
+            size=$(wc -c < data/calls.closed.json)
+            count=$(python -c "import json; print(len(json.load(open('data/calls.closed.json'))))" 2>/dev/null || echo "unknown")
+            echo "calls.closed.json exists" | tee -a logs/fetch-calls.log
+            echo "  Size: $size bytes" | tee -a logs/fetch-calls.log
+            echo "  Records: $count" | tee -a logs/fetch-calls.log
+            closed_found=true
+          else
+            echo "calls.closed.json not found" | tee -a logs/fetch-calls.log
+          fi
+
+          if [ "$open_found" = true ] || [ "$closed_found" = true ]; then
             echo "has_data=true" >> $GITHUB_OUTPUT
           else
-            echo "calls.json not found" | tee -a logs/fetch-calls.log
             echo "has_data=false" >> $GITHUB_OUTPUT
           fi
 
@@ -72,17 +119,6 @@ jobs:
             echo "metadata.json not found" | tee -a logs/fetch-calls.log
           fi
 
-          changelog_file="data/changelog/$(date -u +'%Y-%m-%d').json"
-          if [ -f "$changelog_file" ]; then
-            echo "changelog exists: $changelog_file" | tee -a logs/fetch-calls.log
-            summary=$(python -c "import json; s=json.load(open('$changelog_file'))['summary']; print(f\"{s['new']} new, {s['changed']} changed, {s['auto_closed']} auto-closed\")" 2>/dev/null || echo "unknown")
-            echo "  Summary: $summary" | tee -a logs/fetch-calls.log
-            echo "changelog_summary=$summary" >> $GITHUB_OUTPUT
-          else
-            echo "changelog not found" | tee -a logs/fetch-calls.log
-            echo "changelog_summary=" >> $GITHUB_OUTPUT
-          fi
-
       - name: Commit and push changes
         id: commit
         if: steps.validate.outputs.has_data == 'true'
@@ -90,17 +126,14 @@ jobs:
           echo "=== Git Operations ===" | tee -a logs/fetch-calls.log
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data/calls.json 2>/dev/null || true
+          git add data/calls.open.json 2>/dev/null || true
+          git add data/calls.closed.json 2>/dev/null || true
           git add data/.metadata.json 2>/dev/null || true
-          git add data/changelog/*.json 2>/dev/null || true
+          git add data/changelog/open/*.json 2>/dev/null || true
+          git add data/changelog/closed/*.json 2>/dev/null || true
 
           if ! git diff --cached --quiet; then
-            summary="${{ steps.validate.outputs.changelog_summary }}"
-            if [ -n "$summary" ]; then
-              message="chore(data): fetch calls: $summary [$(date -u +'%Y-%m-%d %H:%M:%S UTC')]"
-            else
-              message="chore(data): update EU funding calls data [$(date -u +'%Y-%m-%d %H:%M:%S UTC')]"
-            fi
+            message="chore(data): fetch calls (open and closed) [$(date -u +'%Y-%m-%d %H:%M:%S UTC')]"
             git commit -m "$message" 2>&1 | tee -a logs/fetch-calls.log
             git push 2>&1 | tee -a logs/fetch-calls.log
             echo "Commit and push successful" | tee -a logs/fetch-calls.log
