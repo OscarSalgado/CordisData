@@ -74,7 +74,9 @@ class CommitteeDocumentsFetcher:
         merged_list = list(merged.values())
 
         # Save
-        output_path.write_text(json.dumps(merged_list, indent=2, ensure_ascii=False))
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        with open(output_path, "w", encoding='utf-8') as f:
+            json.dump(merged_list, f, indent=2, ensure_ascii=False)
         print(f"Saved {len(merged_list)} documents to {output_path}")
 
         # Update metadata
@@ -89,18 +91,25 @@ class CommitteeDocumentsFetcher:
     def _load_documents(self, path: Path) -> list[dict[str, Any]]:
         """Load existing documents from disk."""
         if path.exists():
-            with open(path) as f:
-                return json.load(f)
+            try:
+                with open(path, encoding='utf-8') as f:
+                    return json.load(f)
+            except (json.JSONDecodeError, IOError):
+                return []
         return []
 
     def _fetch_all_pages(self, committee_codes: list[str], start_date: str) -> list[dict]:
-        """Fetch all pages with pagination."""
+        """Fetch all pages with pagination and enrich with attachments."""
         all_docs = []
         page = 0
 
         while True:
             resp = self.client.fetch_documents(committee_codes, start_date, page=page, size=100)
-            all_docs.extend(resp.get("content", []))
+            docs = resp.get("content", [])
+
+            # Enrich each document with attachment details
+            enriched_docs = [self._enrich_with_attachments(doc) for doc in docs]
+            all_docs.extend(enriched_docs)
 
             total_pages = resp.get("totalPages", 1)
             if page >= total_pages - 1:
@@ -128,6 +137,50 @@ class CommitteeDocumentsFetcher:
                 filtered.append(doc)
 
         return filtered
+
+    def _enrich_with_attachments(self, document: dict[str, Any]) -> dict[str, Any]:
+        """Enrich document with attachment details and download URLs.
+
+        Args:
+            document: Document dict from fetch_documents()
+
+        Returns:
+            Same document with added attachments[] and optional download_url
+        """
+        document["attachments"] = []
+
+        try:
+            doc_ref = document.get("documentReference")
+            version = document.get("version")
+
+            if not doc_ref or version is None:
+                return document
+
+            # Fetch document details including attachments
+            detail = self.client.fetch_document_detail(doc_ref, version)
+            attachments = detail.get("documentsAttached", [])
+
+            # Process each attachment
+            for att in attachments:
+                att_id = att.get("id")
+                filename = att.get("fileName") or att.get("filename") or ""
+
+                if att_id is not None:
+                    # Construct download URL
+                    base_url = self.client.BASE_URL.replace("/front", "/integration/ers")
+                    download_url = f"{base_url}/{att_id}/{doc_ref}/{version}/attachment"
+
+                    document["attachments"].append({
+                        "id": att_id,
+                        "filename": filename,
+                        "download_url": download_url,
+                    })
+
+        except Exception as e:
+            # Log error but don't fail - document saved without attachments
+            print(f"  Warning: Could not enrich {document.get('documentReference')}: {e}")
+
+        return document
 
     def detect_changes(
         self,

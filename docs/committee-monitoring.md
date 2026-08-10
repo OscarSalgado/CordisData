@@ -97,7 +97,51 @@ Committee monitoring runs automatically via GitHub Actions:
 ### Set up automation
 
 1. Configure GitHub repository secrets (see [Secrets Setup](./committee-monitoring-secrets.md))
-2. Commit configuration: `.cordis-data/committees-config.json`
+2. Commit configuration: `data/committees/config.json`
+
+## Accessing Document Downloads
+
+All fetched documents are stored in `data/committees/documents.json` with download URLs included.
+
+### Document Structure
+
+Each document contains:
+
+```json
+{
+  "documentReference": "108662",
+  "version": 6,
+  "title": "Commission Implementing Decision...",
+  "committeeCode": "C70407",
+  
+  "download_url": "https://ec.europa.eu/transparency/comitology-register/core/api/integration/ers/12345/108662/6/attachment",
+  "attachments": [
+    {
+      "id": 12345,
+      "filename": "document_108662.pdf",
+      "download_url": "https://ec.europa.eu/transparency/comitology-register/core/api/integration/ers/12345/108662/6/attachment"
+    }
+  ]
+}
+```
+
+### Fields Explained
+
+- **`download_url`**: Direct link to the primary PDF (convenience field)
+- **`attachments[]`**: Array of all available PDFs for this document
+  - `id`: Attachment identifier
+  - `filename`: Original PDF filename
+  - `download_url`: Direct HTTPS link to download
+
+### Performance Notes
+
+Document fetching now makes **N+1 API calls** per fetch:
+- 1 call: Fetch document list
+- N calls: Fetch details for each document (to get attachment URLs)
+
+With rate limiting at 2 req/sec:
+- 100 documents ≈ 50 seconds
+- Acceptable for daily scheduled job
 3. Push to repository
 4. Workflow runs automatically at 06:00 UTC daily
 

@@ -11,7 +11,18 @@ from cordis_data.data.committees.client import CommitteeDocumentsClient
 class CommitteeConfig:
     """Manage committee monitoring configuration."""
 
-    CONFIG_PATH = Path.home() / ".cordis-data" / "committees-config.json"
+    @staticmethod
+    def _get_config_path() -> Path:
+        """Get config path relative to project root."""
+        current = Path(__file__).resolve().parent
+        while current != current.parent:
+            if (current / "data").exists():
+                return current / "data" / "committees" / "config.json"
+            current = current.parent
+        # Fallback to ~/.cordis-data if data/ not found
+        return Path.home() / ".cordis-data" / "committees-config.json"
+
+    CONFIG_PATH = _get_config_path()
     DEFAULT_CONFIG: dict[str, Any] = {
         "committees": [],
         "alerts": {"enabled": True, "slack_webhook": None, "email": None, "github_issues": False},
@@ -19,18 +30,33 @@ class CommitteeConfig:
     }
 
     @classmethod
+    def _get_current_config_path(cls) -> Path:
+        """Get config path relative to project root."""
+        current = Path(__file__).resolve().parent
+        # Go up to project root (4 levels from this file)
+        project_root = current.parent.parent.parent.parent
+        data_path = project_root / "data" / "committees" / "config.json"
+        if data_path.exists() or (project_root / "data").exists():
+            return data_path
+        # Fallback to ~/.cordis-data if data/ not found
+        return Path.home() / ".cordis-data" / "committees-config.json"
+
+    @classmethod
     def load(cls) -> dict[str, Any]:
         """Load config from disk."""
-        if cls.CONFIG_PATH.exists():
-            with open(cls.CONFIG_PATH) as f:
+        config_path = cls._get_current_config_path()
+        if config_path.exists():
+            with open(config_path, encoding='utf-8') as f:
                 return json.load(f)
         return copy.deepcopy(cls.DEFAULT_CONFIG)
 
     @classmethod
     def save(cls, config: dict[str, Any]) -> None:
         """Save config to disk."""
-        cls.CONFIG_PATH.parent.mkdir(parents=True, exist_ok=True)
-        cls.CONFIG_PATH.write_text(json.dumps(config, indent=2, ensure_ascii=False))
+        config_path = cls._get_current_config_path()
+        config_path.parent.mkdir(parents=True, exist_ok=True)
+        with open(config_path, "w", encoding='utf-8') as f:
+            json.dump(config, f, indent=2, ensure_ascii=False)
 
     @classmethod
     def add_committee(cls, code: str, name: str) -> None:
