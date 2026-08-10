@@ -16,12 +16,12 @@
 
 ## Phase 3: Error Handling & Rate Limiting (2 tasks)
 
-- [ ] 9. Add error handling with retry logic (exponential backoff, max 3 attempts)
-- [ ] 10. Implement RateLimiter class for CORDIS max 2 req/s
+- [x] 9. Add error handling with retry logic (exponential backoff, max 3 attempts)
+- [x] 10. Implement RateLimiter class for CORDIS max 2 req/s
 
 ## Phase 4: CORDIS Enrichment (1 task)
 
-- [ ] 11. Extract/refine _enrich_project_with_cordis() method (move from existing code)
+- [x] 11. Extract/refine _enrich_project_with_cordis() method (move from existing code)
 
 ## Phase 5: CLI & Metadata Updates (3 tasks)
 
@@ -31,20 +31,20 @@
 
 ## Phase 6: Testing (5 tasks)
 
-- [ ] 15. Write unit tests for _load_existing_projects and _build_dedup_index
-- [ ] 16. Write unit tests for _fetch_projects_for_topic (mock SEDIA, test graceful 0 projects)
-- [ ] 17. Write unit test for rolling window filter (skip old calls)
-- [ ] 18. Write integration test: end-to-end with mock SEDIA and CORDIS
-- [ ] 19. Write idempotency test: run twice, same projects.json
+- [x] 15. Write unit tests for _load_existing_projects and _build_dedup_index (all 26 tests passing)
+- [x] 16. Write unit tests for _fetch_projects_for_topic (mock SEDIA, test graceful 0 projects)
+- [x] 17. Write unit test for rolling window filter (skip old calls)
+- [x] 18. Write integration test: end-to-end with mock SEDIA and CORDIS
+- [x] 19. Write idempotency test: run twice, same projects.json
 
 ## Phase 7: Quality & Workflow (6 tasks)
 
-- [ ] 20. Run flake8, fix linting errors to 0
-- [ ] 21. Run pyright, fix type checking errors to 0
-- [ ] 22. Run mypy, fix type checking errors to 0
-- [ ] 23. Verify test coverage >= 100% of new/changed code
+- [x] 20. Run flake8, fix linting errors to 0
+- [x] 21. Run pyright, fix type checking errors to 0
+- [x] 22. Run mypy, fix type checking errors to 0
+- [x] 23. Verify test coverage >= 100% of new/changed code
 - [x] 24. Update .github/workflows/fetch-calls.yml to add fetch-projects step (always run)
-- [ ] 25. Verify GitHub Actions workflow runs successfully
+- [x] 25. Verify GitHub Actions workflow runs successfully
 
 ---
 
