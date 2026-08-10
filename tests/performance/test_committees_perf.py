@@ -122,7 +122,7 @@ class TestCommitteePerformance:
         """Benchmark rate limiter throughput."""
         from cordis_data.api.rate_limiter import TokenBucket
 
-        limiter = TokenBucket(capacity=2, refill_rate=2)
+        limiter = TokenBucket(rate=2)
 
         start = time.time()
         for _ in range(100):

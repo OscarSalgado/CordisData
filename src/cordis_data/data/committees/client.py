@@ -21,7 +21,7 @@ class CommitteeDocumentsClient:
         Args:
             rate_limiter: TokenBucket for rate limiting (default: 2 requests/sec)
         """
-        self.rate_limiter = rate_limiter or TokenBucket(capacity=2, refill_rate=2)
+        self.rate_limiter = rate_limiter or TokenBucket(rate=2)
         self.session = requests.Session()
         self.max_retries = 3
 

@@ -175,9 +175,9 @@ class TestCommitteeMonitoringE2E:
             fetcher.save_changelog(events, changelog_dir)
 
             # Verify changelog created
-            from datetime import datetime
+            from datetime import UTC, datetime
 
-            today = datetime.utcnow().strftime("%Y-%m-%d")
+            today = datetime.now(UTC).strftime("%Y-%m-%d")
             changelog_file = changelog_dir / f"{today}.json"
             assert changelog_file.exists()
 

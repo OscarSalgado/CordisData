@@ -1,5 +1,6 @@
 """Configuration management for committee monitoring."""
 
+import copy
 import json
 from pathlib import Path
 from typing import Any, Optional
@@ -23,7 +24,7 @@ class CommitteeConfig:
         if cls.CONFIG_PATH.exists():
             with open(cls.CONFIG_PATH) as f:
                 return json.load(f)
-        return cls.DEFAULT_CONFIG.copy()
+        return copy.deepcopy(cls.DEFAULT_CONFIG)
 
     @classmethod
     def save(cls, config: dict[str, Any]) -> None:

@@ -30,7 +30,8 @@ def test_workflow_has_schedule() -> None:
     with open(workflow_file) as f:
         config = yaml.safe_load(f)
 
-    triggers = config.get("on", {})
+    # YAML parser interprets 'on' as boolean True due to YAML 1.1 spec
+    triggers = config.get(True, config.get("on", {}))
     assert "schedule" in triggers, "Workflow missing schedule trigger"
 
     schedule = triggers["schedule"]
@@ -96,6 +97,6 @@ def test_monitoring_guide_references_workflow() -> None:
     guide = Path("docs/committee-monitoring.md")
     assert guide.exists(), "Committee monitoring guide not found"
 
-    content = guide.read_text()
+    content = guide.read_text(encoding="utf-8")
     assert "GitHub Actions" in content or "workflow" in content, "Guide missing workflow reference"
     assert "06:00" in content or "scheduled" in content.lower(), "Guide missing schedule info"
