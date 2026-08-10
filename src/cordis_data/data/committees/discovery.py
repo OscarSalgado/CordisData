@@ -38,9 +38,7 @@ class DiscoveryResult:
 
 
 class CommitteeDiscovery:
-    """Discover new committees from EU comitology register."""
-
-    DISCOVERY_LOG_PATH = Path.home() / ".cordis-data" / "discovery.json"
+    """Discover new committees from EU commitology register."""
 
     def __init__(self, client: Optional[CommitteeDocumentsClient] = None) -> None:
         """Initialize discovery engine.
@@ -49,6 +47,20 @@ class CommitteeDiscovery:
             client: CommitteeDocumentsClient instance
         """
         self.client = client or CommitteeDocumentsClient()
+        # Set discovery log path relative to project root (4 levels up)
+        current = Path(__file__).resolve().parent
+        project_root = current.parent.parent.parent.parent
+        data_path = project_root / "data" / "committees" / "discovery.json"
+        if (project_root / "data").exists():
+            self.discovery_log_path = data_path
+        else:
+            # Fallback to ~/.cordis-data if data/ not found
+            self.discovery_log_path = Path.home() / ".cordis-data" / "discovery.json"
+
+    @property
+    def DISCOVERY_LOG_PATH(self) -> Path:
+        """Get discovery log path."""
+        return self.discovery_log_path
 
     def discover(self) -> DiscoveryResult:
         """Discover new committees not in local config.
@@ -115,7 +127,7 @@ class CommitteeDiscovery:
             return self._create_empty_log()
 
         try:
-            with open(self.DISCOVERY_LOG_PATH) as f:
+            with open(self.DISCOVERY_LOG_PATH, encoding='utf-8') as f:
                 return json.load(f)
         except (json.JSONDecodeError, IOError):
             return self._create_empty_log()
@@ -167,7 +179,7 @@ class CommitteeDiscovery:
         self.DISCOVERY_LOG_PATH.parent.mkdir(parents=True, exist_ok=True)
 
         # Write to disk
-        with open(self.DISCOVERY_LOG_PATH, "w") as f:
+        with open(self.DISCOVERY_LOG_PATH, "w", encoding='utf-8') as f:
             json.dump(log, f, indent=2, ensure_ascii=False)
 
     def _deduplicate(self, new_committees: list[dict]) -> list[dict]:
@@ -212,7 +224,7 @@ class CommitteeDiscovery:
         log["history"]["issues_created"].append(issue_record)
 
         # Write back
-        with open(self.DISCOVERY_LOG_PATH, "w") as f:
+        with open(self.DISCOVERY_LOG_PATH, "w", encoding='utf-8') as f:
             json.dump(log, f, indent=2, ensure_ascii=False)
 
     def cleanup_old_discoveries(self, days: int = 90) -> None:
@@ -238,5 +250,5 @@ class CommitteeDiscovery:
         log["discoveries"] = filtered
         log["history"]["total_discovered"] = len(filtered)
 
-        with open(self.DISCOVERY_LOG_PATH, "w") as f:
+        with open(self.DISCOVERY_LOG_PATH, "w", encoding='utf-8') as f:
             json.dump(log, f, indent=2, ensure_ascii=False)

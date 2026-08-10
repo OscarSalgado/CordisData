@@ -108,7 +108,7 @@ def fetch(window: int) -> None:
 
     fetcher = CommitteeDocumentsFetcher()
     new_docs = fetcher.main(committees, output_path, window_days=window)
-    click.echo(f"✓ Fetch complete: {len(new_docs)} new documents")
+    click.echo(f"Fetch complete: {len(new_docs)} new documents")
 
 
 @monitor.command()
@@ -116,6 +116,9 @@ def fetch(window: int) -> None:
 @click.option("--clear-log", is_flag=True, help="Reset discovery log before running")
 def discover(dry_run: bool, clear_log: bool) -> None:
     """Discover new EU committees from the register."""
+    import sys
+    import io
+
     try:
         discovery = CommitteeDiscovery()
 
@@ -135,13 +138,17 @@ def discover(dry_run: bool, clear_log: bool) -> None:
         if result.has_new():
             click.echo("\nNew committees found:")
             for committee in result.new_committees:
-                click.echo(f"  {committee['code']}: {committee.get('title', 'Unknown')}")
+                code = committee['code']
+                title = committee.get('title', 'Unknown')
+                # Encode to handle UTF-8 characters
+                title_safe = title.encode('ascii', errors='replace').decode('ascii')
+                click.echo(f"  {code}: {title_safe}")
 
             if not dry_run:
                 click.echo("\nDiscovery log updated.")
                 click.echo("Next steps:")
                 click.echo("  1. Review new committees")
-                click.echo("  2. Add relevant ones: cordis-data monitor add-committee <code> '<title>'")
+                click.echo("  2. Add relevant ones: cordis-data monitor add-committee <code>")
         else:
             click.echo("No new committees found.")
 
@@ -151,5 +158,6 @@ def discover(dry_run: bool, clear_log: bool) -> None:
     except SystemExit:
         raise
     except Exception as e:
-        click.echo(f"❌ Error: {e}", err=True)
+        import traceback
+        traceback.print_exc(file=sys.stderr)
         raise click.Abort()
