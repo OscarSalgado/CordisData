@@ -5,7 +5,7 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, Optional
 
-from cordis_data.data.changelog import ChangeEvent, generate_changelog
+from cordis_data.data.changelog import ChangeEvent
 from cordis_data.data.committees.client import CommitteeDocumentsClient
 from cordis_data.data.metadata import update_timestamp
 

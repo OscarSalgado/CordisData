@@ -37,21 +37,9 @@ jobs:
             echo "No changes to commit"
           else
             git add data/committees/
-            git commit -m "chore: update committee documents
-
-Automated committee document monitoring
-
-Co-Authored-By: GitHub Actions <action@github.com>"
+            git commit -m $'chore: update committee documents\n\nAutomated committee document monitoring\n\nCo-Authored-By: GitHub Actions <action@github.com>'
             git push
           fi
-
-      - name: Send Slack alert
-        if: env.SLACK_WEBHOOK && success()
-        run: |
-          # Get new documents count from fetch output
-          echo "Alerts sent to Slack"
-        env:
-          SLACK_WEBHOOK: ${{ secrets.CORDIS_SLACK_WEBHOOK }}
 
       - name: Create GitHub issues
         if: env.GH_TOKEN && success()

@@ -3,8 +3,6 @@
 import time
 from unittest.mock import Mock, patch
 
-import pytest
-
 from cordis_data.data.committees.fetcher import CommitteeDocumentsFetcher
 
 

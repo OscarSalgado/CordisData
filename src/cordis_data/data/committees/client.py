@@ -59,7 +59,7 @@ class CommitteeDocumentsClient:
                     resp.raise_for_status()
                     return resp
 
-            except requests.RequestException as e:
+            except requests.RequestException:
                 if attempt == self.max_retries - 1:
                     raise
                 wait_time = (2 ** attempt) + (1 if attempt > 0 else 0)

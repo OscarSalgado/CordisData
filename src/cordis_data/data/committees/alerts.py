@@ -1,6 +1,5 @@
 """Alert senders for committee documents."""
 
-import json
 from abc import ABC, abstractmethod
 from typing import Optional
 

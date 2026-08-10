@@ -1,6 +1,5 @@
 """Integration tests for committee monitoring CLI."""
 
-from pathlib import Path
 from unittest.mock import Mock, patch
 
 from click.testing import CliRunner
@@ -15,7 +14,7 @@ class TestMonitorCLI:
         """Test adding a committee via CLI."""
         runner = CliRunner()
         with patch("cordis_data.cli.monitor.CommitteeDocumentsClient") as mock_client_class:
-            with patch("cordis_data.cli.monitor.CommitteeConfig") as mock_config_class:
+            with patch("cordis_data.cli.monitor.CommitteeConfig"):
                 mock_client = Mock()
                 mock_client_class.return_value = mock_client
                 mock_client.list_committees.return_value = [

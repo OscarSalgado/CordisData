@@ -1,8 +1,6 @@
 """Tests for committee alerts system."""
 
-from unittest.mock import Mock, patch
-
-import pytest
+from unittest.mock import patch
 
 from cordis_data.data.committees.alerts import (
     AlertDispatcher,

@@ -3,8 +3,6 @@
 from pathlib import Path
 from unittest.mock import Mock, patch
 
-import pytest
-
 from cordis_data.data.committees.config import CommitteeConfig
 
 

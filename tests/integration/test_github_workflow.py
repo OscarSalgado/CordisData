@@ -1,6 +1,5 @@
 """Tests for GitHub Actions workflow integration."""
 
-import json
 from pathlib import Path
 
 
@@ -74,8 +73,6 @@ def test_workflow_has_commit_step() -> None:
 
 def test_workflow_has_secret_references() -> None:
     """Test that workflow references secrets."""
-    import yaml
-
     workflow_file = Path(".github/workflows/monitor-committees.yml")
     with open(workflow_file) as f:
         content = f.read()
