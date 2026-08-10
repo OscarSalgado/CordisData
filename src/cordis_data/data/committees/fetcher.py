@@ -27,7 +27,7 @@ class CommitteeDocumentsFetcher:
         output_path: Optional[Path] = None,
         metadata_path: Optional[Path] = None,
         window_days: int = 90,
-    ) -> None:
+    ) -> list[dict]:
         """Fetch documents with rolling 3-month window.
 
         Args:
@@ -80,7 +80,9 @@ class CommitteeDocumentsFetcher:
         # Update metadata
         if metadata_path:
             metadata_path = Path(metadata_path)
-            update_timestamp(metadata_path, "committees_fetched_at")
+            metadata = json.loads(metadata_path.read_text()) if metadata_path.exists() else {}
+            update_timestamp(metadata, "committees_fetched_at")
+            metadata_path.write_text(json.dumps(metadata, indent=2))
 
         return new_docs
 
