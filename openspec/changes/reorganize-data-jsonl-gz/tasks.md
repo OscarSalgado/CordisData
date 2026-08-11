@@ -1,16 +1,16 @@
 ## 1. Core Infrastructure: Compression & UTF-8 Utilities
 
-- [ ] 1.1 Create `src/cordis_data/utils/compression.py` with `JSONLGzipWriter` class
+- [x] 1.1 Create `src/cordis_data/utils/compression.py` with `JSONLGzipWriter` class
   - Write JSONL.GZ files (one record per line, gzip compressed)
   - Normalize UTF-8 to NFC form before serialization
   - Include compression ratio tracking
 
-- [ ] 1.2 Create `src/cordis_data/utils/compression.py` with `JSONLGzipReader` class
+- [x] 1.2 Create `src/cordis_data/utils/compression.py` with `JSONLGzipReader` class
   - Read JSONL.GZ files line-by-line
   - Support both compressed (.gz) and uncompressed (.jsonl) variants
   - Handle encoding errors gracefully
 
-- [ ] 1.3 Add unit tests for compression utilities
+- [x] 1.3 Add unit tests for compression utilities
   - Test: Round-trip integrity (write → read produces same data)
   - Test: Compression ratio is ~85% for calls data
   - Test: Decompression time < 50ms for 8.5MB
@@ -18,23 +18,23 @@
 
 ## 2. OpenCallsFetcher: Migration & JSONL.GZ Output
 
-- [ ] 2.1 Add migration method `_migrate_old_format()` to OpenCallsFetcher
+- [x] 2.1 Add migration method `_migrate_old_format()` to OpenCallsFetcher
   - Detect old `data/calls.open.json` exists
   - Read, convert to JSONL.GZ, write to `data/calls/open.jsonl.gz`
   - Archive old file to `data/calls.open.json.bak`
   - Log clear migration message
 
-- [ ] 2.2 Update `OpenCallsFetcher.main()` to write JSONL.GZ
+- [x] 2.2 Update `OpenCallsFetcher.main()` to write JSONL.GZ
   - Replace `json.dump()` with JSONLGzipWriter
   - Normalize UTF-8 (NFC) for all text fields before writing
   - Update output path: `data/calls/open.jsonl.gz`
   - Create `data/calls/` directory if doesn't exist
 
-- [ ] 2.3 Update changelog path in OpenCallsFetcher
+- [x] 2.3 Update changelog path in OpenCallsFetcher
   - Change from `data/changelog/open/` to `data/calls/changelog/open/`
   - Ensure parent directories are created
 
-- [ ] 2.4 Update CLI help text and docstrings
+- [x] 2.4 Update CLI help text and docstrings
   - Change default output path in `--output` help
   - Document new .jsonl.gz format
 
@@ -46,23 +46,23 @@
 
 ## 3. ClosedCallsFetcher: Migration & JSONL.GZ Output
 
-- [ ] 3.1 Add migration method `_migrate_old_format()` to ClosedCallsFetcher
+- [x] 3.1 Add migration method `_migrate_old_format()` to ClosedCallsFetcher
   - Detect old `data/calls.closed.json` exists
   - Read, convert to JSONL.GZ, write to `data/calls/closed.jsonl.gz`
   - Archive old file to `data/calls.closed.json.bak`
   - Log clear migration message
 
-- [ ] 3.2 Update `ClosedCallsFetcher.main()` to write JSONL.GZ
+- [x] 3.2 Update `ClosedCallsFetcher.main()` to write JSONL.GZ
   - Replace `json.dump()` with JSONLGzipWriter
   - Normalize UTF-8 (NFC) for all text fields before writing
   - Update output path: `data/calls/closed.jsonl.gz`
   - Create `data/calls/` directory if doesn't exist
 
-- [ ] 3.3 Update changelog path in ClosedCallsFetcher
+- [x] 3.3 Update changelog path in ClosedCallsFetcher
   - Change from `data/changelog/closed/` to `data/calls/changelog/closed/`
   - Ensure parent directories are created
 
-- [ ] 3.4 Update CLI help text and docstrings
+- [x] 3.4 Update CLI help text and docstrings
   - Change default output path in `--output` help
   - Document new .jsonl.gz format
 
@@ -90,13 +90,13 @@
 
 ## 5. ProjectsFetcher: Read from New Path
 
-- [ ] 5.1 Update `ProjectsFetcher._load_closed_calls()` to read JSONL.GZ
+- [x] 5.1 Update `ProjectsFetcher._load_closed_calls()` to read JSONL.GZ
   - Change from: `open("data/calls.closed.json")`
   - Change to: `gzip.open("data/calls/closed.jsonl.gz", "rt")`
   - Parse each line as JSON record: `[json.loads(line) for line in f]`
   - Handle file not found with clear error message
 
-- [ ] 5.2 Update default path constant
+- [x] 5.2 Update default path constant
   - Change from: `project_root / "data" / "calls.closed.json"`
   - Change to: `project_root / "data" / "calls" / "closed.jsonl.gz"`
 
@@ -107,7 +107,7 @@
 
 ## 6. CLI Integration & Documentation
 
-- [ ] 6.1 Update all CLI references to old paths
+- [x] 6.1 Update all CLI references to old paths
   - `src/cordis_data/cli/__init__.py`: update help texts, docstrings
   - Search for hardcoded `calls.open.json`, `calls.closed.json` references
 
@@ -150,7 +150,7 @@
   - Confirm new format is stable
   - Document policy (delete after 1 week / 2 fetches)
 
-- [ ] 8.2 Commit and create PR
+- [x] 8.2 Commit and create PR
   - Clear commit message: "refactor: reorganize data to JSONL.GZ and normalize UTF-8"
   - Reference proposal, design, specs
 
