@@ -1,10 +1,13 @@
 """Client for EU comitology-register REST API."""
 
+import random
 import time
 from datetime import datetime, timedelta, timezone
 from typing import Optional
 
 import requests
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
 
 from cordis_data.api.rate_limiter import TokenBucket
 
@@ -24,6 +27,20 @@ class CommitteeDocumentsClient:
         self.rate_limiter = rate_limiter or TokenBucket(rate=2)
         self.session = requests.Session()
         self.max_retries = 3
+        self.timeout = 30  # seconds, increased from 10 to handle slow API responses
+        self._setup_session_retries()
+
+    def _setup_session_retries(self) -> None:
+        """Configure session with automatic retries for transient failures."""
+        retry_strategy = Retry(
+            total=3,
+            backoff_factor=1,
+            status_forcelist=[429, 500, 502, 503, 504],
+            allowed_methods=["GET", "POST"],
+        )
+        adapter = HTTPAdapter(max_retries=retry_strategy)
+        self.session.mount("http://", adapter)
+        self.session.mount("https://", adapter)
 
     def _request_with_retry(self, method: str, url: str, **kwargs) -> requests.Response:
         """Execute HTTP request with exponential backoff retry.
@@ -39,19 +56,25 @@ class CommitteeDocumentsClient:
         Raises:
             requests.HTTPError: If request fails after all retries
         """
+        # Use provided timeout or default
+        timeout = kwargs.pop("timeout", self.timeout)
+
         for attempt in range(self.max_retries):
             try:
                 if method.upper() == "GET":
-                    resp = requests.get(url, **kwargs)
+                    resp = self.session.get(url, timeout=timeout, **kwargs)
                 elif method.upper() == "POST":
-                    resp = requests.post(url, **kwargs)
+                    resp = self.session.post(url, timeout=timeout, **kwargs)
                 else:
                     raise ValueError(f"Unsupported method: {method}")
 
                 # Retry on rate limit or server error
                 if resp.status_code in [429, 500, 502, 503, 504]:
                     if attempt < self.max_retries - 1:
-                        wait_time = (2 ** attempt) + (1 if attempt > 0 else 0)
+                        # Exponential backoff with jitter: 1-2s, 2-4s, 4-8s
+                        base_wait = 2 ** attempt
+                        jitter = random.uniform(0, base_wait)
+                        wait_time = base_wait + jitter
                         time.sleep(wait_time)
                         continue
                     resp.raise_for_status()
@@ -59,10 +82,21 @@ class CommitteeDocumentsClient:
                     resp.raise_for_status()
                     return resp
 
+            except requests.Timeout:
+                # Timeout needs longer backoff
+                if attempt < self.max_retries - 1:
+                    base_wait = 3 * (2 ** attempt)  # 3s, 6s, 12s
+                    jitter = random.uniform(0, base_wait * 0.5)
+                    wait_time = base_wait + jitter
+                    time.sleep(wait_time)
+                    continue
+                raise
             except requests.RequestException:
                 if attempt == self.max_retries - 1:
                     raise
-                wait_time = (2 ** attempt) + (1 if attempt > 0 else 0)
+                base_wait = 2 ** attempt
+                jitter = random.uniform(0, base_wait)
+                wait_time = base_wait + jitter
                 time.sleep(wait_time)
 
         return resp
@@ -100,7 +134,7 @@ class CommitteeDocumentsClient:
             "documentStartDate": start_date,
         }
 
-        resp = self._request_with_retry("POST", url, json=payload, timeout=10)
+        resp = self._request_with_retry("POST", url, json=payload)
         return resp.json()
 
     def fetch_document_detail(self, document_reference: str, version: int) -> dict:
@@ -116,7 +150,7 @@ class CommitteeDocumentsClient:
         self.rate_limiter.acquire()
 
         url = f"{self.BASE_URL}/documents/{document_reference}/{version}"
-        resp = self._request_with_retry("GET", url, timeout=10)
+        resp = self._request_with_retry("GET", url)
         return resp.json()
 
     def download_attachment(
@@ -138,7 +172,7 @@ class CommitteeDocumentsClient:
         self.rate_limiter.acquire()
 
         url = f"{self.INTEGRATION_BASE}/{attachment_id}/{document_reference}/{version}/attachment"
-        resp = self._request_with_retry("GET", url, timeout=10)
+        resp = self._request_with_retry("GET", url)
         return resp.content
 
     def list_committees(self) -> list[dict]:
@@ -150,5 +184,5 @@ class CommitteeDocumentsClient:
         self.rate_limiter.acquire()
 
         url = f"{self.BASE_URL}/committees"
-        resp = self._request_with_retry("GET", url, timeout=10)
+        resp = self._request_with_retry("GET", url)
         return resp.json()
