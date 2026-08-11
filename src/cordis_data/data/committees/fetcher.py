@@ -8,6 +8,7 @@ from typing import Any, Optional
 from cordis_data.data.changelog import ChangeEvent
 from cordis_data.data.committees.client import CommitteeDocumentsClient
 from cordis_data.data.metadata import update_timestamp
+from cordis_data.utils.compression import JSONLGzipReader, JSONLGzipWriter
 
 
 class CommitteeDocumentsFetcher:
@@ -32,13 +33,13 @@ class CommitteeDocumentsFetcher:
 
         Args:
             committee_codes: Committees to monitor
-            output_path: Path to write documents.json
+            output_path: Path to write documents.jsonl.gz
             metadata_path: Path to metadata
             window_days: Days to look back (default: 90)
         """
         if output_path is None:
             project_root = Path(__file__).resolve().parent.parent.parent.parent
-            output_path = project_root / "data" / "committees" / "documents.json"
+            output_path = project_root / "data" / "committees" / "documents.jsonl.gz"
         else:
             output_path = Path(output_path)
 
@@ -73,10 +74,9 @@ class CommitteeDocumentsFetcher:
 
         merged_list = list(merged.values())
 
-        # Save
-        output_path.parent.mkdir(parents=True, exist_ok=True)
-        with open(output_path, "w", encoding='utf-8') as f:
-            json.dump(merged_list, f, indent=2, ensure_ascii=False)
+        # Save to JSONL.GZ with UTF-8 normalization
+        writer = JSONLGzipWriter(output_path, normalize_utf8=True)
+        writer.write_records(merged_list)
         print(f"Saved {len(merged_list)} documents to {output_path}")
 
         # Update metadata
@@ -89,12 +89,12 @@ class CommitteeDocumentsFetcher:
         return new_docs
 
     def _load_documents(self, path: Path) -> list[dict[str, Any]]:
-        """Load existing documents from disk."""
+        """Load existing documents from disk (JSONL.GZ format)."""
         if path.exists():
             try:
-                with open(path, encoding='utf-8') as f:
-                    return json.load(f)
-            except (json.JSONDecodeError, IOError):
+                reader = JSONLGzipReader(path)
+                return reader.read_all()
+            except (json.JSONDecodeError, IOError, FileNotFoundError):
                 return []
         return []
 

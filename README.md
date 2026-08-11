@@ -80,9 +80,8 @@ GitHub Actions workflows automatically fetch and update data:
 - **Calls**: Daily at 02:00 UTC (`fetch-calls.yml`)
   - Fetches open/forthcoming/closed EU funding calls
   - Merges with existing data (preserves older records by default)
-  - Generates a daily changelog at `data/changelog/YYYY-MM-DD.json` and deletes
-    changelog files older than 90 days
-  - Commits `data/calls.json`, `data/.metadata.json`, and `data/changelog/*.json`
+  - Generates a daily changelog and auto-prunes after 90 days
+  - Commits data/calls/* and `data/.metadata.json`
 
 - **Projects**: Daily at 04:00 UTC (`fetch-projects.yml`)
   - Fetches awarded projects for closed calls
@@ -94,8 +93,7 @@ GitHub Actions workflows automatically fetch and update data:
   - Monitors EU committee documents from comitology-register
   - Detects new documents from last 90 days
   - Sends alerts on new documents (Slack, GitHub Issues)
-  - Generates daily changelog at `data/committees/changelog/YYYY-MM-DD.json`
-  - Commits `data/committees/documents.json` and changelog
+  - Commits data/committees/* and changelog
 
 All workflows use `github-actions[bot]` and include timestamps in commit messages.
 
@@ -103,12 +101,41 @@ Configure committee monitoring: See [Committee Monitoring Guide](./docs/committe
 
 ## Data
 
-- `data/calls.json` — Available EU funding calls
+Data is organized by dataset type and stored in compressed JSONL.GZ format for efficient storage:
+
+**Calls** (open/closed funding opportunities):
+- `data/calls/open.jsonl.gz` — Active/forthcoming EU funding calls (compressed JSONL)
+- `data/calls/closed.jsonl.gz` — Closed EU funding calls (compressed JSONL)
+- `data/calls/changelog/{open,closed}/` — Daily changelog of call changes
+
+**Projects** (awarded research projects):
 - `data/projects.json` — Awarded projects with CORDIS enrichment
-- `data/committees/documents.json` — EU committee documents (rolling 90-day window)
+
+**Committee Documents** (EU committee meeting documents):
+- `data/committees/documents.jsonl.gz` — Committee documents (compressed JSONL, rolling 90-day window)
+- `data/committees/changelog/` — Daily changelog of document changes
+
+**Metadata**:
 - `data/.metadata.json` — Fetch timestamps and freshness info
-- `data/changelog/YYYY-MM-DD.json` — Daily changelog of call changes
-- `data/committees/changelog/YYYY-MM-DD.json` — Daily changelog of committee document changes
+
+### Data Format
+
+Calls and committee document data is stored in **JSONL.GZ format** (JSON Lines compressed with gzip):
+- Each record is one line of JSON
+- Compressed with gzip (~85% size reduction)
+- UTF-8 normalized to NFC canonical form
+- Decompression is fast (~17ms for 8.5MB)
+
+To read in Python:
+```python
+from cordis_data.utils.compression import JSONLGzipReader
+
+reader = JSONLGzipReader("data/calls/open.jsonl.gz")
+calls = reader.read_all()  # Load all records
+# or stream line-by-line:
+for call in reader.read_records():
+    process(call)
+```
 
 Changelogs are retained for 90 days and auto-pruned on each fetch.
 
