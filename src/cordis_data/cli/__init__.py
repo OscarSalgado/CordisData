@@ -7,7 +7,6 @@ import click
 
 from cordis_data.cli.explorer import explorer_cli
 from cordis_data.cli.monitor import monitor
-from cordis_data.data.calls import CallsFetcher
 from cordis_data.data.closed_calls import ClosedCallsFetcher
 from cordis_data.data.metadata import load_metadata
 from cordis_data.data.open_calls import OpenCallsFetcher
@@ -22,43 +21,40 @@ def main() -> None:
 
 @main.command()
 @click.option(
-    "--full-history",
-    is_flag=True,
-    help="Fetch complete dataset with no date limit (replaces existing)",
-)
-@click.option(
     "--force",
     is_flag=True,
     help="Skip freshness check and fetch unconditionally",
 )
-@click.option(
-    "--output",
-    type=click.Path(),
-    default=None,
-    help="Output file path (default: data/calls.json)",
-)
-def fetch_calls(full_history: bool, force: bool, output: str | None) -> None:
-    """Fetch open/forthcoming/closed EU grant calls from SEDIA API.
+def fetch_calls(force: bool) -> None:
+    """Fetch all EU grant calls (open and closed) from SEDIA API.
 
-    By default, fetches calls published in the last 90 days and merges into
-    existing data. Use --full-history to fetch complete dataset and replace.
-    Use --force to skip freshness check and fetch unconditionally.
+    Orchestrates both OpenCallsFetcher (active opportunities) and ClosedCallsFetcher
+    (closed calls for project discovery), writing results to data/calls/open.jsonl.gz
+    and data/calls/closed.jsonl.gz respectively.
 
-    Also writes a daily changelog to data/changelog/YYYY-MM-DD.json recording
-    NEW/STATUS_CHANGED/FIELD_CHANGED/METADATA_UPDATED events, and prunes
-    changelog files older than 90 days.
+    By default, fetches calls published in the relevant time windows (9 months for open,
+    all history for closed) and merges into existing data. Use --force to skip freshness
+    checks and fetch unconditionally.
+
+    Also writes daily changelogs to data/changelog/open/YYYY-MM-DD.json and
+    data/changelog/closed/YYYY-MM-DD.json recording changes, and prunes old entries.
 
     Args:
-        full_history: If True, fetch complete dataset (no date limit)
-        force: If True, skip freshness check and always fetch
-        output: Output file path (default: data/calls.json)
+        force: If True, skip freshness checks and always fetch
 
-    Exits with code 1 if fetch fails.
+    Exits with code 1 if either fetch fails.
     """
     try:
-        fetcher = CallsFetcher()
-        output_path = Path(output) if output else None
-        fetcher.main(output_path=output_path, full_history=full_history, force=force)
+        open_fetcher = OpenCallsFetcher()
+        closed_fetcher = ClosedCallsFetcher()
+
+        click.echo("Fetching open/forthcoming calls...", err=True)
+        open_fetcher.main(force=force)
+
+        click.echo("Fetching closed calls...", err=True)
+        closed_fetcher.main(force=force)
+
+        click.echo("Done.", err=True)
     except Exception as e:
         click.echo(f"Error fetching calls: {e}", err=True)
         sys.exit(1)

@@ -4,6 +4,33 @@
 
 ### Major Changes
 
+#### Deprecated CallsFetcher Removed
+- **BREAKING**: `CallsFetcher` class removed from `cordis_data.data` module
+  - Marked as DEPRECATED, now fully removed
+  - Functionality split: use `OpenCallsFetcher` for active calls, `ClosedCallsFetcher` for closed calls
+  - CLI command `cordis-data fetch-calls` now orchestrates both fetchers sequentially
+
+- **Migration**: Update code to use new fetchers
+  ```python
+  # Old (no longer works)
+  from cordis_data.data import CallsFetcher
+  fetcher = CallsFetcher()
+  
+  # New
+  from cordis_data.data.open_calls import OpenCallsFetcher
+  from cordis_data.data.closed_calls import ClosedCallsFetcher
+  
+  open_fetcher = OpenCallsFetcher()
+  closed_fetcher = ClosedCallsFetcher()
+  open_fetcher.main()
+  closed_fetcher.main()
+  ```
+
+- **CLI Behavior Change**: `cordis-data fetch-calls` now outputs to separate files
+  - Output paths: `data/calls/open.jsonl.gz` and `data/calls/closed.jsonl.gz`
+  - Changelog paths: `data/calls/changelog/open/YYYY-MM-DD.json` and `data/calls/changelog/closed/YYYY-MM-DD.json`
+  - Metadata keys updated: `calls_open_fetched_at`, `calls_closed_fetched_at` (was `calls_fetched_at`)
+
 #### Data Format Reorganization & JSONL.GZ Compression
 - **BREAKING**: Data file paths have changed
   - `data/calls.open.json` → `data/calls/open.jsonl.gz`

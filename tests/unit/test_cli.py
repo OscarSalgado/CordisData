@@ -25,45 +25,46 @@ class TestCLI:
         result = runner.invoke(main, ["fetch-calls", "--help"])
         assert result.exit_code == 0
         assert "--force" in result.output
-        assert "--full-history" in result.output
 
     def test_fetch_calls_basic(self) -> None:
         """Test fetch-calls command execution."""
         runner = CliRunner()
         with runner.isolated_filesystem():
-            with patch("cordis_data.cli.CallsFetcher.main") as mock_main:
+            with patch("cordis_data.cli.OpenCallsFetcher.main") as mock_open, \
+                 patch("cordis_data.cli.ClosedCallsFetcher.main") as mock_closed:
                 result = runner.invoke(main, ["fetch-calls", "--force"])
                 assert result.exit_code == 0
-                mock_main.assert_called()
+                mock_open.assert_called_once()
+                mock_closed.assert_called_once()
 
     def test_fetch_calls_with_force_flag(self) -> None:
         """Test fetch-calls with --force flag."""
         runner = CliRunner()
         with runner.isolated_filesystem():
-            with patch("cordis_data.cli.CallsFetcher.main") as mock_main:
+            with patch("cordis_data.cli.OpenCallsFetcher.main") as mock_open, \
+                 patch("cordis_data.cli.ClosedCallsFetcher.main") as mock_closed:
                 result = runner.invoke(main, ["fetch-calls", "--force"])
                 if result.exit_code == 0:
-                    mock_main.assert_called()
+                    mock_open.assert_called()
+                    mock_closed.assert_called()
 
-    def test_fetch_calls_with_full_history(self) -> None:
-        """Test fetch-calls with --full-history flag."""
+    def test_fetch_calls_orchestrates_sequential_fetchers(self) -> None:
+        """Test fetch-calls orchestrates open then closed fetchers sequentially."""
         runner = CliRunner()
-        with runner.isolated_filesystem():
-            with patch("cordis_data.cli.CallsFetcher.main") as mock_main:
-                result = runner.invoke(main, ["fetch-calls", "--full-history"])
-                if result.exit_code == 0:
-                    mock_main.assert_called()
+        call_order = []
 
-    def test_fetch_calls_with_custom_output(self) -> None:
-        """Test fetch-calls with custom output path."""
-        runner = CliRunner()
+        def record_open_call(*args, **kwargs):
+            call_order.append("open")
+
+        def record_closed_call(*args, **kwargs):
+            call_order.append("closed")
+
         with runner.isolated_filesystem():
-            with patch("cordis_data.cli.CallsFetcher.main") as mock_main:
-                result = runner.invoke(
-                    main, ["fetch-calls", "--output", "custom_calls.json"]
-                )
-                if result.exit_code == 0:
-                    mock_main.assert_called()
+            with patch("cordis_data.cli.OpenCallsFetcher.main", side_effect=record_open_call), \
+                 patch("cordis_data.cli.ClosedCallsFetcher.main", side_effect=record_closed_call):
+                result = runner.invoke(main, ["fetch-calls"])
+                assert result.exit_code == 0
+                assert call_order == ["open", "closed"]
 
     def test_fetch_projects_help(self) -> None:
         """Test fetch-projects help."""
@@ -166,7 +167,7 @@ class TestCLI:
         runner = CliRunner()
         with runner.isolated_filesystem():
             with patch(
-                "cordis_data.cli.CallsFetcher.main",
+                "cordis_data.cli.OpenCallsFetcher.main",
                 side_effect=Exception("API Error")
             ):
                 result = runner.invoke(main, ["fetch-calls"])
