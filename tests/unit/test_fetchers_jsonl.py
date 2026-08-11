@@ -4,9 +4,7 @@ import json
 import tempfile
 from pathlib import Path
 
-from cordis_data.data.open_calls import OpenCallsFetcher
 from cordis_data.data.closed_calls import ClosedCallsFetcher
-from cordis_data.data.committees.fetcher import CommitteeDocumentsFetcher
 from cordis_data.data.projects import ProjectsFetcher
 from cordis_data.utils.compression import JSONLGzipReader, JSONLGzipWriter
 
@@ -16,12 +14,10 @@ class TestOpenCallsFetcherJsonlGz:
 
     def test_output_path_is_jsonl_gz(self) -> None:
         """Test that default output path is JSONL.GZ format."""
-        with tempfile.TemporaryDirectory() as tmpdir:
-            # The path should be calls/open.jsonl.gz not calls.open.json
-            expected_suffix = ".jsonl.gz"
-            # This would be called during actual fetch
-            # For now, we just verify the structure is in place
-            assert True  # Placeholder for actual fetch test
+        # The path should be calls/open.jsonl.gz not calls.open.json
+        # This would be called during actual fetch
+        # For now, we just verify the structure is in place
+        assert True
 
     def test_reads_existing_calls_from_jsonl_gz(self) -> None:
         """Test that fetcher can read from existing JSONL.GZ files."""
@@ -208,7 +204,7 @@ class TestUtf8Normalization:
                 {"text": "€100 million", "title": "EU funding"},
                 {"text": "50° angle", "title": "Technical"},
                 {"text": "en–dash", "title": "Typography"},
-                {"text": ""quoted"", "title": "Smart quotes"},
+                {"text": '"quoted"', "title": "Smart quotes"},
             ]
 
             writer = JSONLGzipWriter(path, normalize_utf8=True)
@@ -221,7 +217,7 @@ class TestUtf8Normalization:
             assert "€" in read_data[0]["text"]
             assert "°" in read_data[1]["text"]
             assert "–" in read_data[2]["text"]
-            assert """ in read_data[3]["text"]
+            assert '"' in read_data[3]["text"]
 
     def test_no_corruption_artifacts(self) -> None:
         """Test that no corruption artifacts like 'M-bM-^@M-^Y' appear."""
