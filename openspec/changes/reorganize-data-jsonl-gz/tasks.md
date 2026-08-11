@@ -38,7 +38,7 @@
   - Change default output path in `--output` help
   - Document new .jsonl.gz format
 
-- [ ] 2.5 Add unit tests for OpenCallsFetcher
+- [x] 2.5 Add unit tests for OpenCallsFetcher
   - Test: Output file is at `data/calls/open.jsonl.gz`
   - Test: Records can be read back with JSONLGzipReader
   - Test: UTF-8 special characters are preserved
@@ -66,7 +66,7 @@
   - Change default output path in `--output` help
   - Document new .jsonl.gz format
 
-- [ ] 3.5 Add unit tests for ClosedCallsFetcher
+- [x] 3.5 Add unit tests for ClosedCallsFetcher
   - Test: Output file is at `data/calls/closed.jsonl.gz`
   - Test: Records can be read back with JSONLGzipReader
   - Test: File size reduction is ~85% (55MB → ~8MB)
@@ -84,7 +84,7 @@
   - Change from `data/committees/changelog/` to `data/committees/changelog/`
   - (Already organized, just ensure it's under committees/)
 
-- [ ] 4.3 Add unit tests for CommitteeDocumentsFetcher
+- [x] 4.3 Add unit tests for CommitteeDocumentsFetcher
   - Test: Output file is at `data/committees/documents.jsonl.gz`
   - Test: Records can be read back
 
@@ -100,7 +100,7 @@
   - Change from: `project_root / "data" / "calls.closed.json"`
   - Change to: `project_root / "data" / "calls" / "closed.jsonl.gz"`
 
-- [ ] 5.3 Add unit tests for ProjectsFetcher
+- [x] 5.3 Add unit tests for ProjectsFetcher
   - Test: Loads closed calls from new path
   - Test: Extracts topic IDs correctly for project fetching
   - Test: Behavior is identical to before (same topic lists)
@@ -122,30 +122,30 @@
 
 ## 7. Integration Testing & Validation
 
-- [ ] 7.1 Run full test suite
+- [x] 7.1 Run full test suite
   - All unit tests pass
   - Integration tests: fetch calls, verify structure, verify ProjectsFetcher can read
 
-- [ ] 7.2 Manual validation
+- [x] 7.2 Manual validation
   - Run: `cordis-data calls open --force` (writes calls/open.jsonl.gz)
   - Run: `cordis-data calls closed --force` (writes calls/closed.jsonl.gz)
   - Verify: files exist at correct paths
   - Verify: file sizes are ~85% smaller than originals
   - Verify: projects fetch works (reads closed calls from new path)
 
-- [ ] 7.3 Verify UTF-8 normalization
+- [x] 7.3 Verify UTF-8 normalization
   - Decompress a sample file: `gunzip -c data/calls/open.jsonl.gz | head -1 | jq .`
   - Check for special characters (é, °, –) render correctly
   - Verify no "M-bM-^@M-^Y" corruption artifacts
 
-- [ ] 7.4 Verify backward compatibility
+- [x] 7.4 Verify backward compatibility
   - If old files present, migration runs automatically
   - `.bak` files are created and old data is preserved
   - Migration is logged clearly
 
 ## 8. Cleanup & Release
 
-- [ ] 8.1 Verify old `.bak` files can be safely deleted
+- [x] 8.1 Verify old `.bak` files can be safely deleted
   - Run fetch cycles 2-3 times
   - Confirm new format is stable
   - Document policy (delete after 1 week / 2 fetches)
