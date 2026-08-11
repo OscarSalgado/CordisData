@@ -27,13 +27,14 @@ from cordis_data.data.metadata import (
 )
 from cordis_data.data.merger import get_programme_distribution, get_status_distribution, mark_expired_closed
 from cordis_data.utils import extract_budget, merge_calls, normalize_date, parse_action_type, summarize_changes
+from cordis_data.utils.compression import JSONLGzipReader, JSONLGzipWriter
 
 
 class OpenCallsFetcher:
     """Fetches active EU research funding calls (open/forthcoming) from SEDIA.
 
     Fetches open and forthcoming EU grant calls published in the last 9 months
-    and writes them to data/calls.open.json. Merges into existing data,
+    and writes them to data/calls/open.jsonl.gz. Merges into existing data,
     preserving older records within the 9-month window.
 
     Dependency injection of SediaClient enables testing without network calls.
@@ -159,6 +160,26 @@ class OpenCallsFetcher:
                 }
                 cluster = cl_map.get(tag, tag if tag.startswith("CL") else "")
         return cluster
+
+    def _migrate_old_format(self, new_path: Path) -> None:
+        """Migrate old data/calls.open.json to new format if needed.
+
+        Args:
+            new_path: Path to new calls/open.jsonl.gz file
+        """
+        old_path = new_path.parent.parent / "calls.open.json"
+        if old_path.exists() and not new_path.exists():
+            try:
+                with open(old_path, "r", encoding="utf-8") as f:
+                    old_calls = json.load(f)
+                writer = JSONLGzipWriter(new_path, normalize_utf8=True)
+                writer.write_records(old_calls)
+                # Archive old file
+                backup_path = old_path.with_suffix(".json.bak")
+                old_path.rename(backup_path)
+                print(f"Migrated {old_path} to {new_path} (old file archived to {backup_path})", flush=True)
+            except Exception as e:
+                print(f"Migration failed: {e}. Continuing with fetch.", flush=True)
 
     def _extract_submission_procedure(self, m: dict[str, Any]) -> dict[str, Any]:
         """Extract submission procedure from actions[0].
@@ -286,12 +307,12 @@ class OpenCallsFetcher:
         existing data. Set force=True to skip freshness check.
 
         Args:
-            output_path: Path to write calls.open.json (default: data/calls.open.json)
+            output_path: Path to write calls/open.jsonl.gz (default: data/calls/open.jsonl.gz)
             force: If True, skip freshness check and fetch unconditionally
         """
         if output_path is None:
             project_root = Path(__file__).resolve().parent.parent.parent.parent
-            output_path = project_root / "data" / "calls.open.json"
+            output_path = project_root / "data" / "calls" / "open.jsonl.gz"
         else:
             output_path = Path(output_path)
 
@@ -344,10 +365,14 @@ class OpenCallsFetcher:
 
         calls = [self._transform_record(r) for r in all_results]
 
+        # Migrate old format if needed
+        self._migrate_old_format(output_path)
+
+        # Load existing calls from JSONL.GZ
         used_existing = output_path.exists()
         if used_existing:
-            with open(output_path, "r", encoding="utf-8") as f:
-                existing_calls = json.load(f)
+            reader = JSONLGzipReader(output_path)
+            existing_calls = reader.read_all()
         else:
             existing_calls = []
 
@@ -389,19 +414,19 @@ class OpenCallsFetcher:
             json.dump(changelog, f, separators=(",", ":"), ensure_ascii=False)
         print(f"\nChangelog: {changelog['summary']['new']} new, "
               f"{changelog['summary']['changed']} changed "
-              f"-> data/changelog/open/{today_str}.json")
+              f"-> data/calls/changelog/open/{today_str}.json")
 
         deleted_changelogs = cleanup_old_changelogs(changelog_path.parent, datetime.date.today())
         if deleted_changelogs:
             print(f"\nArchival: deleted {len(deleted_changelogs)} changelog(s) older than "
                   f"{RETENTION_DAYS} days: {', '.join(deleted_changelogs)}")
 
-        output_path.parent.mkdir(parents=True, exist_ok=True)
-        with open(output_path, "w", encoding="utf-8") as f:
-            json.dump(merged_calls, f, separators=(",", ":"), ensure_ascii=False)
+        # Write to JSONL.GZ with UTF-8 normalization
+        writer = JSONLGzipWriter(output_path, normalize_utf8=True)
+        writer.write_records(merged_calls)
         size_kb = output_path.stat().st_size / 1024
 
         # Update metadata timestamp
         metadata = update_timestamp(metadata, "calls_open_fetched_at")
         save_metadata(metadata, project_root / ".metadata.json")
-        print(f"\nWritten {output_path} ({len(merged_calls)} calls, {size_kb:.0f} KB)")
+        print(f"\nWritten {output_path} ({len(merged_calls)} calls, {size_kb:.0f} KB, compressed)")

@@ -19,6 +19,7 @@ from cordis_data.config import (
     SEDIA_API_URL,
 )
 from cordis_data.utils import merge_projects
+from cordis_data.utils.compression import JSONLGzipReader
 
 T = TypeVar("T")
 
@@ -300,22 +301,22 @@ class ProjectsFetcher:
         self,
         calls_path: Optional[Path] = None,
     ) -> list[dict[str, Any]]:
-        """Load closed calls from calls.closed.json.
+        """Load closed calls from calls/closed.jsonl.gz.
 
         Args:
-            calls_path: Path to calls.closed.json (default: data/calls.closed.json)
+            calls_path: Path to calls/closed.jsonl.gz (default: data/calls/closed.jsonl.gz)
 
         Returns:
             List of closed call dicts (already filtered by callStatus="closed")
         """
         if calls_path is None:
             project_root = Path(__file__).resolve().parent.parent.parent.parent
-            calls_path = project_root / "data" / "calls.closed.json"
+            calls_path = project_root / "data" / "calls" / "closed.jsonl.gz"
         else:
             calls_path = Path(calls_path)
 
-        with open(calls_path, "r", encoding="utf-8") as f:
-            calls = json.load(f)
+        reader = JSONLGzipReader(calls_path)
+        calls = reader.read_all()
 
         return calls  # Already filtered (closed only)
 
