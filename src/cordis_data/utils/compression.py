@@ -4,7 +4,7 @@ import gzip
 import json
 import unicodedata
 from pathlib import Path
-from typing import Any, Generator, Iterator, Optional
+from typing import Any, Generator
 
 
 class JSONLGzipWriter:

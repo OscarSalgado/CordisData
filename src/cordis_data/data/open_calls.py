@@ -12,7 +12,6 @@ from cordis_data.data.archival import RETENTION_DAYS, cleanup_old_changelogs
 from cordis_data.data.changelog import generate_compact_changelog_calls
 from cordis_data.data.html_clean import clean_html_to_text
 from cordis_data.config import (
-    DEFAULT_WINDOW_DAYS,
     PROGRAMME_NAMES,
     SEDIA_API_KEY,
     SEDIA_API_URL,
