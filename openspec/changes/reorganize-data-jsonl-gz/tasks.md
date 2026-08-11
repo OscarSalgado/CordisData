@@ -74,13 +74,13 @@
 
 ## 4. CommitteeDocumentsFetcher: Reorganize & Compress
 
-- [ ] 4.1 Update CommitteeDocumentsFetcher to write JSONL.GZ
+- [x] 4.1 Update CommitteeDocumentsFetcher to write JSONL.GZ
   - Currently writes to `data/committees/documents.json`
   - Update to write to `data/committees/documents.jsonl.gz`
   - Normalize UTF-8 (NFC) for all text fields
   - Create `data/committees/` directory if doesn't exist
 
-- [ ] 4.2 Update changelog path in CommitteeDocumentsFetcher
+- [x] 4.2 Update changelog path in CommitteeDocumentsFetcher
   - Change from `data/committees/changelog/` to `data/committees/changelog/`
   - (Already organized, just ensure it's under committees/)
 
@@ -111,12 +111,12 @@
   - `src/cordis_data/cli/__init__.py`: update help texts, docstrings
   - Search for hardcoded `calls.open.json`, `calls.closed.json` references
 
-- [ ] 6.2 Update `README.md` and docs
+- [x] 6.2 Update `README.md` and docs
   - Document new data structure (calls/, committees/)
   - Show example of reading JSONL.GZ files
   - Note UTF-8 normalization
 
-- [ ] 6.3 Add migration guide
+- [x] 6.3 Add migration guide
   - Explain old vs new paths
   - Note `.bak` files are safe to delete after verification
 
@@ -154,10 +154,10 @@
   - Clear commit message: "refactor: reorganize data to JSONL.GZ and normalize UTF-8"
   - Reference proposal, design, specs
 
-- [ ] 8.3 Update CHANGELOG
+- [x] 8.3 Update CHANGELOG
   - Document breaking changes (new paths)
   - Document benefits (85% compression, UTF-8 normalization)
   - Note migration is automatic
 
-- [ ] 8.4 Mark change complete in OpenSpec
+- [x] 8.4 Mark change complete in OpenSpec
   - After PR merged, archive this change: `openspec archive --change "reorganize-data-jsonl-gz"`
