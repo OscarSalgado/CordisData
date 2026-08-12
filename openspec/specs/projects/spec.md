@@ -12,12 +12,12 @@ The system SHALL fetch and enrich awarded projects for closed call topics within
 
 #### Scenario: First run (empty state)
 - **WHEN** projects.json does not exist
-- **THEN** fetch all topics from calls.closed.json closed within last 1 year
+- **THEN** fetch all topics from calls/closed.jsonl.gz closed within last 1 year
 - **AND** create projects.json with enriched projects
 
 #### Scenario: Subsequent runs (always fetch recent)
 - **WHEN** projects.json exists with N projects
-- **THEN** fetch all topics from calls.closed.json closed within last 1 year again
+- **THEN** fetch all topics from calls/closed.jsonl.gz closed within last 1 year again
 - **AND** append only new projects to existing projects.json (dedup)
 
 #### Scenario: Skip old calls
@@ -92,14 +92,36 @@ The system SHALL run on every invocation without freshness checks, fetching rece
 - **AND** same projects are deduplicated, no duplicates added
 - **AND** only new projects are appended
 
+### Requirement: Read closed calls from JSONL.GZ file
+ProjectsFetcher._load_closed_calls() SHALL read closed calls from `data/calls/closed.jsonl.gz`, parsing JSONL format (one record per line) and decompressing gzip, rather than reading `data/calls.closed.json`.
+
+#### Scenario: Load closed calls from new location
+- **WHEN** ProjectsFetcher._load_closed_calls() is called
+- **THEN** it reads from `data/calls/closed.jsonl.gz` (not `data/calls.closed.json`)
+- **AND** system decompresses gzip stream
+- **AND** parses each line as a separate JSON record
+- **AND** returns list of closed call dicts as before
+
+#### Scenario: Extract topic IDs for project fetching
+- **WHEN** closed calls are loaded
+- **THEN** system extracts topic IDs from each record
+- **AND** uses them to query SEDIA API for awarded projects
+- **AND** behavior is identical to before (same topic ID extraction logic)
+
+#### Scenario: Default path resolution
+- **WHEN** no calls_path is provided to _load_closed_calls()
+- **THEN** system uses default path: `data/calls/closed.jsonl.gz`
+- **AND** gracefully handles missing file with clear error message
+- **AND** suggests checking new data organization structure
+
 ### Requirement: Source Data
 
-The system SHALL consume only calls.closed.json (not calls.open.json).
+The system SHALL consume only closed calls (not open calls).
 
 #### Scenario: Closed calls only
 - **WHEN** ProjectsFetcher runs
-- **THEN** read from calls.closed.json (pre-filtered closed calls)
-- **AND** ignore calls.open.json entirely
+- **THEN** read from calls.closed.jsonl.gz (pre-filtered closed calls in new format)
+- **AND** ignore open calls entirely
 - **AND** do not attempt to fetch projects for open calls
 
 #### Scenario: Year filtering (optional)
@@ -159,13 +181,13 @@ The system SHALL provide CLI commands for project fetching.
 - **AND** always run (no freshness check)
 
 #### Scenario: Custom paths
-- **WHEN** user runs `cordis-data fetch-projects --calls-closed /path/to/calls.json --output /path/to/projects.json`
+- **WHEN** user runs `cordis-data fetch-projects --calls-closed /path/to/calls.jsonl.gz --output /path/to/projects.json`
 - **THEN** use custom paths instead of defaults
 
 #### Scenario: Help
 - **WHEN** user runs `cordis-data fetch-projects --help`
 - **THEN** show usage with options:
-  - --calls-closed PATH (default: data/calls.closed.json)
+  - --calls-closed PATH (default: data/calls/closed.jsonl.gz)
   - --output PATH (default: data/projects.json)
 
 ## Data Schema
