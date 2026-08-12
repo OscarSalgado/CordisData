@@ -61,21 +61,6 @@ jobs:
           fi
         continue-on-error: true
 
-      - name: Discover projects from closed calls
-        id: fetch_projects
-        run: |
-          set -o pipefail
-          echo "=== Starting projects discovery ===" | tee -a logs/fetch-calls.log
-
-          if cordis-data fetch-projects 2>&1 | tee -a logs/fetch-calls.log; then
-            echo "Projects discovery completed successfully" | tee -a logs/fetch-calls.log
-            echo "status=success" >> $GITHUB_OUTPUT
-          else
-            echo "Projects discovery failed" | tee -a logs/fetch-calls.log
-            echo "status=failed" >> $GITHUB_OUTPUT
-          fi
-        continue-on-error: true
-
       - name: Validate fetched data
         id: validate
         run: |
@@ -84,26 +69,22 @@ jobs:
           open_found=false
           closed_found=false
 
-          if [ -f data/calls.open.json ]; then
-            size=$(wc -c < data/calls.open.json)
-            count=$(python -c "import json; print(len(json.load(open('data/calls.open.json'))))" 2>/dev/null || echo "unknown")
-            echo "calls.open.json exists" | tee -a logs/fetch-calls.log
+          if [ -f data/calls/open.jsonl.gz ]; then
+            size=$(wc -c < data/calls/open.jsonl.gz)
+            echo "calls/open.jsonl.gz exists" | tee -a logs/fetch-calls.log
             echo "  Size: $size bytes" | tee -a logs/fetch-calls.log
-            echo "  Records: $count" | tee -a logs/fetch-calls.log
             open_found=true
           else
-            echo "calls.open.json not found" | tee -a logs/fetch-calls.log
+            echo "calls/open.jsonl.gz not found" | tee -a logs/fetch-calls.log
           fi
 
-          if [ -f data/calls.closed.json ]; then
-            size=$(wc -c < data/calls.closed.json)
-            count=$(python -c "import json; print(len(json.load(open('data/calls.closed.json'))))" 2>/dev/null || echo "unknown")
-            echo "calls.closed.json exists" | tee -a logs/fetch-calls.log
+          if [ -f data/calls/closed.jsonl.gz ]; then
+            size=$(wc -c < data/calls/closed.jsonl.gz)
+            echo "calls/closed.jsonl.gz exists" | tee -a logs/fetch-calls.log
             echo "  Size: $size bytes" | tee -a logs/fetch-calls.log
-            echo "  Records: $count" | tee -a logs/fetch-calls.log
             closed_found=true
           else
-            echo "calls.closed.json not found" | tee -a logs/fetch-calls.log
+            echo "calls/closed.jsonl.gz not found" | tee -a logs/fetch-calls.log
           fi
 
           if [ "$open_found" = true ] || [ "$closed_found" = true ]; then
@@ -126,11 +107,11 @@ jobs:
           echo "=== Git Operations ===" | tee -a logs/fetch-calls.log
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data/calls.open.json 2>/dev/null || true
-          git add data/calls.closed.json 2>/dev/null || true
+          git add data/calls/open.jsonl.gz 2>/dev/null || true
+          git add data/calls/closed.jsonl.gz 2>/dev/null || true
           git add data/.metadata.json 2>/dev/null || true
-          git add data/changelog/open/*.json 2>/dev/null || true
-          git add data/changelog/closed/*.json 2>/dev/null || true
+          git add data/calls/changelog/open/*.json 2>/dev/null || true
+          git add data/calls/changelog/closed/*.json 2>/dev/null || true
 
           if ! git diff --cached --quiet; then
             message="chore(data): fetch calls (open and closed) [$(date -u +'%Y-%m-%d %H:%M:%S UTC')]"
