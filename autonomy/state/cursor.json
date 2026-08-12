@@ -1,0 +1,9 @@
+{
+  "run_id": null,
+  "goal_id": null,
+  "change_id": null,
+  "task_id": null,
+  "iteration": 0,
+  "phase": "idle",
+  "blast_radius": []
+}
