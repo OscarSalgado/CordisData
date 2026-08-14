@@ -1,0 +1,17 @@
+{
+  "limits": {
+    "max_iterations_per_goal": 40,
+    "max_repairs_same_signature": 2,
+    "max_files_per_task": 8
+  },
+  "forbidden_paths": [
+    "openspec/specs/*",
+    ".github/workflows/*",
+    ".claude/hooks/*",
+    ".claude/settings.json",
+    "autonomy/policy.json",
+    "*.env",
+    "*.env.*"
+  ],
+  "commit": { "per": "task", "prefix": "feat({goal}): {task}" }
+}

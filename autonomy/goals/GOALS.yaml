@@ -1,0 +1,16 @@
+# Un goal NO es una tarea: es una condicion verificable.
+# done_when son comandos, no prosa. Si no puedes escribirlo como comando,
+# el goal no esta listo para ejecucion autonoma.
+goals:
+  - id: G-001
+    intent: "La API de ingesta acepta CSV con cabecera variable"
+    change_id: add-csv-ingest        # carpeta en openspec/changes/
+    human_gate: proposal             # para tras este artefacto: proposal | specs | design | none
+    done_when:
+      - "pnpm test -- ingest"
+      - "test -f src/ingest/parse.ts"
+    blast_radius:
+      - "src/ingest/*"
+      - "tests/ingest/*"
+    budget: { iterations: 25 }
+    status: pending                  # pending | planning | executing | blocked | done
