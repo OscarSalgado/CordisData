@@ -1,5 +1,5 @@
 # Core dependencies
-click==8.4.2
+click==8.5.0
 pydantic==2.13.4
 requests==2.34.2
 annotated-types==0.8.0
