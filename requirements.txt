@@ -8,7 +8,7 @@ typing-extensions==4.16.0
 typing-inspection==0.4.4
 
 # Development dependencies
-pytest==9.1.1
+pytest==9.2.0
 pytest-cov==7.1.0
 flake8==7.5.0
 mypy==2.4.0
